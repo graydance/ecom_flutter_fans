@@ -1,4 +1,4 @@
-import 'package:idol/store/actions.dart';
+import 'package:fans/store/actions.dart';
 import 'package:redux/redux.dart';
 
 final loadingReducer = combineReducers<bool>([

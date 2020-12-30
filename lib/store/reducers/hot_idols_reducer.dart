@@ -1,5 +1,5 @@
-import 'package:idol/models/idol.dart';
-import 'package:idol/store/actions.dart';
+import 'package:fans/models/idol.dart';
+import 'package:fans/store/actions.dart';
 import 'package:redux/redux.dart';
 
 final hotIdolsReducer = combineReducers<List<Idol>>([

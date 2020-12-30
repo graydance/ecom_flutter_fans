@@ -1,5 +1,5 @@
-import 'package:idol/models/models.dart';
-import 'package:idol/store/actions.dart';
+import 'package:fans/models/models.dart';
+import 'package:fans/store/actions.dart';
 import 'package:redux/redux.dart';
 
 final hotGoodsReducer = combineReducers<List<Goods>>([

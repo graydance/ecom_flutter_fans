@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:idol/models/models.dart';
+import 'package:fans/models/models.dart';
 import 'package:redux/redux.dart';
 
 class HomeScreen extends StatefulWidget {

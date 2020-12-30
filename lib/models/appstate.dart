@@ -1,4 +1,4 @@
-import 'package:idol/models/models.dart';
+import 'package:fans/models/models.dart';
 import 'package:meta/meta.dart';
 
 @immutable

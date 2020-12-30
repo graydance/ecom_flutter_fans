@@ -1,7 +1,7 @@
-import 'package:idol/api.dart';
-import 'package:idol/store/actions.dart';
+import 'package:fans/api.dart';
+import 'package:fans/store/actions.dart';
 import 'package:redux/redux.dart';
-import 'package:idol/models/models.dart';
+import 'package:fans/models/models.dart';
 
 List<Middleware<AppState>> createStoreMiddleware() {
   final loadHots = _createLoadHots();
