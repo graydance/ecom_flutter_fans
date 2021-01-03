@@ -44,6 +44,7 @@ class _AuthEmailFormState extends State<AuthEmailForm> {
         }
         return null;
       },
+      keyboardType: TextInputType.emailAddress,
       style: TextStyle(
         color: Colors.white,
       ),

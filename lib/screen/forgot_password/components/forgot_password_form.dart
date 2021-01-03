@@ -48,6 +48,7 @@ class _ForgotPasswordFormState extends State<ForgotPasswordForm> {
         }
         return null;
       },
+      keyboardType: TextInputType.emailAddress,
       style: TextStyle(
         color: Colors.white,
       ),
