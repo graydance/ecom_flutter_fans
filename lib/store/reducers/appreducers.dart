@@ -1,4 +1,5 @@
 import 'package:fans/models/models.dart';
+import 'package:fans/store/reducers/auth_reducer.dart';
 import 'package:fans/store/reducers/cartreducer.dart';
 import 'package:fans/store/reducers/hot_goods_reducer.dart';
 import 'package:fans/store/reducers/hot_idols_reducer.dart';
@@ -12,5 +13,6 @@ AppState appReducer(AppState state, action) {
     hotIdols: hotIdolsReducer(state.hotIdols, action),
     hotGoods: hotGoodsReducer(state.hotGoods, action),
     cart: cartReducer(state.cart, action),
+    isRegist: authReducer(state.isRegist, action),
   );
 }

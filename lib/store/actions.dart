@@ -19,3 +19,19 @@ class HotsLoadedAction {
     return 'HotsLoadedAction{hotIdols: $hotIdols hotGoods: $hotGoods cart: $cart}';
   }
 }
+
+class CheckEmailAction {
+  final String email;
+  CheckEmailAction(this.email);
+}
+
+class EmailCheckedAction {
+  final bool isRegist;
+
+  EmailCheckedAction(this.isRegist);
+
+  @override
+  String toString() {
+    return 'EmailCheckedAction{is_regist: $isRegist}';
+  }
+}

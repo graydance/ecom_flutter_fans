@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:fans/models/appstate.dart';
 import 'package:fans/screen/screens.dart';
@@ -12,18 +12,18 @@ class ReduxApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return StoreProvider<AppState>(
         store: store,
-        child: CupertinoApp(
-          theme: CupertinoThemeData(
-            scaffoldBackgroundColor: CupertinoColors.white,
+        child: MaterialApp(
+          theme: ThemeData(
+            scaffoldBackgroundColor: Colors.white,
           ),
           initialRoute: '/',
           routes: {
-            '/': (context) => HomeScreen(
-                  onInit: () {
-                    StoreProvider.of<AppState>(context)
-                        .dispatch(LoadHotsAction());
-                  },
-                ),
+            '/': (context) => SplashScreen(),
+            '/welcome': (context) => WelcomeScreen(),
+            '/authemail': (context) => AuthEmailScreen(),
+            '/signup': (context) => SignupScreen(),
+            '/login': (context) => LoginScreen(),
+            '/forgotpwd': (context) => ForgotPasswordScreen(),
             '/home': (context) => HomeScreen(
                   onInit: () {
                     StoreProvider.of<AppState>(context)

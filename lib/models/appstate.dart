@@ -8,13 +8,15 @@ class AppState {
   final List<Idol> hotIdols;
   final List<Goods> hotGoods;
   final int cart;
+  final bool isRegist;
 
   AppState(
       {this.isLoading = false,
       this.hotLoadError = '',
       this.hotIdols = const [],
       this.hotGoods = const [],
-      this.cart = 0});
+      this.cart = 0,
+      this.isRegist = false});
 
   factory AppState.loading() => AppState(isLoading: true);
 
@@ -23,13 +25,16 @@ class AppState {
       String hotLoadError,
       List<Idol> hotIdols,
       List<Goods> hotGoods,
-      int cart}) {
+      int cart,
+      bool isRegist}) {
     return AppState(
-        isLoading: isLoading ?? this.isLoading,
-        hotLoadError: hotLoadError ?? this.hotLoadError,
-        hotIdols: hotIdols ?? this.hotIdols,
-        hotGoods: hotGoods ?? this.hotGoods,
-        cart: cart ?? this.cart);
+      isLoading: isLoading ?? this.isLoading,
+      hotLoadError: hotLoadError ?? this.hotLoadError,
+      hotIdols: hotIdols ?? this.hotIdols,
+      hotGoods: hotGoods ?? this.hotGoods,
+      cart: cart ?? this.cart,
+      isRegist: isRegist ?? this.isRegist,
+    );
   }
 
   @override
@@ -38,7 +43,8 @@ class AppState {
       hotLoadError.hashCode ^
       hotIdols.hashCode ^
       hotGoods.hashCode ^
-      cart.hashCode;
+      cart.hashCode ^
+      isRegist.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -49,10 +55,11 @@ class AppState {
           hotLoadError == other.hotLoadError &&
           hotIdols == other.hotIdols &&
           hotGoods == other.hotGoods &&
-          cart == other.cart;
+          cart == other.cart &&
+          isRegist == other.isRegist;
 
   @override
   String toString() {
-    return 'AppState{isLoading: $isLoading, hotLoadError:$hotLoadError hotIdols: $hotIdols hotGoods:$hotGoods cart:$cart}';
+    return 'AppState{isLoading: $isLoading, hotLoadError:$hotLoadError hotIdols: $hotIdols hotGoods:$hotGoods cart:$cart isRegist:$isRegist}';
   }
 }
