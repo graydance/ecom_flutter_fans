@@ -5,6 +5,8 @@ import 'package:fans/screen/screens.dart';
 import 'package:fans/store/actions.dart';
 import 'package:redux/redux.dart';
 
+final GlobalKey<NavigatorState> navigatorKey = new GlobalKey<NavigatorState>();
+
 class ReduxApp extends StatelessWidget {
   final Store<AppState> store;
   const ReduxApp({this.store});
@@ -17,6 +19,7 @@ class ReduxApp extends StatelessWidget {
             scaffoldBackgroundColor: Colors.white,
           ),
           initialRoute: '/',
+          navigatorKey: navigatorKey,
           routes: {
             '/': (context) => SplashScreen(),
             '/welcome': (context) => WelcomeScreen(),

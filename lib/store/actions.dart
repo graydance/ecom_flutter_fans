@@ -20,18 +20,67 @@ class HotsLoadedAction {
   }
 }
 
+class ClientCheckEmailAction {
+  final String email;
+  ClientCheckEmailAction(this.email);
+}
+
 class CheckEmailAction {
   final String email;
   CheckEmailAction(this.email);
 }
 
+class CheckEmailFailureAction {
+  final String error;
+  CheckEmailFailureAction(this.error);
+}
+
 class EmailCheckedAction {
   final bool isRegist;
+  final String error;
 
-  EmailCheckedAction(this.isRegist);
+  EmailCheckedAction(this.isRegist, this.error);
 
   @override
   String toString() {
-    return 'EmailCheckedAction{is_regist: $isRegist}';
+    return 'EmailCheckedAction{is_regist: $isRegist error: $error}';
   }
+}
+
+class SetEmailAction {
+  final String email;
+
+  SetEmailAction(this.email);
+}
+
+class CheckPasswordAction {
+  final String password;
+
+  CheckPasswordAction(this.password);
+}
+
+class LoginAction {
+  final String email;
+  final String password;
+
+  LoginAction(this.email, this.password);
+}
+
+class LoginFailureAction {
+  final String error;
+
+  LoginFailureAction(this.error);
+}
+
+class SendEmailFailureAction {
+  final String error;
+
+  SendEmailFailureAction(this.error);
+}
+
+class SendEmailAction {
+  final String email;
+  final String password;
+
+  SendEmailAction(this.email, this.password);
 }
