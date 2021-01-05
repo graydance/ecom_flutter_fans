@@ -1,9 +1,9 @@
 import 'dart:async';
 
-import 'package:fans/screen/components/auth_hero_logo.dart';
-import 'package:fans/screen/size_config.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
+import 'package:fans/screen/components/auth_hero_logo.dart';
 
 class SplashScreen extends StatefulWidget {
   @override
@@ -20,8 +20,6 @@ class SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    SizeConfig().init(context);
-
     return CupertinoPageScaffold(
       child: Container(
         child: Center(

@@ -1,9 +1,12 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:fans/models/appstate.dart';
 import 'package:fans/screen/screens.dart';
 import 'package:fans/store/actions.dart';
 import 'package:redux/redux.dart';
+
+final GlobalKey<NavigatorState> navigatorKey = new GlobalKey<NavigatorState>();
 
 class ReduxApp extends StatelessWidget {
   final Store<AppState> store;
@@ -12,11 +15,12 @@ class ReduxApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return StoreProvider<AppState>(
         store: store,
-        child: MaterialApp(
-          theme: ThemeData(
-            scaffoldBackgroundColor: Colors.white,
+        child: CupertinoApp(
+          theme: CupertinoThemeData(
+            scaffoldBackgroundColor: CupertinoColors.white,
           ),
           initialRoute: '/',
+          navigatorKey: navigatorKey,
           routes: {
             '/': (context) => SplashScreen(),
             '/welcome': (context) => WelcomeScreen(),
