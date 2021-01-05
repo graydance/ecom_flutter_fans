@@ -7,17 +7,15 @@ import 'package:fans/models/models.dart';
 List<Middleware<AppState>> createStoreMiddleware() {
   final loadHots = _createLoadHots();
   final checkEmail = _createCheckEmail();
-  final clientCheckEmail = _createClientCheckEmail();
   final login = _createLogin();
-  final checkPasswrod = _createCheckPassword();
   final sendEmail = _createSendEmail();
+  final signup = _createSignup();
 
   return [
     TypedMiddleware<AppState, LoadHotsAction>(loadHots),
-    TypedMiddleware<AppState, CheckEmailAction>(checkEmail),
-    TypedMiddleware<AppState, ClientCheckEmailAction>(clientCheckEmail),
+    TypedMiddleware<AppState, RemoteCheckEmailAction>(checkEmail),
     TypedMiddleware<AppState, LoginAction>(login),
-    TypedMiddleware<AppState, CheckPasswordAction>(checkPasswrod),
+    TypedMiddleware<AppState, SignupAction>(signup),
     TypedMiddleware<AppState, SendEmailAction>(sendEmail),
   ];
 }
@@ -34,36 +32,21 @@ Middleware<AppState> _createLoadHots() {
   };
 }
 
-Middleware<AppState> _createClientCheckEmail() {
-  return (Store<AppState> store, action, NextDispatcher next) {
-    if (action is ClientCheckEmailAction) {
-      String email = action.email;
-      bool emailValid = RegExp(
-              r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-          .hasMatch(email);
-      if (!emailValid) {
-        store.dispatch(CheckEmailFailureAction('The email is invalid'));
-      } else {
-        store.dispatch(CheckEmailFailureAction(null));
-      }
-    }
-    next(action);
-  };
-}
-
 Middleware<AppState> _createCheckEmail() {
   return (Store<AppState> store, action, NextDispatcher next) {
-    if (action is CheckEmailAction) {
+    if (action is RemoteCheckEmailAction) {
       String email = action.email;
       bool emailValid = RegExp(
               r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
           .hasMatch(email);
       if (!emailValid) {
-        store.dispatch(CheckEmailFailureAction('The email is invalid'));
+        store.dispatch(RemoteCheckEmailFailureAction('The email is invalid'));
       } else if (email == '1@1.com') {
-        store.dispatch(CheckEmailFailureAction('The email has been register!'));
+        store.dispatch(
+            RemoteCheckEmailFailureAction('The email has been register!'));
+      } else if (email == '2@2.com') {
+        navigatorKey.currentState.pushNamed('/signup');
       } else {
-        store.dispatch(SetEmailAction(email));
         navigatorKey.currentState.pushNamed('/login');
       }
     }
@@ -86,15 +69,15 @@ Middleware<AppState> _createLogin() {
   };
 }
 
-Middleware<AppState> _createCheckPassword() {
+Middleware<AppState> _createSignup() {
   return (Store<AppState> store, action, NextDispatcher next) {
-    if (action is CheckPasswordAction) {
+    if (action is SignupAction) {
+      // String email = action.email;
       String password = action.password;
       if (password.isEmpty || password.length < 8) {
-        store.dispatch(
-            LoginFailureAction('Make sure it’s at least 8 characters'));
+        store.dispatch(SignupFailureAction('Signup failure'));
       } else {
-        store.dispatch(LoginFailureAction(null));
+        navigatorKey.currentState.pushNamed('/forgotpwd');
       }
     }
     next(action);

@@ -20,19 +20,22 @@ class HotsLoadedAction {
   }
 }
 
-class ClientCheckEmailAction {
+class LocalCheckEmailAction {
   final String email;
-  ClientCheckEmailAction(this.email);
+
+  LocalCheckEmailAction(this.email);
 }
 
-class CheckEmailAction {
+class RemoteCheckEmailAction {
   final String email;
-  CheckEmailAction(this.email);
+
+  RemoteCheckEmailAction(this.email);
 }
 
-class CheckEmailFailureAction {
+class RemoteCheckEmailFailureAction {
   final String error;
-  CheckEmailFailureAction(this.error);
+
+  RemoteCheckEmailFailureAction(this.error);
 }
 
 class EmailCheckedAction {
@@ -45,12 +48,6 @@ class EmailCheckedAction {
   String toString() {
     return 'EmailCheckedAction{is_regist: $isRegist error: $error}';
   }
-}
-
-class SetEmailAction {
-  final String email;
-
-  SetEmailAction(this.email);
 }
 
 class CheckPasswordAction {
@@ -70,6 +67,19 @@ class LoginFailureAction {
   final String error;
 
   LoginFailureAction(this.error);
+}
+
+class SignupAction {
+  final String email;
+  final String password;
+
+  SignupAction(this.email, this.password);
+}
+
+class SignupFailureAction {
+  final String error;
+
+  SignupFailureAction(this.error);
 }
 
 class SendEmailFailureAction {

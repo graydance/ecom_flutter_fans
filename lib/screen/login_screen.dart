@@ -2,6 +2,7 @@ import 'package:fans/models/appstate.dart';
 import 'package:fans/screen/components/default_button.dart';
 import 'package:fans/screen/size_config.dart';
 import 'package:fans/store/actions.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
@@ -84,7 +85,7 @@ class _LoginScreenState extends State<LoginScreen> {
       autovalidateMode: AutovalidateMode.onUserInteraction,
       child: Column(
         children: [
-          _buildPasswordFormField(model),
+          _buildTextField(model),
           SizedBox(height: 40),
           GestureDetector(
             onTap: () => Navigator.of(context).pushNamed('/forgotpwd'),
@@ -118,48 +119,56 @@ class _LoginScreenState extends State<LoginScreen> {
     });
   }
 
-  TextFormField _buildPasswordFormField(_ViewModel model) {
-    return TextFormField(
-      obscureText: _obscureText,
-      controller: _controller,
-      autovalidateMode: AutovalidateMode.onUserInteraction,
-      validator: (value) => model.error,
-      onChanged: (value) => model.onCheck(value),
-      style: TextStyle(
-        color: Colors.white,
-      ),
-      textAlign: TextAlign.center,
-      decoration: InputDecoration(
-        hintText: "Enter your password",
-        hintStyle: TextStyle(
-          color: Colors.white,
-        ),
-        focusedBorder: UnderlineInputBorder(
-          borderSide: BorderSide(color: Colors.white),
-        ),
-        enabledBorder: UnderlineInputBorder(
-          borderSide: BorderSide(color: Colors.white),
-        ),
-        // If  you are using latest version of flutter then lable text and hint text shown like this
-        // if you r using flutter less then 1.20.* then maybe this is not working properly
-        floatingLabelBehavior: FloatingLabelBehavior.never,
-        prefix: SizedBox(
-          width: 40,
-        ),
-        suffixIcon: SizedBox(
-          width: 40,
-          child: FlatButton(
-            child: Image(
-              image: _obscureText
-                  ? AssetImage('assets/images/eyes_close.png')
-                  : AssetImage('assets/images/eyes_open.png'),
-              // width: 22,
-              height: 22,
+  _buildTextField(_ViewModel model) {
+    var color = model.error == null || model.error.isEmpty
+        ? CupertinoColors.white
+        : CupertinoColors.destructiveRed;
+    return Column(
+      children: [
+        CupertinoTextField(
+          controller: _controller,
+          obscureText: _obscureText,
+          placeholder: "Enter your password",
+          placeholderStyle: TextStyle(color: CupertinoColors.white),
+          keyboardType: TextInputType.text,
+          textAlign: TextAlign.center,
+          clearButtonMode: OverlayVisibilityMode.editing,
+          onChanged: (value) => model.onCheck(value),
+          decoration: BoxDecoration(
+            border: Border.all(
+              width: 0.0,
+              color: Color(0x00FFFFFF),
             ),
-            onPressed: _toggle,
+          ),
+          style: TextStyle(color: color),
+          suffixMode: OverlayVisibilityMode.always,
+          suffix: SizedBox(
+            width: 50,
+            child: CupertinoButton(
+              onPressed: _toggle,
+              child: Image(
+                image: _obscureText
+                    ? AssetImage('assets/images/eyes_close.png')
+                    : AssetImage('assets/images/eyes_open.png'),
+              ),
+            ),
+          ),
+          prefix: SizedBox(
+            width: 40,
           ),
         ),
-      ),
+        Divider(
+          height: 2,
+          color: color,
+        ),
+        Padding(
+          padding: const EdgeInsets.only(top: 8),
+          child: Text(
+            model.error ?? '',
+            style: TextStyle(color: CupertinoColors.white, fontSize: 12),
+          ),
+        ),
+      ],
     );
   }
 }

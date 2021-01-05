@@ -19,10 +19,12 @@ class AuthEmailScreen extends StatefulWidget {
 class _AuthEmailScreenState extends State<AuthEmailScreen> {
   @override
   Widget build(BuildContext context) {
+    SizeConfig().init(context);
+
     return StoreConnector<AppState, _ViewModel>(
       converter: _ViewModel.fromStore,
-      builder: (ctx, model) => Scaffold(
-        body: GestureDetector(
+      builder: (ctx, model) => CupertinoPageScaffold(
+        child: GestureDetector(
           behavior: HitTestBehavior.translucent,
           onTap: () {
             // 触摸收起键盘
@@ -61,7 +63,8 @@ class _AuthEmailScreenState extends State<AuthEmailScreen> {
                 autovalidateMode: AutovalidateMode.onUserInteraction,
                 child: Column(
                   children: [
-                    _buildFormField(model),
+                    // _buildFormField(model),
+                    _buildTextField(model),
                     SizedBox(height: 40),
                     DefaultButton(
                       text: "Log in/Sign up".toUpperCase(),
@@ -81,32 +84,40 @@ class _AuthEmailScreenState extends State<AuthEmailScreen> {
     );
   }
 
-  TextFormField _buildFormField(_ViewModel model) {
-    return TextFormField(
-      controller: _controller,
-      autovalidateMode: AutovalidateMode.onUserInteraction,
-      validator: (value) => model.error,
-      onChanged: (value) => model.onClientCheckEmail(_controller.text),
-      keyboardType: TextInputType.emailAddress,
-      style: TextStyle(
-        color: Colors.white,
-      ),
-      textAlign: TextAlign.center,
-      decoration: InputDecoration(
-        hintText: "Enter your email",
-        hintStyle: TextStyle(
-          color: Colors.white,
+  _buildTextField(_ViewModel model) {
+    var color = model.error == null || model.error.isEmpty
+        ? CupertinoColors.white
+        : CupertinoColors.destructiveRed;
+    return Column(
+      children: [
+        CupertinoTextField(
+          controller: _controller,
+          placeholder: "Enter your email",
+          placeholderStyle: TextStyle(color: CupertinoColors.white),
+          keyboardType: TextInputType.emailAddress,
+          textAlign: TextAlign.center,
+          clearButtonMode: OverlayVisibilityMode.editing,
+          onChanged: (value) => model.onClientCheckEmail(value),
+          decoration: BoxDecoration(
+            border: Border.all(
+              width: 0.0,
+              color: Color(0x00FFFFFF),
+            ),
+          ),
+          style: TextStyle(color: color),
         ),
-        focusedBorder: UnderlineInputBorder(
-          borderSide: BorderSide(color: Colors.white),
+        Divider(
+          height: 2,
+          color: color,
         ),
-        enabledBorder: UnderlineInputBorder(
-          borderSide: BorderSide(color: Colors.white),
+        Padding(
+          padding: const EdgeInsets.only(top: 8),
+          child: Text(
+            model.error ?? '',
+            style: TextStyle(color: CupertinoColors.white, fontSize: 12),
+          ),
         ),
-        // If  you are using latest version of flutter then lable text and hint text shown like this
-        // if you r using flutter less then 1.20.* then maybe this is not working properly
-        floatingLabelBehavior: FloatingLabelBehavior.never,
-      ),
+      ],
     );
   }
 }
@@ -121,11 +132,11 @@ class _ViewModel {
       this.loading, this.error, this.onClientCheckEmail, this.onCheckEmail);
   static _ViewModel fromStore(Store<AppState> store) {
     _onClientCheckEmail(String email) {
-      store.dispatch(ClientCheckEmailAction(email));
+      store.dispatch(LocalCheckEmailAction(email));
     }
 
     _onCheckEmail(String email) {
-      store.dispatch(CheckEmailAction(email));
+      store.dispatch(RemoteCheckEmailAction(email));
     }
 
     return _ViewModel(store.state.isLoading, store.state.emailCheckError,

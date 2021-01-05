@@ -1,20 +1,21 @@
-import 'package:fans/models/appstate.dart';
-import 'package:fans/screen/components/default_button.dart';
-import 'package:fans/screen/size_config.dart';
-import 'package:fans/store/actions.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
 
-class ForgotPasswordScreen extends StatefulWidget {
-  ForgotPasswordScreen({Key key}) : super(key: key);
+import 'package:fans/models/appstate.dart';
+import 'package:fans/screen/components/default_button.dart';
+import 'package:fans/screen/size_config.dart';
+import 'package:fans/store/actions.dart';
+
+class SignupScreen extends StatefulWidget {
+  SignupScreen({Key key}) : super(key: key);
 
   @override
-  _ForgotPasswordScreenState createState() => _ForgotPasswordScreenState();
+  _SignupScreenState createState() => _SignupScreenState();
 }
 
-class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
+class _SignupScreenState extends State<SignupScreen> {
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _ViewModel>(
@@ -57,14 +58,18 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   // mainAxisSize: MainAxisSize.max,
                   children: [
                     SizedBox(height: SizeConfig.screenHeight * 0.08), // 4%
-                    Text("Forgot password".toUpperCase(), style: headingStyle),
-                    SizedBox(height: SizeConfig.screenHeight * 0.02),
+                    Text("Set your password".toUpperCase(),
+                        style: headingStyle),
+                    SizedBox(height: SizeConfig.screenHeight * 0.06),
                     Text(
-                      "Don't worry, it happens to all of us.\n\nEnter your email and we'll send you a link to reset your paasword.",
+                      model.email,
                       textAlign: TextAlign.center,
-                      style: TextStyle(color: Colors.white, fontSize: 16),
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w500,
+                          fontSize: 26),
                     ),
-                    SizedBox(height: SizeConfig.screenHeight * 0.04),
+                    SizedBox(height: SizeConfig.screenHeight * 0.02),
                     _buildForm(model),
                   ],
                 ),
@@ -85,10 +90,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           _buildTextField(model),
           SizedBox(height: 40),
           DefaultButton(
-            text: "send email".toUpperCase(),
+            text: "Sign up".toUpperCase(),
             press: () {
               if (model.error == null) {
-                model.onSend(_controller.text);
+                model.onSignup(_controller.text);
               }
             },
           ),
@@ -128,7 +133,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               color: Color(0x00FFFFFF),
             ),
           ),
-          style: TextStyle(color: CupertinoColors.white),
+          style: TextStyle(color: color),
           suffixMode: OverlayVisibilityMode.always,
           suffix: SizedBox(
             width: 50,
@@ -165,13 +170,13 @@ class _ViewModel {
   final bool loading;
   final String error;
   final String email;
-  final Function(String) onSend;
+  final Function(String) onSignup;
   final Function(String) onCheck;
 
-  _ViewModel(this.loading, this.error, this.email, this.onSend, this.onCheck);
+  _ViewModel(this.loading, this.error, this.email, this.onSignup, this.onCheck);
   static _ViewModel fromStore(Store<AppState> store) {
-    _onSend(String password) {
-      store.dispatch(SendEmailAction(store.state.email, password));
+    _onLogin(String password) {
+      store.dispatch(SignupAction(store.state.email, password));
     }
 
     _onCheck(String password) {
@@ -179,6 +184,6 @@ class _ViewModel {
     }
 
     return _ViewModel(store.state.isLoading, store.state.error,
-        store.state.email, _onSend, _onCheck);
+        store.state.email, _onLogin, _onCheck);
   }
 }

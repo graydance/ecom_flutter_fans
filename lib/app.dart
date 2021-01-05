@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:fans/models/appstate.dart';
@@ -14,9 +15,9 @@ class ReduxApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return StoreProvider<AppState>(
         store: store,
-        child: MaterialApp(
-          theme: ThemeData(
-            scaffoldBackgroundColor: Colors.white,
+        child: CupertinoApp(
+          theme: CupertinoThemeData(
+            scaffoldBackgroundColor: CupertinoColors.white,
           ),
           initialRoute: '/',
           navigatorKey: navigatorKey,
