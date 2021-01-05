@@ -6,7 +6,6 @@ import 'package:redux/redux.dart';
 import 'package:fans/models/models.dart';
 import 'package:fans/screen/components/auth_hero_logo.dart';
 import 'package:fans/screen/components/default_button.dart';
-import 'package:fans/screen/size_config.dart';
 import 'package:fans/store/actions.dart';
 
 class AuthEmailScreen extends StatefulWidget {
@@ -19,8 +18,6 @@ class AuthEmailScreen extends StatefulWidget {
 class _AuthEmailScreenState extends State<AuthEmailScreen> {
   @override
   Widget build(BuildContext context) {
-    SizeConfig().init(context);
-
     return StoreConnector<AppState, _ViewModel>(
       converter: _ViewModel.fromStore,
       builder: (ctx, model) => CupertinoPageScaffold(
@@ -50,15 +47,23 @@ class _AuthEmailScreenState extends State<AuthEmailScreen> {
             fit: BoxFit.cover),
       ),
       child: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              SizedBox(height: SizeConfig.screenHeight * 0.15),
-              AuthHeroLogo(),
-              SizedBox(
-                height: 40,
+        child: Column(
+          children: [
+            Flexible(
+              child: FractionallySizedBox(
+                heightFactor: 0.8,
               ),
-              Form(
+            ),
+            Flexible(
+              child: AuthHeroLogo(),
+            ),
+            Flexible(
+              child: FractionallySizedBox(
+                heightFactor: 0.15,
+              ),
+            ),
+            Flexible(
+              child: Form(
                 key: _formKey,
                 autovalidateMode: AutovalidateMode.onUserInteraction,
                 child: Column(
@@ -77,8 +82,8 @@ class _AuthEmailScreenState extends State<AuthEmailScreen> {
                   ],
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

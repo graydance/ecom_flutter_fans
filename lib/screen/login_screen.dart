@@ -1,6 +1,5 @@
 import 'package:fans/models/appstate.dart';
 import 'package:fans/screen/components/default_button.dart';
-import 'package:fans/screen/size_config.dart';
 import 'package:fans/store/actions.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -41,39 +40,45 @@ class _LoginScreenState extends State<LoginScreen> {
     );
 
     return Container(
+      padding: EdgeInsets.symmetric(horizontal: 20),
+      width: double.infinity,
+      height: double.infinity,
       decoration: BoxDecoration(
         image: DecorationImage(
             image: AssetImage('assets/images/auth_background.png'),
             fit: BoxFit.cover),
       ),
       child: SafeArea(
-        child: SizedBox(
-          width: double.infinity,
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20),
-            child: Column(children: [
-              SingleChildScrollView(
-                child: Column(
-                  // mainAxisSize: MainAxisSize.max,
-                  children: [
-                    SizedBox(height: SizeConfig.screenHeight * 0.08), // 4%
-                    Text("Log in".toUpperCase(), style: headingStyle),
-                    SizedBox(height: SizeConfig.screenHeight * 0.06),
-                    Text(
-                      model.email,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w500,
-                          fontSize: 26),
-                    ),
-                    SizedBox(height: SizeConfig.screenHeight * 0.02),
-                    _buildForm(model),
-                  ],
-                ),
+        child: Column(
+          children: [
+            Flexible(
+              child: FractionallySizedBox(
+                heightFactor: 0.8,
               ),
-            ]),
-          ),
+            ),
+            Flexible(child: Text("Log in".toUpperCase(), style: headingStyle)),
+            Flexible(
+              child: FractionallySizedBox(
+                heightFactor: 0.15,
+              ),
+            ),
+            Flexible(
+              child: Text(
+                model.email,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w500,
+                    fontSize: 26),
+              ),
+            ),
+            Flexible(
+              child: FractionallySizedBox(
+                heightFactor: 0.15,
+              ),
+            ),
+            _buildForm(model),
+          ],
         ),
       ),
     );
@@ -95,7 +100,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   decoration: TextDecoration.underline, color: Colors.white),
             ),
           ),
-          SizedBox(height: SizeConfig.screenHeight * 0.02),
+          SizedBox(height: 20),
           DefaultButton(
             text: "login in".toUpperCase(),
             press: () {
