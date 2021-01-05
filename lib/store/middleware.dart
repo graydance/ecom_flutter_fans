@@ -88,7 +88,6 @@ Middleware<AppState> _createSendEmail() {
   return (Store<AppState> store, action, NextDispatcher next) {
     if (action is SendEmailAction) {
       // String email = action.email;
-      // String password = action.password;
       store.dispatch(SendEmailFailureAction('Send email failure'));
     }
     next(action);

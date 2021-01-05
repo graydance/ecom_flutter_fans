@@ -15,12 +15,17 @@ class ForgotPasswordScreen extends StatefulWidget {
 }
 
 class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
+  final _formKey = GlobalKey<FormState>();
+  TextEditingController _controller;
+
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _ViewModel>(
       converter: _ViewModel.fromStore,
-      builder: (ctx, model) => Scaffold(
-        body: GestureDetector(
+      onInit: (store) =>
+          _controller = TextEditingController(text: store.state.email),
+      builder: (ctx, model) => CupertinoPageScaffold(
+        child: GestureDetector(
           behavior: HitTestBehavior.translucent,
           onTap: () {
             // 触摸收起键盘
@@ -85,7 +90,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           _buildTextField(model),
           SizedBox(height: 40),
           DefaultButton(
-            text: "send email".toUpperCase(),
+            text: "Send email".toUpperCase(),
             press: () {
               if (model.error == null) {
                 model.onSend(_controller.text);
@@ -97,16 +102,6 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     );
   }
 
-  final _formKey = GlobalKey<FormState>();
-  final _controller = TextEditingController();
-  bool _obscureText = true;
-
-  void _toggle() {
-    setState(() {
-      _obscureText = !_obscureText;
-    });
-  }
-
   _buildTextField(_ViewModel model) {
     var color = model.error == null || model.error.isEmpty
         ? CupertinoColors.white
@@ -115,35 +110,19 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       children: [
         CupertinoTextField(
           controller: _controller,
-          obscureText: _obscureText,
-          placeholder: "Enter your password",
+          placeholder: "Enter your email",
           placeholderStyle: TextStyle(color: CupertinoColors.white),
-          keyboardType: TextInputType.text,
+          keyboardType: TextInputType.emailAddress,
           textAlign: TextAlign.center,
           clearButtonMode: OverlayVisibilityMode.editing,
-          onChanged: (value) => model.onCheck(value),
+          onChanged: (value) => model.onClientCheckEmail(value),
           decoration: BoxDecoration(
             border: Border.all(
               width: 0.0,
               color: Color(0x00FFFFFF),
             ),
           ),
-          style: TextStyle(color: CupertinoColors.white),
-          suffixMode: OverlayVisibilityMode.always,
-          suffix: SizedBox(
-            width: 50,
-            child: CupertinoButton(
-              onPressed: _toggle,
-              child: Image(
-                image: _obscureText
-                    ? AssetImage('assets/images/eyes_close.png')
-                    : AssetImage('assets/images/eyes_open.png'),
-              ),
-            ),
-          ),
-          prefix: SizedBox(
-            width: 40,
-          ),
+          style: TextStyle(color: color),
         ),
         Divider(
           height: 2,
@@ -166,19 +145,20 @@ class _ViewModel {
   final String error;
   final String email;
   final Function(String) onSend;
-  final Function(String) onCheck;
+  final Function(String) onClientCheckEmail;
 
-  _ViewModel(this.loading, this.error, this.email, this.onSend, this.onCheck);
+  _ViewModel(this.loading, this.error, this.email, this.onSend,
+      this.onClientCheckEmail);
   static _ViewModel fromStore(Store<AppState> store) {
-    _onSend(String password) {
-      store.dispatch(SendEmailAction(store.state.email, password));
+    _onSend(String email) {
+      store.dispatch(SendEmailAction(email));
     }
 
-    _onCheck(String password) {
-      store.dispatch(CheckPasswordAction(password));
+    _onCheck(String email) {
+      store.dispatch(LocalCheckEmailAction(email));
     }
 
-    return _ViewModel(store.state.isLoading, store.state.error,
+    return _ViewModel(store.state.isLoading, store.state.emailCheckError,
         store.state.email, _onSend, _onCheck);
   }
 }

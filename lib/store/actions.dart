@@ -90,7 +90,6 @@ class SendEmailFailureAction {
 
 class SendEmailAction {
   final String email;
-  final String password;
 
-  SendEmailAction(this.email, this.password);
+  SendEmailAction(this.email);
 }
