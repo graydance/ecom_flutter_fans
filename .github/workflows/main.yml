@@ -60,5 +60,5 @@ jobs:
             cp build/Runner.ipa ${GITHUB_SHA::8}/
             cp -r build/web ${GITHUB_SHA::8}/web
             scp -r ${GITHUB_SHA::8} cnwesleywang@35.203.63.151:/var/www/html/cicd/
-            ssh cnwesleywang@35.203.63.151 "ln -s /var/www/html/cicd/${GITHUB_SHA::8} /var/www/html/cicd/current"
+            ssh cnwesleywang@35.203.63.151 "ln -s -n -f /var/www/html/cicd/${GITHUB_SHA::8} /var/www/html/cicd/current"
 
