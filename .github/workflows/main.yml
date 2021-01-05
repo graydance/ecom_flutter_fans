@@ -14,8 +14,20 @@ jobs:
         - uses: subosito/flutter-action@v1
           with:
             channel: dev
+        - run: flutter config --enable-web
         - run: flutter pub get
         - run: flutter test
+        - run: flutter build web
+        - run: flutter build apk
+        - uses: r0adkll/sign-android-release@v1
+          name: Sign app APK
+          id: sign_app
+          with:
+            releaseDirectory: build/app/outputs/flutter-apk/
+            signingKeyBase64: ${{ secrets.SIGNING_KEY }}
+            alias: 'key'
+            keyStorePassword: ${{ secrets.KEY_PASSWORD }}
+            keyPassword: ${{ secrets.KEY_PASSWORD }}
         - run: flutter build ios --release --no-codesign
         - uses: actions/setup-ruby@v1
           with:
