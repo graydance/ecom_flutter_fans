@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+        - uses: actions/checkout@v2
+        - uses: actions/setup-java@v1
+          with:
+            java-version: '12.x'
+        - uses: subosito/flutter-action@v1
+          with:
+            channel: dev
+        - run: flutter pub get
+        - run: flutter test
+        - run: flutter build ios --release --no-codesign
+        - uses: actions/setup-ruby@v1
+          with:
+            ruby-version: '>= 2.6'
+        - name: Set up Google Key
+          run: |
+            echo "$GOOGLE_KEYFILE" > ./ios/gc_keys.json
+        - uses: maierj/fastlane-action@v2.0.0
+          with:
+            lane: 'beta'
+            subdirectory: 'ios'          
+        - name: Set up SSH
+          run: |
+            mkdir -p ~/.ssh/
+            echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+            sudo chmod 600 ~/.ssh/id_rsa
+            echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts              
