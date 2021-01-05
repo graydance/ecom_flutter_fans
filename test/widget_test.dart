@@ -37,7 +37,8 @@ void main() {
     await tester.pumpWidget(StoreProvider<AppState>(
         store: Store<AppState>(
           appReducer,
-          initialState: AppState(email: 'email@test.com', error: 'error test'),
+          initialState: AppState(
+              email: 'email@test.com', passwordCheckError: 'error test'),
         ),
         child: CupertinoApp(
           home: LoginScreen(),
@@ -53,7 +54,8 @@ void main() {
     await tester.pumpWidget(StoreProvider<AppState>(
         store: Store<AppState>(
           appReducer,
-          initialState: AppState(email: 'email@test.com', error: 'error test'),
+          initialState: AppState(
+              email: 'email@test.com', passwordCheckError: 'error test'),
         ),
         child: CupertinoApp(
           home: SignupScreen(),

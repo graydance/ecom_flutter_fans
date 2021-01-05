@@ -30,11 +30,12 @@ void main() {
 
     store.dispatch(CheckPasswordAction('123'));
 
-    expect(store.state.error, 'Make sure it’s at least 8 characters');
+    expect(
+        store.state.passwordCheckError, 'Make sure it’s at least 8 characters');
 
     var password = '12345678';
     store.dispatch(CheckPasswordAction(password));
 
-    expect(store.state.error, null);
+    expect(store.state.passwordCheckError, null);
   });
 }

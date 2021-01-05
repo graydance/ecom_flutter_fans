@@ -12,6 +12,7 @@ class AppState {
   final bool isRegist;
   final String emailCheckError;
   final String email;
+  final String passwordCheckError;
 
   AppState(
       {this.isLoading = false,
@@ -22,7 +23,8 @@ class AppState {
       this.cart = 0,
       this.isRegist = false,
       this.emailCheckError,
-      this.email = ''});
+      this.email = '',
+      this.passwordCheckError});
 
   factory AppState.loading() => AppState(isLoading: true);
 
@@ -35,7 +37,8 @@ class AppState {
       int cart,
       bool isRegist,
       String emailValidError,
-      String email}) {
+      String email,
+      String passwordCheckError}) {
     return AppState(
       isLoading: isLoading ?? this.isLoading,
       hotLoadError: hotLoadError ?? this.hotLoadError,
@@ -45,6 +48,7 @@ class AppState {
       isRegist: isRegist ?? this.isRegist,
       emailCheckError: emailValidError ?? this.emailCheckError,
       email: email ?? this.email,
+      passwordCheckError: passwordCheckError ?? this.passwordCheckError,
     );
   }
 
@@ -57,7 +61,8 @@ class AppState {
       cart.hashCode ^
       isRegist.hashCode ^
       emailCheckError.hashCode ^
-      email.hashCode;
+      email.hashCode ^
+      passwordCheckError.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -71,10 +76,11 @@ class AppState {
           cart == other.cart &&
           isRegist == other.isRegist &&
           emailCheckError == other.emailCheckError &&
-          email == other.email;
+          email == other.email &&
+          passwordCheckError == other.passwordCheckError;
 
   @override
   String toString() {
-    return 'AppState{isLoading: $isLoading, hotLoadError:$hotLoadError hotIdols: $hotIdols hotGoods:$hotGoods cart:$cart isRegist:$isRegist emailValidError:$emailCheckError email:$email}';
+    return 'AppState{isLoading: $isLoading, hotLoadError:$hotLoadError hotIdols: $hotIdols hotGoods:$hotGoods cart:$cart isRegist:$isRegist emailValidError:$emailCheckError email:$email passwordCheckError:$passwordCheckError}';
   }
 }

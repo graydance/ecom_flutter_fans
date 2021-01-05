@@ -37,10 +37,13 @@ String _setEmail(String state, LocalCheckEmailAction action) {
   return action.email;
 }
 
+final validPasswordReducer = combineReducers<String>([
+  TypedReducer<String, CheckPasswordAction>(_setCheckPasswordError),
+]);
+
 final errorReducer = combineReducers<String>([
   TypedReducer<String, RemoteCheckEmailFailureAction>(
       _setRemoteCheckEmailError),
-  TypedReducer<String, CheckPasswordAction>(_setCheckPasswordError),
   TypedReducer<String, LoginFailureAction>(_setLoginError),
   TypedReducer<String, SendEmailFailureAction>(_setSendEmailError),
 ]);

@@ -17,5 +17,6 @@ AppState appReducer(AppState state, action) {
     isRegist: authReducer(state.isRegist, action),
     emailCheckError: clientValidEmailReducer(state.emailCheckError, action),
     email: setEmailReducer(state.email, action),
+    passwordCheckError: validPasswordReducer(state.passwordCheckError, action),
   );
 }

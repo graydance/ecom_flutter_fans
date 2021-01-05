@@ -190,7 +190,7 @@ class _ViewModel {
       store.dispatch(CheckPasswordAction(password));
     }
 
-    return _ViewModel(store.state.isLoading, store.state.error,
+    return _ViewModel(store.state.isLoading, store.state.passwordCheckError,
         store.state.email, _onLogin, _onCheck);
   }
 }
