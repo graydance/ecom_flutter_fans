@@ -1,6 +1,9 @@
-name: CI
+name: CI/CD
 
 on:
+  push:
+    branches:
+      - dev
   workflow_dispatch:
 
 jobs:
