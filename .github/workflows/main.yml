@@ -23,6 +23,8 @@ jobs:
         - name: Set up Google Key
           run: |
             echo "$GOOGLE_KEYFILE" > ./ios/gc_keys.json
+          env:
+            GOOGLE_KEYFILE: ${{ secrets.GOOGLE_KEYFILE }}
         - uses: maierj/fastlane-action@v2.0.0
           with:
             lane: 'beta'
@@ -33,3 +35,6 @@ jobs:
             echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
             sudo chmod 600 ~/.ssh/id_rsa
             echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts              
+          env:
+            SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+            SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
