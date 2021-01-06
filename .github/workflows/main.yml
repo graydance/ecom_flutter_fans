@@ -53,12 +53,21 @@ jobs:
           env:
             SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
             SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
+        - name: Get Time
+          id: time
+          uses: nanzm/get-time-action@v1.1
+          with:
+            timeZone: 8
+            format: 'YYYY-MM-DD-HH-mm-ss'
         - name: deploy
           run: |
             mkdir ${GITHUB_SHA::8}
             cp ${{steps.sign_app.outputs.signedReleaseFile}} ${GITHUB_SHA::8}/
             cp build/Runner.ipa ${GITHUB_SHA::8}/
             cp -r build/web ${GITHUB_SHA::8}/web
-            scp -r ${GITHUB_SHA::8} cnwesleywang@35.203.63.151:/var/www/html/cicd/
-            ssh cnwesleywang@35.203.63.151 "ln -s -n -f /var/www/html/cicd/${GITHUB_SHA::8} /var/www/html/cicd/current"
+            echo "const fans = {\"timestamp\":\"$TIME\", \"version:\":\"${GITHUB_SHA::8}\"}" > ${GITHUB_SHA::8}/ver.js
+            scp -r ${GITHUB_SHA::8} cnwesleywang@35.203.63.151:/var/www/html/cicd/fans/
+            ssh cnwesleywang@35.203.63.151 "ln -s -n -f /var/www/html/cicd/fans/${GITHUB_SHA::8} /var/www/html/cicd/fans/current"
+          env:
+            TIME: "${{ steps.time.outputs.time }}"
 
