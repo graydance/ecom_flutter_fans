@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 
 class DefaultButton extends StatelessWidget {
   const DefaultButton({
@@ -13,16 +13,15 @@ class DefaultButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return SizedBox(
       width: double.infinity,
-      height: 44,
-      child: FlatButton(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
-        color: Colors.white54,
+      height: 50,
+      child: CupertinoButton(
+        color: CupertinoColors.white.withAlpha(56),
         onPressed: press,
         child: Text(
           text,
           style: TextStyle(
             fontSize: 18,
-            color: Colors.white,
+            color: CupertinoColors.white,
           ),
         ),
       ),

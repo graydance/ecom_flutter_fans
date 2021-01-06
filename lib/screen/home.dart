@@ -1,5 +1,4 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:fans/models/models.dart';
 import 'package:redux/redux.dart';
@@ -29,7 +28,7 @@ class HomeScreenState extends State<HomeScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              ...model.loading ? [CircularProgressIndicator()] : [],
+              ...model.loading ? [CupertinoActivityIndicator()] : [],
               Text('${model.error}')
             ],
           ),

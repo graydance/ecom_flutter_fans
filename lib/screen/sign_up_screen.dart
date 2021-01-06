@@ -1,5 +1,4 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
 
@@ -19,8 +18,8 @@ class _SignupScreenState extends State<SignupScreen> {
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _ViewModel>(
       converter: _ViewModel.fromStore,
-      builder: (ctx, model) => Scaffold(
-        body: GestureDetector(
+      builder: (ctx, model) => CupertinoPageScaffold(
+        child: GestureDetector(
           behavior: HitTestBehavior.translucent,
           onTap: () {
             // 触摸收起键盘
@@ -36,7 +35,7 @@ class _SignupScreenState extends State<SignupScreen> {
     final headingStyle = TextStyle(
       fontSize: 28,
       fontWeight: FontWeight.bold,
-      color: Colors.white,
+      color: CupertinoColors.white,
       height: 1.5,
     );
 
@@ -71,7 +70,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 model.email,
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                    color: Colors.white,
+                    color: CupertinoColors.white,
                     fontWeight: FontWeight.w500,
                     fontSize: 26),
               ),
@@ -157,7 +156,7 @@ class _SignupScreenState extends State<SignupScreen> {
             width: 40,
           ),
         ),
-        Divider(
+        Container(
           height: 2,
           color: color,
         ),

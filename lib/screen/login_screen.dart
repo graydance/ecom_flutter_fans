@@ -2,7 +2,6 @@ import 'package:fans/models/appstate.dart';
 import 'package:fans/screen/components/default_button.dart';
 import 'package:fans/store/actions.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
 
@@ -18,8 +17,8 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _ViewModel>(
       converter: _ViewModel.fromStore,
-      builder: (ctx, model) => Scaffold(
-        body: GestureDetector(
+      builder: (ctx, model) => CupertinoPageScaffold(
+        child: GestureDetector(
           behavior: HitTestBehavior.translucent,
           onTap: () {
             // 触摸收起键盘
@@ -35,7 +34,7 @@ class _LoginScreenState extends State<LoginScreen> {
     final headingStyle = TextStyle(
       fontSize: 28,
       fontWeight: FontWeight.bold,
-      color: Colors.white,
+      color: CupertinoColors.white,
       height: 1.5,
     );
 
@@ -67,7 +66,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 model.email,
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                    color: Colors.white,
+                    color: CupertinoColors.white,
                     fontWeight: FontWeight.w500,
                     fontSize: 26),
               ),
@@ -97,7 +96,8 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Text(
               "Forgot Password",
               style: TextStyle(
-                  decoration: TextDecoration.underline, color: Colors.white),
+                  decoration: TextDecoration.underline,
+                  color: CupertinoColors.white),
             ),
           ),
           SizedBox(height: 20),
@@ -162,7 +162,7 @@ class _LoginScreenState extends State<LoginScreen> {
             width: 40,
           ),
         ),
-        Divider(
+        Container(
           height: 2,
           color: color,
         ),

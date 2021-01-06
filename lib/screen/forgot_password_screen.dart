@@ -2,7 +2,6 @@ import 'package:fans/models/appstate.dart';
 import 'package:fans/screen/components/default_button.dart';
 import 'package:fans/store/actions.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
 
@@ -40,7 +39,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     final headingStyle = TextStyle(
       fontSize: 28,
       fontWeight: FontWeight.bold,
-      color: Colors.white,
+      color: CupertinoColors.white,
       height: 1.5,
     );
 
@@ -73,7 +72,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               child: Text(
                 "Don't worry, it happens to all of us.\n\nEnter your email and we'll send you a link to reset your paasword.",
                 textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.white, fontSize: 16),
+                style: TextStyle(color: CupertinoColors.white, fontSize: 16),
               ),
             ),
             Flexible(
@@ -131,7 +130,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           ),
           style: TextStyle(color: color),
         ),
-        Divider(
+        Container(
           height: 2,
           color: color,
         ),

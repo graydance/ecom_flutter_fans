@@ -2,7 +2,6 @@ import 'package:dio/dio.dart';
 import 'package:fans/screen/screens.dart';
 import 'package:fans/store/actions.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:fans/api.dart';

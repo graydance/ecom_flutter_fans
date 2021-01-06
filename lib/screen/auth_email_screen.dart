@@ -1,5 +1,4 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
 
@@ -111,7 +110,7 @@ class _AuthEmailScreenState extends State<AuthEmailScreen> {
           ),
           style: TextStyle(color: color),
         ),
-        Divider(
+        Container(
           height: 2,
           color: color,
         ),
