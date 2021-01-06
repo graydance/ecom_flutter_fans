@@ -9,12 +9,13 @@ class AuthHeroLogo extends StatelessWidget {
       child: Hero(
         tag: 'hero_logo',
         child: Container(
-          width: 160,
-          height: 160,
+          constraints: BoxConstraints(
+              minHeight: 50, minWidth: 50, maxHeight: 160, maxWidth: 160),
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             image: DecorationImage(
-                image: AssetImage('assets/images/logo.png'), fit: BoxFit.fill),
+                image: AssetImage('assets/images/logo.png'),
+                fit: BoxFit.contain),
           ),
         ),
       ),
