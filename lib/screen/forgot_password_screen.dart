@@ -13,7 +13,6 @@ class ForgotPasswordScreen extends StatefulWidget {
 }
 
 class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
-  final _formKey = GlobalKey<FormState>();
   TextEditingController _controller;
 
   @override
@@ -44,7 +43,6 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     );
 
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 20),
       width: double.infinity,
       height: double.infinity,
       decoration: BoxDecoration(
@@ -53,57 +51,38 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             fit: BoxFit.cover),
       ),
       child: SafeArea(
-        child: Column(
-          children: [
-            Flexible(
-              child: FractionallySizedBox(
-                heightFactor: 0.8,
+        child: SingleChildScrollView(
+          padding: EdgeInsets.symmetric(horizontal: 20),
+          child: Column(
+            children: [
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.15,
               ),
-            ),
-            Flexible(
-              child: Text("Forgot password".toUpperCase(), style: headingStyle),
-            ),
-            Flexible(
-              child: FractionallySizedBox(
-                heightFactor: 0.15,
+              Text("Forgot password".toUpperCase(), style: headingStyle),
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.05,
               ),
-            ),
-            Flexible(
-              child: Text(
+              Text(
                 "Don't worry, it happens to all of us.\n\nEnter your email and we'll send you a link to reset your paasword.",
                 textAlign: TextAlign.center,
                 style: TextStyle(color: CupertinoColors.white, fontSize: 16),
               ),
-            ),
-            Flexible(
-              child: FractionallySizedBox(
-                heightFactor: 0.15,
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.05,
               ),
-            ),
-            _buildForm(model),
-          ],
-        ),
-      ),
-    );
-  }
-
-  _buildForm(_ViewModel model) {
-    return Form(
-      key: _formKey,
-      autovalidateMode: AutovalidateMode.onUserInteraction,
-      child: Column(
-        children: [
-          _buildTextField(model),
-          SizedBox(height: 40),
-          DefaultButton(
-            text: "Send email".toUpperCase(),
-            press: () {
-              if (model.error == null) {
-                model.onSend(_controller.text);
-              }
-            },
+              _buildTextField(model),
+              SizedBox(height: 40),
+              DefaultButton(
+                text: "Send email".toUpperCase(),
+                press: () {
+                  if (model.error == null) {
+                    model.onSend(_controller.text);
+                  }
+                },
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

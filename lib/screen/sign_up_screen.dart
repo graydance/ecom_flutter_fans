@@ -40,7 +40,6 @@ class _SignupScreenState extends State<SignupScreen> {
     );
 
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 20),
       width: double.infinity,
       height: double.infinity,
       decoration: BoxDecoration(
@@ -49,24 +48,19 @@ class _SignupScreenState extends State<SignupScreen> {
             fit: BoxFit.cover),
       ),
       child: SafeArea(
-        child: Column(
-          // mainAxisSize: MainAxisSize.max,
-          children: [
-            Flexible(
-              child: FractionallySizedBox(
-                heightFactor: 0.8,
+        child: SingleChildScrollView(
+          padding: EdgeInsets.symmetric(horizontal: 20),
+          child: Column(
+            // mainAxisSize: MainAxisSize.max,
+            children: [
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.15,
               ),
-            ),
-            Flexible(
-                child: Text("Set your password".toUpperCase(),
-                    style: headingStyle)),
-            Flexible(
-              child: FractionallySizedBox(
-                heightFactor: 0.15,
+              Text("Set your password".toUpperCase(), style: headingStyle),
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.05,
               ),
-            ),
-            Flexible(
-              child: Text(
+              Text(
                 model.email,
                 textAlign: TextAlign.center,
                 style: TextStyle(
@@ -74,41 +68,26 @@ class _SignupScreenState extends State<SignupScreen> {
                     fontWeight: FontWeight.w500,
                     fontSize: 26),
               ),
-            ),
-            Flexible(
-              child: FractionallySizedBox(
-                heightFactor: 0.15,
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.05,
               ),
-            ),
-            _buildForm(model),
-          ],
+              _buildTextField(model),
+              SizedBox(height: 40),
+              DefaultButton(
+                text: "Sign up".toUpperCase(),
+                press: () {
+                  if (model.error == null) {
+                    model.onSignup(_controller.text);
+                  }
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  _buildForm(_ViewModel model) {
-    return Form(
-      key: _formKey,
-      autovalidateMode: AutovalidateMode.onUserInteraction,
-      child: Column(
-        children: [
-          _buildTextField(model),
-          SizedBox(height: 40),
-          DefaultButton(
-            text: "Sign up".toUpperCase(),
-            press: () {
-              if (model.error == null) {
-                model.onSignup(_controller.text);
-              }
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
-  final _formKey = GlobalKey<FormState>();
   final _controller = TextEditingController();
   bool _obscureText = true;
 

@@ -39,7 +39,6 @@ class _LoginScreenState extends State<LoginScreen> {
     );
 
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 20),
       width: double.infinity,
       height: double.infinity,
       decoration: BoxDecoration(
@@ -48,21 +47,18 @@ class _LoginScreenState extends State<LoginScreen> {
             fit: BoxFit.cover),
       ),
       child: SafeArea(
-        child: Column(
-          children: [
-            Flexible(
-              child: FractionallySizedBox(
-                heightFactor: 0.8,
+        child: SingleChildScrollView(
+          padding: EdgeInsets.symmetric(horizontal: 20),
+          child: Column(
+            children: [
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.15,
               ),
-            ),
-            Flexible(child: Text("Log in".toUpperCase(), style: headingStyle)),
-            Flexible(
-              child: FractionallySizedBox(
-                heightFactor: 0.15,
+              Text("Log in".toUpperCase(), style: headingStyle),
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.05,
               ),
-            ),
-            Flexible(
-              child: Text(
+              Text(
                 model.email,
                 textAlign: TextAlign.center,
                 style: TextStyle(
@@ -70,51 +66,36 @@ class _LoginScreenState extends State<LoginScreen> {
                     fontWeight: FontWeight.w500,
                     fontSize: 26),
               ),
-            ),
-            Flexible(
-              child: FractionallySizedBox(
-                heightFactor: 0.15,
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.05,
               ),
-            ),
-            _buildForm(model),
-          ],
+              _buildTextField(model),
+              SizedBox(height: 40),
+              GestureDetector(
+                onTap: () => Navigator.of(context).pushNamed('/forgotpwd'),
+                child: Text(
+                  "Forgot Password",
+                  style: TextStyle(
+                      decoration: TextDecoration.underline,
+                      color: CupertinoColors.white),
+                ),
+              ),
+              SizedBox(height: 20),
+              DefaultButton(
+                text: "login in".toUpperCase(),
+                press: () {
+                  if (model.error == null) {
+                    model.onLogin(_controller.text);
+                  }
+                },
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  _buildForm(_ViewModel model) {
-    return Form(
-      key: _formKey,
-      autovalidateMode: AutovalidateMode.onUserInteraction,
-      child: Column(
-        children: [
-          _buildTextField(model),
-          SizedBox(height: 40),
-          GestureDetector(
-            onTap: () => Navigator.of(context).pushNamed('/forgotpwd'),
-            child: Text(
-              "Forgot Password",
-              style: TextStyle(
-                  decoration: TextDecoration.underline,
-                  color: CupertinoColors.white),
-            ),
-          ),
-          SizedBox(height: 20),
-          DefaultButton(
-            text: "login in".toUpperCase(),
-            press: () {
-              if (model.error == null) {
-                model.onLogin(_controller.text);
-              }
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
-  final _formKey = GlobalKey<FormState>();
   final _controller = TextEditingController();
   bool _obscureText = true;
 

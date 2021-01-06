@@ -32,12 +32,10 @@ class _AuthEmailScreenState extends State<AuthEmailScreen> {
     );
   }
 
-  final _formKey = GlobalKey<FormState>();
   final _controller = TextEditingController();
 
   _buildBody(_ViewModel model) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 20),
       width: double.infinity,
       height: double.infinity,
       decoration: BoxDecoration(
@@ -46,43 +44,29 @@ class _AuthEmailScreenState extends State<AuthEmailScreen> {
             fit: BoxFit.cover),
       ),
       child: SafeArea(
-        child: Column(
-          children: [
-            Flexible(
-              child: FractionallySizedBox(
-                heightFactor: 0.8,
+        child: SingleChildScrollView(
+          padding: EdgeInsets.symmetric(horizontal: 20),
+          child: Column(
+            children: [
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.15,
               ),
-            ),
-            Flexible(
-              child: AuthHeroLogo(),
-            ),
-            Flexible(
-              child: FractionallySizedBox(
-                heightFactor: 0.15,
+              AuthHeroLogo(),
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.05,
               ),
-            ),
-            Flexible(
-              child: Form(
-                key: _formKey,
-                autovalidateMode: AutovalidateMode.onUserInteraction,
-                child: Column(
-                  children: [
-                    // _buildFormField(model),
-                    _buildTextField(model),
-                    SizedBox(height: 40),
-                    DefaultButton(
-                      text: "Log in/Sign up".toUpperCase(),
-                      press: () {
-                        if (model.error == null) {
-                          model.onCheckEmail(_controller.text);
-                        }
-                      },
-                    ),
-                  ],
-                ),
+              _buildTextField(model),
+              SizedBox(height: 40),
+              DefaultButton(
+                text: "Log in/Sign up".toUpperCase(),
+                press: () {
+                  if (model.error == null) {
+                    model.onCheckEmail(_controller.text);
+                  }
+                },
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
