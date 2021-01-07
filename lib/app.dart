@@ -1,9 +1,11 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:redux/redux.dart';
+
 import 'package:fans/models/appstate.dart';
 import 'package:fans/screen/screens.dart';
 import 'package:fans/store/actions.dart';
-import 'package:redux/redux.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = new GlobalKey<NavigatorState>();
 
@@ -34,6 +36,7 @@ class ReduxApp extends StatelessWidget {
                   },
                 ),
           },
+          builder: EasyLoading.init(),
         ));
   }
 }
