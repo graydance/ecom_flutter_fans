@@ -1,18 +1,14 @@
 import 'package:dio/dio.dart';
-import 'package:fans/screen/screens.dart';
-import 'package:fans/store/actions.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:fans/api.dart';
-import 'package:fans/app.dart';
-import 'package:fans/models/models.dart';
-import 'package:fans/store/middleware.dart';
-import 'package:fans/store/reducers/appreducers.dart';
-import 'package:logging/logging.dart';
 import 'package:mockito/mockito.dart';
 import 'package:redux/redux.dart';
-import 'package:redux_logging/redux_logging.dart';
+
+import 'package:fans/models/models.dart';
+import 'package:fans/screen/screens.dart';
+import 'package:fans/store/reducers/appreducers.dart';
+import 'package:fans/store/states.dart';
 
 class MockDio extends Mock implements Dio {}
 
@@ -21,7 +17,9 @@ void main() {
     await tester.pumpWidget(StoreProvider<AppState>(
         store: Store<AppState>(
           appReducer,
-          initialState: AppState(emailCheckError: 'error test'),
+          initialState: AppState(
+            verifyEmail: VerifyEmailState(error: 'error test'),
+          ),
         ),
         child: CupertinoApp(
           home: AuthEmailScreen(),
@@ -37,7 +35,9 @@ void main() {
         store: Store<AppState>(
           appReducer,
           initialState: AppState(
-              email: 'email@test.com', passwordCheckError: 'error test'),
+            verifyEmail: VerifyEmailState(email: 'email@test.com'),
+            auth: LoginOrSignupState(error: 'error test'),
+          ),
         ),
         child: CupertinoApp(
           home: LoginScreen(),
@@ -54,7 +54,9 @@ void main() {
         store: Store<AppState>(
           appReducer,
           initialState: AppState(
-              email: 'email@test.com', passwordCheckError: 'error test'),
+            verifyEmail: VerifyEmailState(email: 'email@test.com'),
+            auth: LoginOrSignupState(error: 'error test'),
+          ),
         ),
         child: CupertinoApp(
           home: SignupScreen(),
@@ -70,8 +72,9 @@ void main() {
     await tester.pumpWidget(StoreProvider<AppState>(
         store: Store<AppState>(
           appReducer,
-          initialState:
-              AppState(email: 'email@test.com', emailCheckError: 'error test'),
+          initialState: AppState(
+            verifyEmail: VerifyEmailState(email: 'email@test.com'),
+          ),
         ),
         child: CupertinoApp(
           home: ForgotPasswordScreen(),
@@ -80,7 +83,6 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('email@test.com'), findsOneWidget);
-    expect(find.text('error test'), findsOneWidget);
   });
 
   // testWidgets('basic', (WidgetTester tester) async {

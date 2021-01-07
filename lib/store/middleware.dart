@@ -1,54 +1,48 @@
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:redux/redux.dart';
+
 import 'package:fans/api.dart';
 import 'package:fans/app.dart';
-import 'package:fans/store/actions.dart';
-import 'package:redux/redux.dart';
 import 'package:fans/models/models.dart';
+import 'package:fans/store/actions.dart';
 
 List<Middleware<AppState>> createStoreMiddleware() {
-  final loadHots = _createLoadHots();
-  final checkEmail = _createCheckEmail();
+  final verifyEmail = _createVerifyEmail();
   final login = _createLogin();
   final sendEmail = _createSendEmail();
   final signup = _createSignup();
 
   return [
-    TypedMiddleware<AppState, LoadHotsAction>(loadHots),
-    TypedMiddleware<AppState, RemoteCheckEmailAction>(checkEmail),
+    TypedMiddleware<AppState, VerifyEmailAction>(verifyEmail),
     TypedMiddleware<AppState, LoginAction>(login),
     TypedMiddleware<AppState, SignupAction>(signup),
     TypedMiddleware<AppState, SendEmailAction>(sendEmail),
   ];
 }
 
-Middleware<AppState> _createLoadHots() {
+Middleware<AppState> _createVerifyEmail() {
   return (Store<AppState> store, action, NextDispatcher next) {
-    api('/hots', {}, '').then(
-      (hots) {
-        store.dispatch(
-            HotsLoadedAction(hots['idols'], hots['goods'], hots['cart']));
-      },
-    ).catchError((err) => store.dispatch(HotsNotLoadedAction(err.toString())));
-    next(action);
-  };
-}
-
-Middleware<AppState> _createCheckEmail() {
-  return (Store<AppState> store, action, NextDispatcher next) {
-    if (action is RemoteCheckEmailAction) {
-      String email = action.email;
-      bool emailValid = RegExp(
-              r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-          .hasMatch(email);
-      if (!emailValid) {
-        store.dispatch(RemoteCheckEmailFailureAction('The email is invalid'));
-      } else if (email == '1@1.com') {
-        store.dispatch(
-            RemoteCheckEmailFailureAction('The email has been register!'));
-      } else if (email == '2@2.com') {
-        navigatorKey.currentState.pushNamed('/signup');
-      } else {
-        navigatorKey.currentState.pushNamed('/login');
-      }
+    if (action is VerifyEmailAction) {
+      EasyLoading.show();
+      var email = action.email;
+      api('/user/login', {'email': email, 'password': ''})
+          .whenComplete(() => EasyLoading.dismiss())
+          .then(
+        (data) {
+          var code = data['code'];
+          if (code == 401) {
+            // 用户不存在
+            store.dispatch(VerifyEmailSuccessAction(email));
+            Keys.navigatorKey.currentState.pushNamed(Routes.signup);
+          } else if (code == 402) {
+            // 邮箱已注册
+            store.dispatch(VerifyEmailSuccessAction(email));
+            Keys.navigatorKey.currentState.pushNamed(Routes.login);
+          } else {
+            EasyLoading.showToast(data['msg'].toString());
+          }
+        },
+      ).catchError((error) => EasyLoading.showToast(error.toString()));
     }
     next(action);
   };
@@ -57,13 +51,20 @@ Middleware<AppState> _createCheckEmail() {
 Middleware<AppState> _createLogin() {
   return (Store<AppState> store, action, NextDispatcher next) {
     if (action is LoginAction) {
-      // String email = action.email;
-      String password = action.password;
-      if (password.isEmpty || password.length < 8) {
-        store.dispatch(LoginFailureAction('Login failure'));
-      } else {
-        navigatorKey.currentState.pushNamed('/forgotpwd');
-      }
+      EasyLoading.show();
+      api('/user/login', {'email': action.email, 'password': action.password})
+          .whenComplete(() => EasyLoading.dismiss())
+          .then(
+        (data) {
+          if (data['code'] == 0) {
+            store.dispatch(LoginSuccessAction(User.fromJson(data['data'])));
+            Keys.navigatorKey.currentState.pushReplacementNamed(Routes.home);
+          } else {
+            // store.dispatch(LoginFailureAction(data['msg'].toString()));
+            EasyLoading.showToast(data['msg'].toString());
+          }
+        },
+      ).catchError((err) => EasyLoading.showToast(err.toString()));
     }
     next(action);
   };
@@ -72,13 +73,20 @@ Middleware<AppState> _createLogin() {
 Middleware<AppState> _createSignup() {
   return (Store<AppState> store, action, NextDispatcher next) {
     if (action is SignupAction) {
-      // String email = action.email;
-      String password = action.password;
-      if (password.isEmpty || password.length < 8) {
-        store.dispatch(SignupFailureAction('Signup failure'));
-      } else {
-        navigatorKey.currentState.pushNamed('/forgotpwd');
-      }
+      EasyLoading.show();
+      api('/user/login', {'email': action.email, 'password': action.password})
+          .whenComplete(() => EasyLoading.dismiss())
+          .then(
+        (data) {
+          if (data['code'] == 0) {
+            store.dispatch(SignupSuccessAction(User.fromJson(data['data'])));
+            Keys.navigatorKey.currentState.pushReplacementNamed(Routes.home);
+          } else {
+            EasyLoading.showToast(data['msg'].toString());
+            // store.dispatch(SignupFailureAction(data['msg'].toString()));
+          }
+        },
+      ).catchError((err) => EasyLoading.showToast(err.toString()));
     }
     next(action);
   };

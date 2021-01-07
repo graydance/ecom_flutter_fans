@@ -1,30 +1,30 @@
-import 'package:fans/models/models.dart';
 import 'package:meta/meta.dart';
+
+import 'package:fans/models/models.dart';
+import 'package:fans/store/states.dart';
 
 @immutable
 class AppState {
+  final VerifyEmailState verifyEmail;
+  final LoginOrSignupState auth;
+
   final bool isLoading;
   final String error;
   final String hotLoadError;
   final List<Idol> hotIdols;
   final List<Goods> hotGoods;
   final int cart;
-  final bool isRegist;
-  final String emailCheckError;
-  final String email;
-  final String passwordCheckError;
 
-  AppState(
-      {this.isLoading = false,
-      this.error,
-      this.hotLoadError = '',
-      this.hotIdols = const [],
-      this.hotGoods = const [],
-      this.cart = 0,
-      this.isRegist = false,
-      this.emailCheckError,
-      this.email = '',
-      this.passwordCheckError});
+  AppState({
+    this.verifyEmail = const VerifyEmailState(),
+    this.auth = const LoginOrSignupState(),
+    this.isLoading = false,
+    this.error,
+    this.hotLoadError = '',
+    this.hotIdols = const [],
+    this.hotGoods = const [],
+    this.cart = 0,
+  });
 
   factory AppState.loading() => AppState(isLoading: true);
 
@@ -45,10 +45,6 @@ class AppState {
       hotIdols: hotIdols ?? this.hotIdols,
       hotGoods: hotGoods ?? this.hotGoods,
       cart: cart ?? this.cart,
-      isRegist: isRegist ?? this.isRegist,
-      emailCheckError: emailValidError ?? this.emailCheckError,
-      email: email ?? this.email,
-      passwordCheckError: passwordCheckError ?? this.passwordCheckError,
     );
   }
 
@@ -58,11 +54,7 @@ class AppState {
       hotLoadError.hashCode ^
       hotIdols.hashCode ^
       hotGoods.hashCode ^
-      cart.hashCode ^
-      isRegist.hashCode ^
-      emailCheckError.hashCode ^
-      email.hashCode ^
-      passwordCheckError.hashCode;
+      cart.hashCode;
 
   @override
   bool operator ==(Object other) =>
@@ -73,14 +65,10 @@ class AppState {
           hotLoadError == other.hotLoadError &&
           hotIdols == other.hotIdols &&
           hotGoods == other.hotGoods &&
-          cart == other.cart &&
-          isRegist == other.isRegist &&
-          emailCheckError == other.emailCheckError &&
-          email == other.email &&
-          passwordCheckError == other.passwordCheckError;
+          cart == other.cart;
 
   @override
   String toString() {
-    return 'AppState{isLoading: $isLoading, hotLoadError:$hotLoadError hotIdols: $hotIdols hotGoods:$hotGoods cart:$cart isRegist:$isRegist emailValidError:$emailCheckError email:$email passwordCheckError:$passwordCheckError}';
+    return 'AppState(verifyEmail: $verifyEmail, login: $auth, isLoading: $isLoading, error: $error, hotLoadError: $hotLoadError, hotIdols: $hotIdols, hotGoods: $hotGoods, cart: $cart)';
   }
 }

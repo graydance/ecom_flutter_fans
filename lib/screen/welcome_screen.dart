@@ -1,3 +1,4 @@
+import 'package:fans/app.dart';
 import 'package:fans/screen/components/default_button.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:fans/screen/components/auth_hero_logo.dart';
@@ -44,7 +45,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   ),
                   DefaultButton(
                     text: "Get Started!".toUpperCase(),
-                    press: () => Navigator.of(context).pushNamed('/authemail'),
+                    press: () => Keys.navigatorKey.currentState
+                        .pushNamed(Routes.verifyEmail),
                   ),
                 ],
               ),

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:fans/app.dart';
 import 'package:flutter/cupertino.dart';
 
 import 'package:fans/screen/components/auth_hero_logo.dart';
@@ -13,7 +14,7 @@ class SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     Timer(Duration(seconds: 3),
-        () => Navigator.of(context).pushReplacementNamed('/welcome'));
+        () => Keys.navigatorKey.currentState.pushNamed(Routes.welcome));
     super.initState();
   }
 

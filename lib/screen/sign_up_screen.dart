@@ -76,7 +76,7 @@ class _SignupScreenState extends State<SignupScreen> {
               DefaultButton(
                 text: "Sign up".toUpperCase(),
                 press: () {
-                  if (model.error == null) {
+                  if (model.error.isEmpty && _controller.text.isNotEmpty) {
                     model.onSignup(_controller.text);
                   }
                 },
@@ -98,7 +98,7 @@ class _SignupScreenState extends State<SignupScreen> {
   }
 
   _buildTextField(_ViewModel model) {
-    var color = model.error == null || model.error.isEmpty
+    var color = model.error.isEmpty
         ? CupertinoColors.white
         : CupertinoColors.destructiveRed;
     return Column(
@@ -160,15 +160,15 @@ class _ViewModel {
 
   _ViewModel(this.loading, this.error, this.email, this.onSignup, this.onCheck);
   static _ViewModel fromStore(Store<AppState> store) {
-    _onLogin(String password) {
-      store.dispatch(SignupAction(store.state.email, password));
+    _onSignup(String password) {
+      store.dispatch(SignupAction(store.state.verifyEmail.email, password));
     }
 
     _onCheck(String password) {
       store.dispatch(CheckPasswordAction(password));
     }
 
-    return _ViewModel(store.state.isLoading, store.state.passwordCheckError,
-        store.state.email, _onLogin, _onCheck);
+    return _ViewModel(store.state.auth.isLoading, store.state.auth.error,
+        store.state.verifyEmail.email, _onSignup, _onCheck);
   }
 }

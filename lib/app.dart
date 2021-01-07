@@ -7,8 +7,6 @@ import 'package:fans/models/appstate.dart';
 import 'package:fans/screen/screens.dart';
 import 'package:fans/store/actions.dart';
 
-final GlobalKey<NavigatorState> navigatorKey = new GlobalKey<NavigatorState>();
-
 class ReduxApp extends StatelessWidget {
   final Store<AppState> store;
   const ReduxApp({this.store});
@@ -20,16 +18,16 @@ class ReduxApp extends StatelessWidget {
           theme: CupertinoThemeData(
             scaffoldBackgroundColor: CupertinoColors.white,
           ),
-          initialRoute: '/',
-          navigatorKey: navigatorKey,
+          initialRoute: Routes.splash,
+          navigatorKey: Keys.navigatorKey,
           routes: {
-            '/': (context) => SplashScreen(),
-            '/welcome': (context) => WelcomeScreen(),
-            '/authemail': (context) => AuthEmailScreen(),
-            '/signup': (context) => SignupScreen(),
-            '/login': (context) => LoginScreen(),
-            '/forgotpwd': (context) => ForgotPasswordScreen(),
-            '/home': (context) => HomeScreen(
+            Routes.splash: (context) => SplashScreen(),
+            Routes.welcome: (context) => WelcomeScreen(),
+            Routes.verifyEmail: (context) => AuthEmailScreen(),
+            Routes.signup: (context) => SignupScreen(),
+            Routes.login: (context) => LoginScreen(),
+            Routes.forgotPassword: (context) => ForgotPasswordScreen(),
+            Routes.home: (context) => HomeScreen(
                   onInit: () {
                     StoreProvider.of<AppState>(context)
                         .dispatch(LoadHotsAction());
@@ -39,4 +37,18 @@ class ReduxApp extends StatelessWidget {
           builder: EasyLoading.init(),
         ));
   }
+}
+
+class Keys {
+  static final navigatorKey = new GlobalKey<NavigatorState>();
+}
+
+class Routes {
+  static final splash = '/';
+  static final welcome = '/welcome';
+  static final verifyEmail = '/verfiy_email';
+  static final signup = '/signup';
+  static final login = '/login';
+  static final forgotPassword = '/forgot_password';
+  static final home = '/home';
 }

@@ -1,53 +1,33 @@
 import 'package:fans/models/models.dart';
 
-class LoadHotsAction {}
+class StartLoadingAction {}
 
-class HotsNotLoadedAction {
-  final String msg;
-  HotsNotLoadedAction(this.msg);
-}
+class StopLoadingAction {}
 
-class HotsLoadedAction {
-  final List<Idol> hotIdols;
-  final List<Goods> hotGoods;
-  final int cart;
+// Verify Email Actions
 
-  HotsLoadedAction(this.hotIdols, this.hotGoods, this.cart);
-
-  @override
-  String toString() {
-    return 'HotsLoadedAction{hotIdols: $hotIdols hotGoods: $hotGoods cart: $cart}';
-  }
-}
-
-class LocalCheckEmailAction {
+class LocalVerifyEmailAction {
   final String email;
 
-  LocalCheckEmailAction(this.email);
+  LocalVerifyEmailAction(this.email);
 }
 
-class RemoteCheckEmailAction {
+class VerifyEmailAction {
   final String email;
 
-  RemoteCheckEmailAction(this.email);
+  VerifyEmailAction(this.email);
 }
 
-class RemoteCheckEmailFailureAction {
-  final String error;
+class VerifyEmailSuccessAction {
+  final String email;
 
-  RemoteCheckEmailFailureAction(this.error);
+  VerifyEmailSuccessAction(this.email);
 }
 
-class EmailCheckedAction {
-  final bool isRegist;
+class VerifyEmailFailedAction {
   final String error;
 
-  EmailCheckedAction(this.isRegist, this.error);
-
-  @override
-  String toString() {
-    return 'EmailCheckedAction{is_regist: $isRegist error: $error}';
-  }
+  VerifyEmailFailedAction(this.error);
 }
 
 class CheckPasswordAction {
@@ -63,6 +43,12 @@ class LoginAction {
   LoginAction(this.email, this.password);
 }
 
+class LoginSuccessAction {
+  final User user;
+
+  LoginSuccessAction(this.user);
+}
+
 class LoginFailureAction {
   final String error;
 
@@ -74,6 +60,12 @@ class SignupAction {
   final String password;
 
   SignupAction(this.email, this.password);
+}
+
+class SignupSuccessAction {
+  final User user;
+
+  SignupSuccessAction(this.user);
 }
 
 class SignupFailureAction {
@@ -92,4 +84,26 @@ class SendEmailAction {
   final String email;
 
   SendEmailAction(this.email);
+}
+
+// Other
+
+class LoadHotsAction {}
+
+class HotsNotLoadedAction {
+  final String msg;
+  HotsNotLoadedAction(this.msg);
+}
+
+class HotsLoadedAction {
+  final List<Idol> hotIdols;
+  final List<Goods> hotGoods;
+  final int cart;
+
+  HotsLoadedAction(this.hotIdols, this.hotGoods, this.cart);
+
+  @override
+  String toString() {
+    return 'HotsLoadedAction{hotIdols: $hotIdols hotGoods: $hotGoods cart: $cart}';
+  }
 }

@@ -19,8 +19,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _ViewModel>(
       converter: _ViewModel.fromStore,
-      onInit: (store) =>
-          _controller = TextEditingController(text: store.state.email),
+      onInit: (store) => _controller =
+          TextEditingController(text: store.state.verifyEmail.email),
       builder: (ctx, model) => CupertinoPageScaffold(
         child: GestureDetector(
           behavior: HitTestBehavior.translucent,
@@ -75,7 +75,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               DefaultButton(
                 text: "Send email".toUpperCase(),
                 press: () {
-                  if (model.error == null) {
+                  if (model.error.isEmpty && _controller.text.isNotEmpty) {
                     model.onSend(_controller.text);
                   }
                 },
@@ -140,10 +140,10 @@ class _ViewModel {
     }
 
     _onCheck(String email) {
-      store.dispatch(LocalCheckEmailAction(email));
+      store.dispatch(LocalVerifyEmailAction(email));
     }
 
-    return _ViewModel(store.state.isLoading, store.state.emailCheckError,
-        store.state.email, _onSend, _onCheck);
+    return _ViewModel(store.state.isLoading, store.state.error,
+        store.state.verifyEmail.email, _onSend, _onCheck);
   }
 }

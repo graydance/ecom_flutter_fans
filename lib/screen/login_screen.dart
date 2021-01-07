@@ -84,7 +84,7 @@ class _LoginScreenState extends State<LoginScreen> {
               DefaultButton(
                 text: "login in".toUpperCase(),
                 press: () {
-                  if (model.error == null) {
+                  if (model.error.isEmpty && _controller.text.isNotEmpty) {
                     model.onLogin(_controller.text);
                   }
                 },
@@ -106,7 +106,7 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   _buildTextField(_ViewModel model) {
-    var color = model.error == null || model.error.isEmpty
+    var color = model.error.isEmpty
         ? CupertinoColors.white
         : CupertinoColors.destructiveRed;
     return Column(
@@ -150,7 +150,7 @@ class _LoginScreenState extends State<LoginScreen> {
         Padding(
           padding: const EdgeInsets.only(top: 8),
           child: Text(
-            model.error ?? '',
+            model.error,
             style: TextStyle(color: CupertinoColors.white, fontSize: 12),
           ),
         ),
@@ -169,14 +169,14 @@ class _ViewModel {
   _ViewModel(this.loading, this.error, this.email, this.onLogin, this.onCheck);
   static _ViewModel fromStore(Store<AppState> store) {
     _onLogin(String password) {
-      store.dispatch(LoginAction(store.state.email, password));
+      store.dispatch(LoginAction(store.state.verifyEmail.email, password));
     }
 
     _onCheck(String password) {
       store.dispatch(CheckPasswordAction(password));
     }
 
-    return _ViewModel(store.state.isLoading, store.state.passwordCheckError,
-        store.state.email, _onLogin, _onCheck);
+    return _ViewModel(store.state.auth.isLoading, store.state.auth.error,
+        store.state.verifyEmail.email, _onLogin, _onCheck);
   }
 }
