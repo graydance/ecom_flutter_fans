@@ -1,4 +1,5 @@
 import 'package:fans/models/models.dart';
+import 'package:flutter/foundation.dart';
 
 class StartLoadingAction {}
 
@@ -96,10 +97,16 @@ class FetchInterestSuccessAction {
   FetchInterestSuccessAction(this.interests);
 }
 
-class FetchInterestFailedAction {
+class InterestsFailedAction {
   final String error;
 
-  FetchInterestFailedAction(this.error);
+  InterestsFailedAction(this.error);
+}
+
+class UploadInterestsAction {
+  final List<String> idList;
+
+  UploadInterestsAction(this.idList);
 }
 
 // Other

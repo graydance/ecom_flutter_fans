@@ -19,7 +19,7 @@ class ReduxApp extends StatelessWidget {
           theme: CupertinoThemeData(
             scaffoldBackgroundColor: CupertinoColors.white,
           ),
-          initialRoute: Routes.interests,
+          initialRoute: Routes.splash,
           navigatorKey: Keys.navigatorKey,
           routes: {
             Routes.splash: (context) => SplashScreen(),

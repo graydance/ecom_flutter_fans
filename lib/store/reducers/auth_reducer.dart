@@ -78,8 +78,7 @@ String _setCheckPasswordError(String state, CheckPasswordAction action) {
 
 final interestReducer = combineReducers<InterestListState>([
   TypedReducer<InterestListState, FetchInterestSuccessAction>(_setInterestList),
-  TypedReducer<InterestListState, FetchInterestFailedAction>(
-      _setInterestListError),
+  TypedReducer<InterestListState, InterestsFailedAction>(_setInterestListError),
   TypedReducer<InterestListState, FetchInterestStartLoadingAction>(
       _setInterestListLoading),
 ]);
@@ -90,7 +89,7 @@ InterestListState _setInterestList(
 }
 
 InterestListState _setInterestListError(
-    InterestListState state, FetchInterestFailedAction action) {
+    InterestListState state, InterestsFailedAction action) {
   return state.copyWith(error: action.error);
 }
 
