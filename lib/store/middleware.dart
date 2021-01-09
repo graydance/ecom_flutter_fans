@@ -37,11 +37,11 @@ Middleware<AppState> _createVerifyEmail() {
           if (code == 401) {
             // 用户不存在
             store.dispatch(VerifyEmailSuccessAction(email));
-            Keys.navigatorKey.currentState.pushNamed(Routes.signup);
+            Keys.navigatorKey.currentState.pushReplacementNamed(Routes.signup);
           } else if (code == 402) {
             // 邮箱已注册
             store.dispatch(VerifyEmailSuccessAction(email));
-            Keys.navigatorKey.currentState.pushNamed(Routes.login);
+            Keys.navigatorKey.currentState.pushReplacementNamed(Routes.login);
           } else {
             EasyLoading.showToast(data['msg'].toString());
           }
@@ -62,7 +62,8 @@ Middleware<AppState> _createLogin() {
         (data) {
           if (data['code'] == 0) {
             store.dispatch(LoginSuccessAction(User.fromJson(data['data'])));
-            Keys.navigatorKey.currentState.pushReplacementNamed(Routes.home);
+            Keys.navigatorKey.currentState
+                .pushReplacementNamed(Routes.interests);
           } else {
             // store.dispatch(LoginFailureAction(data['msg'].toString()));
             EasyLoading.showToast(data['msg'].toString());
@@ -84,7 +85,8 @@ Middleware<AppState> _createSignup() {
         (data) {
           if (data['code'] == 0) {
             store.dispatch(SignupSuccessAction(User.fromJson(data['data'])));
-            Keys.navigatorKey.currentState.pushReplacementNamed(Routes.home);
+            Keys.navigatorKey.currentState
+                .pushReplacementNamed(Routes.interests);
           } else {
             EasyLoading.showToast(data['msg'].toString());
             // store.dispatch(SignupFailureAction(data['msg'].toString()));
@@ -135,8 +137,8 @@ Middleware<AppState> _createUploadInterests() {
       api('/user/interest_updata', {'interestIdList': action.idList}).then(
         (data) {
           if (data['code'] == 0) {
-            store.dispatch(
-                Keys.navigatorKey.currentState.popAndPushNamed(Routes.home));
+            store.dispatch(Keys.navigatorKey.currentState
+                .pushReplacementNamed(Routes.home));
           } else {
             store.dispatch(InterestsFailedAction(data['msg'].toString()));
           }
