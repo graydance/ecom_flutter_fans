@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
+import 'package:fans/env.dart';
 
 var version = '';
-var entry = 'https://dev.api.ramboo.live/api/';
 var dio = Dio();
 
 void setApiIO(io) {
@@ -9,7 +9,7 @@ void setApiIO(io) {
 }
 
 Future<Map<String, dynamic>> api(path, data) async {
-  Response rsp = await dio.post('$entry$path',
+  Response rsp = await dio.post('$apiEntry$path',
       data: data,
       options: Options(
           headers: {'x-token': '43811a7a-150d-47e5-836c-878fa9fec8a2'}));
