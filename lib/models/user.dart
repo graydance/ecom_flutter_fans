@@ -12,14 +12,14 @@ class User {
   final String token;
 
   const User({
-    this.id,
-    this.nickName,
-    this.portrait,
-    this.email,
-    this.gender,
-    this.aboutMe,
-    this.bindPhone,
-    this.token,
+    this.id = '',
+    this.nickName = '',
+    this.portrait = '',
+    this.email = '',
+    this.gender = 0,
+    this.aboutMe = '',
+    this.bindPhone = '',
+    this.token = '',
   });
 
   factory User.fromJson(Map<String, dynamic> json) {

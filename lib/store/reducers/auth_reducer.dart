@@ -1,4 +1,5 @@
 import 'package:fans/store/actions.dart';
+import 'package:fans/store/states.dart';
 import 'package:fans/store/states/login_signup_state.dart';
 import 'package:fans/store/states/verify_email_state.dart';
 import 'package:redux/redux.dart';
@@ -71,4 +72,29 @@ String _setCheckPasswordError(String state, CheckPasswordAction action) {
     return null;
   }
   return 'Make sure it’s at least 8 characters';
+}
+
+// Interests
+
+final interestReducer = combineReducers<InterestListState>([
+  TypedReducer<InterestListState, FetchInterestSuccessAction>(_setInterestList),
+  TypedReducer<InterestListState, FetchInterestFailedAction>(
+      _setInterestListError),
+  TypedReducer<InterestListState, FetchInterestStartLoadingAction>(
+      _setInterestListLoading),
+]);
+
+InterestListState _setInterestList(
+    InterestListState state, FetchInterestSuccessAction action) {
+  return state.copyWith(interests: action.interests);
+}
+
+InterestListState _setInterestListError(
+    InterestListState state, FetchInterestFailedAction action) {
+  return state.copyWith(error: action.error);
+}
+
+InterestListState _setInterestListLoading(
+    InterestListState state, FetchInterestStartLoadingAction action) {
+  return state.copyWith(isLoading: true);
 }

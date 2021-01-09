@@ -86,6 +86,22 @@ class SendEmailAction {
   SendEmailAction(this.email);
 }
 
+class FetchInterestStartLoadingAction {}
+
+class FetchInterestAction {}
+
+class FetchInterestSuccessAction {
+  final List<Interest> interests;
+
+  FetchInterestSuccessAction(this.interests);
+}
+
+class FetchInterestFailedAction {
+  final String error;
+
+  FetchInterestFailedAction(this.error);
+}
+
 // Other
 
 class LoadHotsAction {}

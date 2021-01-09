@@ -1,3 +1,4 @@
+import 'package:fans/screen/interest_list_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -18,7 +19,7 @@ class ReduxApp extends StatelessWidget {
           theme: CupertinoThemeData(
             scaffoldBackgroundColor: CupertinoColors.white,
           ),
-          initialRoute: Routes.splash,
+          initialRoute: Routes.interests,
           navigatorKey: Keys.navigatorKey,
           routes: {
             Routes.splash: (context) => SplashScreen(),
@@ -27,6 +28,12 @@ class ReduxApp extends StatelessWidget {
             Routes.signup: (context) => SignupScreen(),
             Routes.login: (context) => LoginScreen(),
             Routes.forgotPassword: (context) => ForgotPasswordScreen(),
+            Routes.interests: (context) => InterestListScreen(
+                  onInit: () {
+                    StoreProvider.of<AppState>(context)
+                        .dispatch(FetchInterestAction());
+                  },
+                ),
             Routes.home: (context) => HomeScreen(
                   onInit: () {
                     StoreProvider.of<AppState>(context)
@@ -50,5 +57,6 @@ class Routes {
   static final signup = '/signup';
   static final login = '/login';
   static final forgotPassword = '/forgot_password';
+  static final interests = 'interests';
   static final home = '/home';
 }

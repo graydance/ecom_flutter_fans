@@ -11,12 +11,14 @@ List<Middleware<AppState>> createStoreMiddleware() {
   final login = _createLogin();
   final sendEmail = _createSendEmail();
   final signup = _createSignup();
+  final interests = _createFetchInterests();
 
   return [
     TypedMiddleware<AppState, VerifyEmailAction>(verifyEmail),
     TypedMiddleware<AppState, LoginAction>(login),
     TypedMiddleware<AppState, SignupAction>(signup),
     TypedMiddleware<AppState, SendEmailAction>(sendEmail),
+    TypedMiddleware<AppState, FetchInterestAction>(interests),
   ];
 }
 
@@ -97,6 +99,26 @@ Middleware<AppState> _createSendEmail() {
     if (action is SendEmailAction) {
       // String email = action.email;
       store.dispatch(SendEmailFailureAction('Send email failure'));
+    }
+    next(action);
+  };
+}
+
+Middleware<AppState> _createFetchInterests() {
+  return (Store<AppState> store, action, NextDispatcher next) {
+    if (action is FetchInterestAction) {
+      store.dispatch(FetchInterestStartLoadingAction());
+      api('/user/interest_list', {}).then(
+        (data) {
+          if (data['code'] == 0) {
+            var list = (data['data'] as List).map((e) => Interest.fromJson(e));
+            store.dispatch(FetchInterestSuccessAction(list));
+          } else {
+            store.dispatch(FetchInterestFailedAction(data['msg'].toString()));
+          }
+        },
+      ).catchError(
+          (err) => store.dispatch(FetchInterestFailedAction(err.toString())));
     }
     next(action);
   };
