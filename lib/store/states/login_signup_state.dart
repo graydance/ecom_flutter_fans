@@ -11,7 +11,7 @@ class LoginOrSignupState {
   const LoginOrSignupState({
     this.isLoading = false,
     this.error = '',
-    this.user,
+    this.user = const User(),
   });
 
   LoginOrSignupState copyWith({

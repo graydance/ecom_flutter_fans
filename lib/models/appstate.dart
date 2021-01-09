@@ -7,6 +7,7 @@ import 'package:fans/store/states.dart';
 class AppState {
   final VerifyEmailState verifyEmail;
   final LoginOrSignupState auth;
+  final InterestListState interests;
 
   final bool isLoading;
   final String error;
@@ -18,6 +19,7 @@ class AppState {
   AppState({
     this.verifyEmail = const VerifyEmailState(),
     this.auth = const LoginOrSignupState(),
+    this.interests = const InterestListState(),
     this.isLoading = false,
     this.error,
     this.hotLoadError = '',

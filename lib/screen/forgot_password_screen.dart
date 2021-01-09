@@ -34,6 +34,12 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     );
   }
 
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
   Widget _buildBody(_ViewModel model) {
     final headingStyle = TextStyle(
       fontSize: 28,

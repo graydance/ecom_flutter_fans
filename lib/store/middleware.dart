@@ -11,12 +11,16 @@ List<Middleware<AppState>> createStoreMiddleware() {
   final login = _createLogin();
   final sendEmail = _createSendEmail();
   final signup = _createSignup();
+  final interests = _createFetchInterests();
+  final uploadInterests = _createUploadInterests();
 
   return [
     TypedMiddleware<AppState, VerifyEmailAction>(verifyEmail),
     TypedMiddleware<AppState, LoginAction>(login),
     TypedMiddleware<AppState, SignupAction>(signup),
     TypedMiddleware<AppState, SendEmailAction>(sendEmail),
+    TypedMiddleware<AppState, FetchInterestAction>(interests),
+    TypedMiddleware<AppState, UploadInterestsAction>(uploadInterests),
   ];
 }
 
@@ -33,11 +37,11 @@ Middleware<AppState> _createVerifyEmail() {
           if (code == 401) {
             // 用户不存在
             store.dispatch(VerifyEmailSuccessAction(email));
-            Keys.navigatorKey.currentState.pushNamed(Routes.signup);
+            Keys.navigatorKey.currentState.pushReplacementNamed(Routes.signup);
           } else if (code == 402) {
             // 邮箱已注册
             store.dispatch(VerifyEmailSuccessAction(email));
-            Keys.navigatorKey.currentState.pushNamed(Routes.login);
+            Keys.navigatorKey.currentState.pushReplacementNamed(Routes.login);
           } else {
             EasyLoading.showToast(data['msg'].toString());
           }
@@ -58,7 +62,8 @@ Middleware<AppState> _createLogin() {
         (data) {
           if (data['code'] == 0) {
             store.dispatch(LoginSuccessAction(User.fromJson(data['data'])));
-            Keys.navigatorKey.currentState.pushReplacementNamed(Routes.home);
+            Keys.navigatorKey.currentState
+                .pushReplacementNamed(Routes.interests);
           } else {
             // store.dispatch(LoginFailureAction(data['msg'].toString()));
             EasyLoading.showToast(data['msg'].toString());
@@ -80,7 +85,8 @@ Middleware<AppState> _createSignup() {
         (data) {
           if (data['code'] == 0) {
             store.dispatch(SignupSuccessAction(User.fromJson(data['data'])));
-            Keys.navigatorKey.currentState.pushReplacementNamed(Routes.home);
+            Keys.navigatorKey.currentState
+                .pushReplacementNamed(Routes.interests);
           } else {
             EasyLoading.showToast(data['msg'].toString());
             // store.dispatch(SignupFailureAction(data['msg'].toString()));
@@ -97,6 +103,48 @@ Middleware<AppState> _createSendEmail() {
     if (action is SendEmailAction) {
       // String email = action.email;
       store.dispatch(SendEmailFailureAction('Send email failure'));
+    }
+    next(action);
+  };
+}
+
+Middleware<AppState> _createFetchInterests() {
+  return (Store<AppState> store, action, NextDispatcher next) {
+    if (action is FetchInterestAction) {
+      store.dispatch(FetchInterestStartLoadingAction());
+      api('/user/interest_list', {}).then(
+        (data) {
+          if (data['code'] == 0) {
+            var list = (data['data'] as List)
+                .map((e) => Interest.fromJson(e))
+                .toList();
+            store.dispatch(FetchInterestSuccessAction(list));
+          } else {
+            store.dispatch(InterestsFailedAction(data['msg'].toString()));
+          }
+        },
+      ).catchError(
+          (err) => store.dispatch(InterestsFailedAction(err.toString())));
+    }
+    next(action);
+  };
+}
+
+Middleware<AppState> _createUploadInterests() {
+  return (Store<AppState> store, action, NextDispatcher next) {
+    if (action is UploadInterestsAction) {
+      store.dispatch(FetchInterestStartLoadingAction());
+      api('/user/interest_updata', {'interestIdList': action.idList}).then(
+        (data) {
+          if (data['code'] == 0) {
+            store.dispatch(Keys.navigatorKey.currentState
+                .pushReplacementNamed(Routes.home));
+          } else {
+            store.dispatch(InterestsFailedAction(data['msg'].toString()));
+          }
+        },
+      ).catchError(
+          (err) => store.dispatch(InterestsFailedAction(err.toString())));
     }
     next(action);
   };

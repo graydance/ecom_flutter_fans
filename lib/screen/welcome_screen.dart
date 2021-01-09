@@ -46,7 +46,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   DefaultButton(
                     text: "Get Started!".toUpperCase(),
                     press: () => Keys.navigatorKey.currentState
-                        .pushNamed(Routes.verifyEmail),
+                        .pushReplacementNamed(Routes.verifyEmail),
                   ),
                 ],
               ),

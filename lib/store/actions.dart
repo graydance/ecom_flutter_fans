@@ -1,4 +1,5 @@
 import 'package:fans/models/models.dart';
+import 'package:flutter/foundation.dart';
 
 class StartLoadingAction {}
 
@@ -84,6 +85,28 @@ class SendEmailAction {
   final String email;
 
   SendEmailAction(this.email);
+}
+
+class FetchInterestStartLoadingAction {}
+
+class FetchInterestAction {}
+
+class FetchInterestSuccessAction {
+  final List<Interest> interests;
+
+  FetchInterestSuccessAction(this.interests);
+}
+
+class InterestsFailedAction {
+  final String error;
+
+  InterestsFailedAction(this.error);
+}
+
+class UploadInterestsAction {
+  final List<String> idList;
+
+  UploadInterestsAction(this.idList);
 }
 
 // Other

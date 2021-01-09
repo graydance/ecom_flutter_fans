@@ -32,6 +32,12 @@ class _AuthEmailScreenState extends State<AuthEmailScreen> {
     );
   }
 
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
   final _controller = TextEditingController();
 
   _buildBody(_ViewModel model) {
