@@ -12,6 +12,7 @@ List<Middleware<AppState>> createStoreMiddleware() {
   final sendEmail = _createSendEmail();
   final signup = _createSignup();
   final interests = _createFetchInterests();
+  final uploadInterests = _createUploadInterests();
 
   return [
     TypedMiddleware<AppState, VerifyEmailAction>(verifyEmail),
@@ -19,6 +20,7 @@ List<Middleware<AppState>> createStoreMiddleware() {
     TypedMiddleware<AppState, SignupAction>(signup),
     TypedMiddleware<AppState, SendEmailAction>(sendEmail),
     TypedMiddleware<AppState, FetchInterestAction>(interests),
+    TypedMiddleware<AppState, UploadInterestsAction>(uploadInterests),
   ];
 }
 
@@ -111,14 +113,36 @@ Middleware<AppState> _createFetchInterests() {
       api('/user/interest_list', {}).then(
         (data) {
           if (data['code'] == 0) {
-            var list = (data['data'] as List).map((e) => Interest.fromJson(e));
+            var list = (data['data'] as List)
+                .map((e) => Interest.fromJson(e))
+                .toList();
             store.dispatch(FetchInterestSuccessAction(list));
           } else {
-            store.dispatch(FetchInterestFailedAction(data['msg'].toString()));
+            store.dispatch(InterestsFailedAction(data['msg'].toString()));
           }
         },
       ).catchError(
-          (err) => store.dispatch(FetchInterestFailedAction(err.toString())));
+          (err) => store.dispatch(InterestsFailedAction(err.toString())));
+    }
+    next(action);
+  };
+}
+
+Middleware<AppState> _createUploadInterests() {
+  return (Store<AppState> store, action, NextDispatcher next) {
+    if (action is UploadInterestsAction) {
+      store.dispatch(FetchInterestStartLoadingAction());
+      api('/user/interest_updata', {'interestIdList': action.idList}).then(
+        (data) {
+          if (data['code'] == 0) {
+            store.dispatch(
+                Keys.navigatorKey.currentState.popAndPushNamed(Routes.home));
+          } else {
+            store.dispatch(InterestsFailedAction(data['msg'].toString()));
+          }
+        },
+      ).catchError(
+          (err) => store.dispatch(InterestsFailedAction(err.toString())));
     }
     next(action);
   };

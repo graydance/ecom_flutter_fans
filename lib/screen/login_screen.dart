@@ -30,6 +30,12 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
   Widget _buildBody(_ViewModel model) {
     final headingStyle = TextStyle(
       fontSize: 28,

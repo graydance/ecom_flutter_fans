@@ -13,8 +13,8 @@ class SplashScreen extends StatefulWidget {
 class SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
-    // Timer(Duration(seconds: 3),
-    //     () => Keys.navigatorKey.currentState.pushNamed(Routes.welcome));
+    Timer(Duration(seconds: 3),
+        () => Keys.navigatorKey.currentState.pushNamed(Routes.welcome));
     super.initState();
   }
 
