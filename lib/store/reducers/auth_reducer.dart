@@ -1,23 +1,29 @@
 import 'package:fans/store/actions.dart';
+import 'package:fans/store/states/login_signup_state.dart';
+import 'package:fans/store/states/verify_email_state.dart';
 import 'package:redux/redux.dart';
 
-final authReducer = combineReducers<bool>([
-  TypedReducer<bool, EmailCheckedAction>(_setIsRegist),
+final verifyEmailReducer = combineReducers<VerifyEmailState>([
+  TypedReducer<VerifyEmailState, LocalVerifyEmailAction>(
+      _setLocalVerifyEmailError),
+  TypedReducer<VerifyEmailState, VerifyEmailSuccessAction>(_setEmail),
+  TypedReducer<VerifyEmailState, VerifyEmailFailedAction>(_setVerifyEmailError),
 ]);
 
-bool _setIsRegist(bool state, EmailCheckedAction action) {
-  return action.isRegist;
+VerifyEmailState _setLocalVerifyEmailError(
+    VerifyEmailState state, LocalVerifyEmailAction action) {
+  var error = _validateEmail(action.email) ? '' : 'The email is invalid';
+  return state.copyWith(error: error);
 }
 
-final clientValidEmailReducer = combineReducers<String>([
-  TypedReducer<String, LocalCheckEmailAction>(_setCheckEmailError),
-]);
+VerifyEmailState _setEmail(
+    VerifyEmailState state, VerifyEmailSuccessAction action) {
+  return state.copyWith(email: action.email);
+}
 
-String _setCheckEmailError(String state, LocalCheckEmailAction action) {
-  if (action.email.isEmpty || _validateEmail(action.email)) {
-    return null;
-  }
-  return 'The email is invalid';
+VerifyEmailState _setVerifyEmailError(
+    VerifyEmailState state, VerifyEmailFailedAction action) {
+  return state.copyWith(error: action.error);
 }
 
 bool _validateEmail(String email) {
@@ -26,32 +32,30 @@ bool _validateEmail(String email) {
       .hasMatch(email);
 }
 
-final setEmailReducer = combineReducers<String>([
-  TypedReducer<String, LocalCheckEmailAction>(_setEmail),
+// Login
+
+final authReducer = combineReducers<LoginOrSignupState>([
+  TypedReducer<LoginOrSignupState, CheckPasswordAction>(
+      _setAuthCheckPasswordError),
 ]);
 
-String _setEmail(String state, LocalCheckEmailAction action) {
-  if (!_validateEmail(action.email)) {
-    return state;
-  }
-  return action.email;
+LoginOrSignupState _setAuthCheckPasswordError(
+    LoginOrSignupState state, CheckPasswordAction action) {
+  String password = action.password;
+  return state.copyWith(
+      error: password.length < 8 ? 'Make sure it’s at least 8 characters' : '');
 }
+
+// other
 
 final validPasswordReducer = combineReducers<String>([
   TypedReducer<String, CheckPasswordAction>(_setCheckPasswordError),
 ]);
 
 final errorReducer = combineReducers<String>([
-  TypedReducer<String, RemoteCheckEmailFailureAction>(
-      _setRemoteCheckEmailError),
   TypedReducer<String, LoginFailureAction>(_setLoginError),
   TypedReducer<String, SendEmailFailureAction>(_setSendEmailError),
 ]);
-
-String _setRemoteCheckEmailError(
-    String state, RemoteCheckEmailFailureAction action) {
-  return action.error;
-}
 
 String _setLoginError(String state, LoginFailureAction action) {
   return action.error;

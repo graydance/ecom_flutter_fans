@@ -60,7 +60,7 @@ class _AuthEmailScreenState extends State<AuthEmailScreen> {
               DefaultButton(
                 text: "Log in/Sign up".toUpperCase(),
                 press: () {
-                  if (model.error == null) {
+                  if (model.error.isEmpty && _controller.text.isNotEmpty) {
                     model.onCheckEmail(_controller.text);
                   }
                 },
@@ -73,7 +73,7 @@ class _AuthEmailScreenState extends State<AuthEmailScreen> {
   }
 
   _buildTextField(_ViewModel model) {
-    var color = model.error == null || model.error.isEmpty
+    var color = model.error.isEmpty
         ? CupertinoColors.white
         : CupertinoColors.destructiveRed;
     return Column(
@@ -101,7 +101,7 @@ class _AuthEmailScreenState extends State<AuthEmailScreen> {
         Padding(
           padding: const EdgeInsets.only(top: 8),
           child: Text(
-            model.error ?? '',
+            model.error,
             style: TextStyle(color: CupertinoColors.white, fontSize: 12),
           ),
         ),
@@ -111,23 +111,21 @@ class _AuthEmailScreenState extends State<AuthEmailScreen> {
 }
 
 class _ViewModel {
-  final bool loading;
   final String error;
   final Function(String) onClientCheckEmail;
   final Function(String) onCheckEmail;
 
-  _ViewModel(
-      this.loading, this.error, this.onClientCheckEmail, this.onCheckEmail);
+  _ViewModel(this.error, this.onClientCheckEmail, this.onCheckEmail);
   static _ViewModel fromStore(Store<AppState> store) {
     _onClientCheckEmail(String email) {
-      store.dispatch(LocalCheckEmailAction(email));
+      store.dispatch(LocalVerifyEmailAction(email));
     }
 
     _onCheckEmail(String email) {
-      store.dispatch(RemoteCheckEmailAction(email));
+      store.dispatch(VerifyEmailAction(email));
     }
 
-    return _ViewModel(store.state.isLoading, store.state.emailCheckError,
-        _onClientCheckEmail, _onCheckEmail);
+    return _ViewModel(
+        store.state.verifyEmail.error, _onClientCheckEmail, _onCheckEmail);
   }
 }

@@ -10,7 +10,7 @@ Future<void> main() async {
   runApp(ReduxApp(
     store: Store<AppState>(
       appReducer,
-      initialState: AppState.loading(),
+      initialState: AppState(),
       middleware: createStoreMiddleware(),
     ),
   ));
