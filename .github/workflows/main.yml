@@ -90,7 +90,7 @@ jobs:
             node -e "$MAINFEST_SCRIPT" >${GITHUB_SHA::8}/mainfest.plist
             node -e "INDEX_SCRIPT" >/tmp/index.html
             gsutil cp /tmp/index.html gs://ecom-static/$ECOM_ENV/$ECOM_PROD/index.html
-            gcloud compute url-maps invalidate-cdn-cache ha-dev-fans --path "/$ECOM_ENV/$ECOM_PROD/index.html"
+            gcloud compute url-maps invalidate-cdn-cache ha-dev-fans --async --path "/$ECOM_ENV/$ECOM_PROD/index.html"
             gsutil rsync -R ${GITHUB_SHA::8} gs://ecom-static/$ECOM_ENV/$ECOM_PROD/${GITHUB_SHA::8}
           env:
             TIME: "${{ steps.time.outputs.time }}"
