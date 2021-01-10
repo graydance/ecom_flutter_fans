@@ -32,6 +32,12 @@ jobs:
         - run: flutter test
         - run: flutter build web
         - run: uuid=$(uuidgen) && sed -i.bak 's/main.dart.js/'"$uuid"'.main.dart.js/g' build/web/index.html && mv build/web/main.dart.js build/web/"$uuid.main.dart.js"
+        - name: upload web to cdn
+          uses: google-github-actions/upload-cloud-storage@main
+          with:
+            credentials: ${{ secrets.GOOGLE_KEYFILE }}
+            path: build/web
+            destination: dev-fans-web        
         - run: node -e "$VERSION_KEY" >./lib/env.dart
           env:
             ECOM_PLATFORM: 'android'
