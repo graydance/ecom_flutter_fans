@@ -82,16 +82,16 @@ jobs:
             timeZone: 8
             format: 'YYYY-MM-DD HH:mm:ss'
         - name: Deploy Web to CDN
-          run: gsutil rsync -R build/web/ gs://dev-fans-web
+          run: gsutil rsync -R build/web/ gs://dev-$ECOM_PROD-web
         - name: Deploy Static Resource
           run: |
             mkdir ${GITHUB_SHA::8}
             cp ${{steps.sign_app.outputs.signedReleaseFile}} ${GITHUB_SHA::8}/
             cp build/Runner.ipa ${GITHUB_SHA::8}/
             cp -r build/web ${GITHUB_SHA::8}/web
-            echo "const fans = {\"timestamp\":\"$TIME\", \"version\":\"${GITHUB_SHA::8}\"}" > ${GITHUB_SHA::8}/ver.js
-            gsutil rsync -R ${GITHUB_SHA::8} gs://ecom-static/dev/fans/${GITHUB_SHA::8}
-            ssh cnwesleywang@35.203.63.151  /var/www/html/cicd/upver.sh ${GITHUB_SHA::8}
+            echo "const $ECOM_PROD = {\"timestamp\":\"$TIME\", \"version\":\"${GITHUB_SHA::8}\"}" > ${GITHUB_SHA::8}/ver.js
+            gsutil rsync -R ${GITHUB_SHA::8} gs://ecom-static/dev/$ECOM_PROD/${GITHUB_SHA::8}
+            ssh cnwesleywang@35.203.63.151  /var/www/html/cicd/upver.sh $ECOM_PROD ${GITHUB_SHA::8}
           env:
             TIME: "${{ steps.time.outputs.time }}"
 
