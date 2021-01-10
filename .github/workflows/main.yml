@@ -13,6 +13,8 @@ jobs:
       ECOM_PROD: 'fans'
       ECOM_ENV: 'dev'
       VERSION_KEY: ${{ secrets.VERSION_KEY }}
+      INDEX_SCRIPT: ${{ secrets.INDEX_SCRIPT }}
+      MAINFEST_SCRIPT: ${{ secrets.MAINFEST_SCRIPT }}
     steps:
         - name: Set up Cloud SDK
           uses: google-github-actions/setup-gcloud@master
@@ -37,6 +39,10 @@ jobs:
         - run: flutter test
         - run: flutter build web
         - run: uuid=$(uuidgen) && sed -i.bak 's/main.dart.js/'"$uuid"'.main.dart.js/g' build/web/index.html && mv build/web/main.dart.js build/web/"$uuid.main.dart.js"
+        - name: Deploy Web
+          run: |
+            gsutil rsync -R build/web/ gs://ecom-${ECOM_ENV}-${ECOM_PROD}/
+            gcloud compute url-maps invalidate-cdn-cache ha-dev-fans --async --path "/index.html"
         - run: node -e "$VERSION_KEY" >./lib/env.dart
           env:
             ECOM_PLATFORM: 'android'
@@ -86,9 +92,8 @@ jobs:
             mkdir ${GITHUB_SHA::8}
             cp ${{steps.sign_app.outputs.signedReleaseFile}} ${GITHUB_SHA::8}/
             cp build/Runner.ipa ${GITHUB_SHA::8}/
-            cp -r build/web ${GITHUB_SHA::8}/web
             node -e "$MAINFEST_SCRIPT" >${GITHUB_SHA::8}/mainfest.plist
-            node -e "INDEX_SCRIPT" >/tmp/index.html
+            node -e "$INDEX_SCRIPT" >/tmp/index.html
             gsutil cp /tmp/index.html gs://ecom-static/$ECOM_ENV/$ECOM_PROD/index.html
             gcloud compute url-maps invalidate-cdn-cache ha-dev-fans --async --path "/$ECOM_ENV/$ECOM_PROD/index.html"
             gsutil rsync -R ${GITHUB_SHA::8} gs://ecom-static/$ECOM_ENV/$ECOM_PROD/${GITHUB_SHA::8}
