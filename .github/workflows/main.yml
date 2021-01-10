@@ -37,8 +37,6 @@ jobs:
         - run: flutter test
         - run: flutter build web
         - run: uuid=$(uuidgen) && sed -i.bak 's/main.dart.js/'"$uuid"'.main.dart.js/g' build/web/index.html && mv build/web/main.dart.js build/web/"$uuid.main.dart.js"
-        - name: Deploy Web to CDN
-          run: gsutil rsync -R build/web/ gs://dev-fans-web
         - run: node -e "$VERSION_KEY" >./lib/env.dart
           env:
             ECOM_PLATFORM: 'android'
@@ -83,16 +81,17 @@ jobs:
           with:
             timeZone: 8
             format: 'YYYY-MM-DD HH:mm:ss'
-        - name: deploy
+        - name: Deploy Web to CDN
+          run: gsutil rsync -R build/web/ gs://dev-fans-web
+        - name: Deploy Static Resource
           run: |
             mkdir ${GITHUB_SHA::8}
             cp ${{steps.sign_app.outputs.signedReleaseFile}} ${GITHUB_SHA::8}/
             cp build/Runner.ipa ${GITHUB_SHA::8}/
             cp -r build/web ${GITHUB_SHA::8}/web
             echo "const fans = {\"timestamp\":\"$TIME\", \"version\":\"${GITHUB_SHA::8}\"}" > ${GITHUB_SHA::8}/ver.js
-            scp -r ${GITHUB_SHA::8} cnwesleywang@35.203.63.151:/var/www/html/cicd/fans/
-            ssh cnwesleywang@35.203.63.151 "ln -s -n -f /var/www/html/cicd/fans/${GITHUB_SHA::8} /var/www/html/cicd/fans/current"
-            ssh cnwesleywang@35.203.63.151  /var/www/html/cicd/upver.sh
+            gsutil rsync -R ${GITHUB_SHA::8} gs://ecom-static/dev/fans/${GITHUB_SHA::8}
+            ssh cnwesleywang@35.203.63.151  /var/www/html/cicd/upver.sh ${GITHUB_SHA::8}
           env:
             TIME: "${{ steps.time.outputs.time }}"
 
