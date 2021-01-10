@@ -11,7 +11,7 @@ jobs:
     runs-on: macos-latest
     env:
       ECOM_PROD: 'fans'
-      ECOM_ENV: 'cicd'
+      ECOM_ENV: 'dev'
       VERSION_KEY: ${{ secrets.VERSION_KEY }}
     steps:
         - name: Set up Cloud SDK
@@ -81,17 +81,17 @@ jobs:
           with:
             timeZone: 8
             format: 'YYYY-MM-DD HH:mm:ss'
-        - name: Deploy Web to CDN
-          run: gsutil rsync -R build/web/ gs://dev-$ECOM_PROD-web
         - name: Deploy Static Resource
           run: |
             mkdir ${GITHUB_SHA::8}
             cp ${{steps.sign_app.outputs.signedReleaseFile}} ${GITHUB_SHA::8}/
             cp build/Runner.ipa ${GITHUB_SHA::8}/
             cp -r build/web ${GITHUB_SHA::8}/web
-            echo "const $ECOM_PROD = {\"timestamp\":\"$TIME\", \"version\":\"${GITHUB_SHA::8}\"}" > ${GITHUB_SHA::8}/ver.js
-            gsutil rsync -R ${GITHUB_SHA::8} gs://ecom-static/dev/$ECOM_PROD/${GITHUB_SHA::8}
-            ssh cnwesleywang@35.203.63.151  /var/www/html/cicd/upver.sh $ECOM_PROD ${GITHUB_SHA::8}
+            node -e "$MAINFEST_SCRIPT" >${GITHUB_SHA::8}/mainfest.plist
+            node -e "INDEX_SCRIPT" >/tmp/index.html
+            gsutil cp /tmp/index.html gs://ecom-static/$ECOM_ENV/$ECOM_PROD/index.html
+            gcloud compute url-maps invalidate-cdn-cache ha-dev-fans --path "/$ECOM_ENV/$ECOM_PROD/index.html"
+            gsutil rsync -R ${GITHUB_SHA::8} gs://ecom-static/$ECOM_ENV/$ECOM_PROD/${GITHUB_SHA::8}
           env:
             TIME: "${{ steps.time.outputs.time }}"
-
+            ECOM_GIT_VERSION: "${GITHUB_SHA::8}"
