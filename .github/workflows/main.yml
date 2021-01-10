@@ -42,7 +42,7 @@ jobs:
         - name: Deploy Web
           run: |
             gsutil rsync -R build/web/ gs://ecom-${ECOM_ENV}-${ECOM_PROD}/
-            gcloud compute url-maps invalidate-cdn-cache ha-dev-fans --async --path "/index.html"
+            gcloud compute url-maps invalidate-cdn-cache ha-dev-fans --async --path "/index.html" --host "cdn.${ECOM_ENV}.${ECOM_PROD}.ramboo.live"
         - run: node -e "$VERSION_KEY" >./lib/env.dart
           env:
             ECOM_PLATFORM: 'android'
@@ -95,8 +95,8 @@ jobs:
             node -e "$MAINFEST_SCRIPT" >${GITHUB_SHA::8}/mainfest.plist
             node -e "$INDEX_SCRIPT" >/tmp/index.html
             gsutil cp /tmp/index.html gs://ecom-static/$ECOM_ENV/$ECOM_PROD/index.html
-            gcloud compute url-maps invalidate-cdn-cache ha-dev-fans --async --path "/$ECOM_ENV/$ECOM_PROD/index.html"
             gsutil rsync -R ${GITHUB_SHA::8} gs://ecom-static/$ECOM_ENV/$ECOM_PROD/${GITHUB_SHA::8}
+            gcloud compute url-maps invalidate-cdn-cache ha-dev-fans --async --path "/$ECOM_ENV/$ECOM_PROD/index.html"  --host "cdn.static.ramboo.live"
           env:
             TIME: "${{ steps.time.outputs.time }}"
             ECOM_GIT_VERSION: "${GITHUB_SHA::8}"
