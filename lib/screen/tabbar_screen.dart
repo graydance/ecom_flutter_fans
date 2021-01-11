@@ -33,7 +33,7 @@ class TabbarScreenState extends State<TabbarScreen> {
     );
   }
 
-  var _pages = <Widget>[
+  var _pages = [
     HomeScreen(),
     WelcomeScreen(),
     WelcomeScreen(),
@@ -42,7 +42,7 @@ class TabbarScreenState extends State<TabbarScreen> {
 
   _buildBottomTabBar() {
     return Scaffold(
-      body: _pages[_selectedIndex],
+      body: SafeArea(child: _pages[_selectedIndex]),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: Colors.white,

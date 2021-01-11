@@ -14,16 +14,11 @@ class AvatarWidget extends StatelessWidget {
     final size = isLarge ? 60.0 : 40.0;
     return GestureDetector(
       onTap: onTap,
-      child: Container(
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(size / 2),
-          child: Image(
-            image: NetworkImage(
-                'https://dev.static.ramboo.live/static/tagicons/04.png'),
-            height: size,
-            width: size,
-          ),
-        ),
+      child: CircleAvatar(
+        radius: size / 2,
+        backgroundImage: NetworkImage(image.isEmpty
+            ? 'https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=159637421,4079816873&fm=26&gp=0.jpg'
+            : image),
       ),
     );
   }

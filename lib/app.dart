@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
 
@@ -23,7 +22,7 @@ class ReduxApp extends StatelessWidget {
           initialRoute: Routes.home,
           navigatorKey: Keys.navigatorKey,
           routes: {
-            Routes.splash: (context) => FollowingFeedScreen(),
+            Routes.splash: (context) => FeedListScreen(),
             Routes.welcome: (context) => WelcomeScreen(),
             Routes.verifyEmail: (context) => AuthEmailScreen(),
             Routes.signup: (context) => SignupScreen(),
@@ -39,7 +38,6 @@ class ReduxApp extends StatelessWidget {
                   onInit: () {},
                 ),
           },
-          builder: EasyLoading.init(),
         ));
   }
 }
