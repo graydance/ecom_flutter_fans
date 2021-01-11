@@ -45,6 +45,14 @@ jobs:
           run: |
             gsutil -m rsync -r -d build/web/ gs://cdn.${ECOM_ENV}.${ECOM_PROD}.ramboo.live/
             gcloud compute url-maps invalidate-cdn-cache ha-dev-fans --async --path "/index.html" --async --host "cdn.${ECOM_ENV}.${ECOM_PROD}.ramboo.live" --project $GCLOUD_PROJECT
+        - name: upload to OSS
+              uses: fangbinwei/aliyun-oss-website-action@v1
+              with:
+                  accessKeyId: ${{ secrets.OSS_ACCESS_KEY_ID }}
+                  accessKeySecret: ${{ secrets.OSS_ACCESS_KEY_SECRET }}
+                  bucket: ecom-dev-fans
+                  endpoint: https://oss-cn-beijing.aliyuncs.com
+                  folder: /
         - run: node -e "$VERSION_KEY" >./lib/env.dart
           env:
             ECOM_PLATFORM: 'android'
