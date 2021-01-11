@@ -1,10 +1,10 @@
-import 'package:fans/screen/interest_list_screen.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
 
 import 'package:fans/models/appstate.dart';
+import 'package:fans/screen/interest_list_screen.dart';
 import 'package:fans/screen/screens.dart';
 import 'package:fans/store/actions.dart';
 
@@ -15,9 +15,10 @@ class ReduxApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return StoreProvider<AppState>(
         store: store,
-        child: CupertinoApp(
-          theme: CupertinoThemeData(
-            scaffoldBackgroundColor: CupertinoColors.white,
+        child: MaterialApp(
+          theme: ThemeData(
+            scaffoldBackgroundColor: Colors.white,
+            primaryColor: Colors.white,
           ),
           initialRoute: Routes.home,
           navigatorKey: Keys.navigatorKey,
@@ -35,10 +36,7 @@ class ReduxApp extends StatelessWidget {
                   },
                 ),
             Routes.home: (context) => TabbarScreen(
-                  onInit: () {
-                    StoreProvider.of<AppState>(context)
-                        .dispatch(LoadHotsAction());
-                  },
+                  onInit: () {},
                 ),
           },
           builder: EasyLoading.init(),

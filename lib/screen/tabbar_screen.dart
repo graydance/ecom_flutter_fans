@@ -1,10 +1,11 @@
 import 'package:fans/screen/home_screen.dart';
-import 'package:fans/screen/screens.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:fans/models/models.dart';
 import 'package:redux/redux.dart';
+
+import 'package:fans/models/models.dart';
 import 'package:fans/r.g.dart';
+import 'package:fans/screen/screens.dart';
 
 class TabbarScreen extends StatefulWidget {
   final void Function() onInit;
@@ -16,7 +17,7 @@ class TabbarScreen extends StatefulWidget {
 }
 
 class TabbarScreenState extends State<TabbarScreen> {
-  int selectIndex = 1;
+  int _selectedIndex = 0;
 
   @override
   void initState() {
@@ -28,44 +29,67 @@ class TabbarScreenState extends State<TabbarScreen> {
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _ViewModel>(
       converter: _ViewModel.fromStore,
-      builder: (ctx, model) => CupertinoPageScaffold(
-        child: _buildBottomTabBar(),
-      ),
+      builder: (ctx, model) => _buildBottomTabBar(),
     );
   }
 
+  var _pages = <Widget>[
+    HomeScreen(),
+    WelcomeScreen(),
+    WelcomeScreen(),
+    WelcomeScreen(),
+  ];
+
   _buildBottomTabBar() {
-    return ClipRRect(
-      // decoration: BoxDecoration(
-      borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(30), topRight: Radius.circular(30)),
-      child: CupertinoTabScaffold(
-          tabBar: CupertinoTabBar(
-            items: [
-              BottomNavigationBarItem(
-                icon: Image(image: R.image.tabbar_home_normal()),
-                activeIcon: Image(image: R.image.tabbar_home_highlight()),
-              ),
-              BottomNavigationBarItem(
-                icon: Image(image: R.image.tabbar_search_normal()),
-                activeIcon: Image(image: R.image.tabbar_search_highlight()),
-              ),
-              BottomNavigationBarItem(
-                icon: Image(image: R.image.tabbar_inbox_normal()),
-                activeIcon: Image(image: R.image.tabbar_inbox_hightlight()),
-              ),
-              BottomNavigationBarItem(
-                icon: Image(image: R.image.tabbar_profile_normal()),
-                activeIcon: Image(image: R.image.tabbar_profile_hightlight()),
-              ),
-            ],
+    return Scaffold(
+      body: _pages[_selectedIndex],
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+                offset: Offset(0, -2.0),
+                color: Color(0x1A777777),
+                blurRadius: 1.0,
+                spreadRadius: 1.0),
+          ],
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(30),
+            topRight: Radius.circular(30),
           ),
-          tabBuilder: (BuildContext context, int index) {
-            if (index == 0) {
-              return HomeScreen();
-            }
-            return CupertinoPageScaffold(child: WelcomeScreen());
-          }),
+        ),
+        child: BottomNavigationBar(
+          elevation: 0,
+          backgroundColor: Colors.transparent,
+          items: <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              icon: Image(image: R.image.tabbar_home_normal()),
+              activeIcon: Image(image: R.image.tabbar_home_highlight()),
+              label: '',
+            ),
+            BottomNavigationBarItem(
+              icon: Image(image: R.image.tabbar_search_normal()),
+              activeIcon: Image(image: R.image.tabbar_search_highlight()),
+              label: '',
+            ),
+            BottomNavigationBarItem(
+              icon: Image(image: R.image.tabbar_inbox_normal()),
+              activeIcon: Image(image: R.image.tabbar_inbox_hightlight()),
+              label: '',
+            ),
+            BottomNavigationBarItem(
+              icon: Image(image: R.image.tabbar_profile_normal()),
+              activeIcon: Image(image: R.image.tabbar_profile_hightlight()),
+              label: '',
+            ),
+          ],
+          type: BottomNavigationBarType.fixed,
+          showSelectedLabels: false,
+          showUnselectedLabels: false,
+          currentIndex: _selectedIndex,
+          onTap: (index) => setState(() => _selectedIndex = index),
+        ),
+      ),
     );
   }
 }
@@ -75,6 +99,6 @@ class _ViewModel {
   final String error;
   _ViewModel(this.loading, this.error);
   static _ViewModel fromStore(Store<AppState> store) {
-    return _ViewModel(store.state.isLoading, store.state.hotLoadError);
+    return _ViewModel(store.state.isLoading, store.state.error);
   }
 }

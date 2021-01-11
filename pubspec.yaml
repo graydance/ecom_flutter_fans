@@ -7,7 +7,6 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  cupertino_icons: ^1.0.1
   flutter_redux: ^0.7.0
   dio: ^3.0.7
   redux_logging: ^0.4.0
@@ -20,11 +19,11 @@ dev_dependencies:
     sdk: flutter
   mockito: ^4.1.3
 flutter:
-  uses-material-design: false
+  uses-material-design: true
   assets:
+  - assets/images/auth/eyes_visibility.png
+  - assets/images/auth/eyes_visibility_off.png
   - assets/images/auth_background.png
-  - assets/images/eyes_close.png
-  - assets/images/eyes_open.png
   - assets/images/interest_selected.png
   - assets/images/interest_unselected.png
   - assets/images/logo.png

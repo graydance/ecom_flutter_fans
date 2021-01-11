@@ -1,6 +1,6 @@
 import 'package:fans/r.g.dart';
 import 'package:fans/screen/components/avatar_widget.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
 class FollowingFeedScreen extends StatefulWidget {
   FollowingFeedScreen({Key key}) : super(key: key);
@@ -58,7 +58,7 @@ class RecommendListBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: CupertinoColors.white,
+      color: Colors.white,
       padding: const EdgeInsets.only(top: 20),
       height: 210.0,
       child: ListView.builder(
@@ -141,14 +141,14 @@ class RecommendItem extends StatelessWidget {
           ),
           SizedBox(
             height: 30,
-            child: CupertinoButton(
+            child: FlatButton(
               color: Color(0xffED8514),
               onPressed: () {},
               child: Text(
                 'Follow',
                 style: TextStyle(
                   // fontSize: 9,
-                  color: CupertinoColors.white,
+                  color: Colors.white,
                 ),
               ),
             ),
@@ -170,7 +170,7 @@ class _PostWidgetState extends State<PostWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: CupertinoColors.white,
+      color: Colors.white,
       padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
       child: Column(
         children: [

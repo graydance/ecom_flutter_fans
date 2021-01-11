@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
 
@@ -19,8 +19,8 @@ class _AuthEmailScreenState extends State<AuthEmailScreen> {
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _ViewModel>(
       converter: _ViewModel.fromStore,
-      builder: (ctx, model) => CupertinoPageScaffold(
-        child: GestureDetector(
+      builder: (ctx, model) => Scaffold(
+        body: GestureDetector(
           behavior: HitTestBehavior.translucent,
           onTap: () {
             // 触摸收起键盘
@@ -79,25 +79,24 @@ class _AuthEmailScreenState extends State<AuthEmailScreen> {
   }
 
   _buildTextField(_ViewModel model) {
-    var color = model.error.isEmpty
-        ? CupertinoColors.white
-        : CupertinoColors.destructiveRed;
+    var color = model.error.isEmpty ? Colors.white : Colors.redAccent;
     return Column(
       children: [
-        CupertinoTextField(
+        TextField(
           controller: _controller,
-          placeholder: "Enter your email",
-          placeholderStyle: TextStyle(color: CupertinoColors.white),
+          decoration: InputDecoration(
+              border: InputBorder.none,
+              focusedBorder: InputBorder.none,
+              enabledBorder: InputBorder.none,
+              errorBorder: InputBorder.none,
+              disabledBorder: InputBorder.none,
+              contentPadding:
+                  EdgeInsets.only(left: 15, bottom: 11, top: 11, right: 15),
+              hintText: "Enter your email",
+              hintStyle: TextStyle(color: Colors.white)),
           keyboardType: TextInputType.emailAddress,
           textAlign: TextAlign.center,
-          clearButtonMode: OverlayVisibilityMode.editing,
           onChanged: (value) => model.onClientCheckEmail(value),
-          decoration: BoxDecoration(
-            border: Border.all(
-              width: 0.0,
-              color: Color(0x00FFFFFF),
-            ),
-          ),
           style: TextStyle(color: color),
         ),
         Container(
@@ -108,7 +107,7 @@ class _AuthEmailScreenState extends State<AuthEmailScreen> {
           padding: const EdgeInsets.only(top: 8),
           child: Text(
             model.error,
-            style: TextStyle(color: CupertinoColors.white, fontSize: 12),
+            style: TextStyle(color: Colors.white, fontSize: 12),
           ),
         ),
       ],

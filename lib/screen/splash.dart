@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:fans/app.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
 import 'package:fans/screen/components/auth_hero_logo.dart';
 
@@ -22,8 +22,8 @@ class SplashScreenState extends State<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return CupertinoPageScaffold(
-      child: Container(
+    return Scaffold(
+      body: Container(
         child: Center(
           child: AuthHeroLogo(),
         ),

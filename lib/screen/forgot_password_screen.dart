@@ -1,9 +1,10 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_redux/flutter_redux.dart';
+import 'package:redux/redux.dart';
+
 import 'package:fans/models/appstate.dart';
 import 'package:fans/screen/components/default_button.dart';
 import 'package:fans/store/actions.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter_redux/flutter_redux.dart';
-import 'package:redux/redux.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   ForgotPasswordScreen({Key key}) : super(key: key);
@@ -21,8 +22,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       converter: _ViewModel.fromStore,
       onInit: (store) => _controller =
           TextEditingController(text: store.state.verifyEmail.email),
-      builder: (ctx, model) => CupertinoPageScaffold(
-        child: GestureDetector(
+      builder: (ctx, model) => Scaffold(
+        body: GestureDetector(
           behavior: HitTestBehavior.translucent,
           onTap: () {
             // 触摸收起键盘
@@ -44,7 +45,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     final headingStyle = TextStyle(
       fontSize: 28,
       fontWeight: FontWeight.bold,
-      color: CupertinoColors.white,
+      color: Colors.white,
       height: 1.5,
     );
 
@@ -71,7 +72,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               Text(
                 "Don't worry, it happens to all of us.\n\nEnter your email and we'll send you a link to reset your paasword.",
                 textAlign: TextAlign.center,
-                style: TextStyle(color: CupertinoColors.white, fontSize: 16),
+                style: TextStyle(color: Colors.white, fontSize: 16),
               ),
               SizedBox(
                 height: MediaQuery.of(context).size.height * 0.05,
@@ -95,24 +96,25 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
   _buildTextField(_ViewModel model) {
     var color = model.error == null || model.error.isEmpty
-        ? CupertinoColors.white
-        : CupertinoColors.destructiveRed;
+        ? Colors.white
+        : Colors.redAccent;
     return Column(
       children: [
-        CupertinoTextField(
+        TextField(
           controller: _controller,
-          placeholder: "Enter your email",
-          placeholderStyle: TextStyle(color: CupertinoColors.white),
+          decoration: new InputDecoration(
+              border: InputBorder.none,
+              focusedBorder: InputBorder.none,
+              enabledBorder: InputBorder.none,
+              errorBorder: InputBorder.none,
+              disabledBorder: InputBorder.none,
+              contentPadding:
+                  EdgeInsets.only(left: 15, bottom: 11, top: 11, right: 15),
+              hintText: "Enter your email",
+              hintStyle: TextStyle(color: Colors.white)),
           keyboardType: TextInputType.emailAddress,
           textAlign: TextAlign.center,
-          clearButtonMode: OverlayVisibilityMode.editing,
           onChanged: (value) => model.onClientCheckEmail(value),
-          decoration: BoxDecoration(
-            border: Border.all(
-              width: 0.0,
-              color: Color(0x00FFFFFF),
-            ),
-          ),
           style: TextStyle(color: color),
         ),
         Container(
@@ -123,7 +125,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           padding: const EdgeInsets.only(top: 8),
           child: Text(
             model.error ?? '',
-            style: TextStyle(color: CupertinoColors.white, fontSize: 12),
+            style: TextStyle(color: Colors.white, fontSize: 12),
           ),
         ),
       ],

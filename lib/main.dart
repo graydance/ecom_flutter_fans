@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:fans/app.dart';
 import 'package:fans/models/appstate.dart';
 import 'package:fans/store/middleware.dart';
