@@ -15,12 +15,10 @@ jobs:
       VERSION_KEY: ${{ secrets.VERSION_KEY }}
       INDEX_SCRIPT: ${{ secrets.INDEX_SCRIPT }}
       MAINFEST_SCRIPT: ${{ secrets.MAINFEST_SCRIPT }}
-      ECOM_GIT_VERSION: ${{ GITHUB_SHA::8 }}
     steps:
         - name: Set up Cloud SDK
           uses: google-github-actions/setup-gcloud@master
           with:
-            project_id: ${{ secrets.GCP_PROJECT_ID }}
             service_account_key: ${{ secrets.GOOGLE_KEYFILE }}
             export_default_credentials: true
         - name: Use gcloud CLI
@@ -46,7 +44,7 @@ jobs:
         - name: Deploy Web
           run: |
             gsutil rsync -R build/web/ gs://ecom-${ECOM_ENV}-${ECOM_PROD}/
-            gcloud compute url-maps invalidate-cdn-cache ha-dev-fans --async --path "/index.html" --async --host "cdn.${ECOM_ENV}.${ECOM_PROD}.ramboo.live"
+            gcloud compute url-maps invalidate-cdn-cache ha-dev-fans --async --path "/index.html" --async --host "cdn.${ECOM_ENV}.${ECOM_PROD}.ramboo.live" --project $GCLOUD_PROJECT
         - run: node -e "$VERSION_KEY" >./lib/env.dart
           env:
             ECOM_PLATFORM: 'android'
@@ -91,6 +89,9 @@ jobs:
           with:
             timeZone: 8
             format: 'YYYY-MM-DD HH:mm:ss'
+        - name: Set outputs
+          id: vars
+          run: echo "::set-output name=sha_short::$(git rev-parse --short HEAD)"
         - name: Deploy Static Resource
           run: |
             mkdir $ECOM_GIT_VERSION
@@ -100,6 +101,7 @@ jobs:
             node -e "$INDEX_SCRIPT" >/tmp/index.html
             gsutil cp /tmp/index.html gs://ecom-static/$ECOM_ENV/$ECOM_PROD/index.html
             gsutil rsync -R $ECOM_GIT_VERSION gs://ecom-static/$ECOM_ENV/$ECOM_PROD/$ECOM_GIT_VERSION
-            gcloud compute url-maps invalidate-cdn-cache ha-dev-fans --async --path "/$ECOM_ENV/$ECOM_PROD/index.html"  --host "cdn.static.ramboo.live"
+            gcloud compute url-maps invalidate-cdn-cache ha-dev-fans --async --path "/$ECOM_ENV/$ECOM_PROD/index.html"  --host "cdn.static.ramboo.live"  --project $GCLOUD_PROJECT
           env:
             TIME: "${{ steps.time.outputs.time }}"
+            ECOM_GIT_VERSION: ${{ steps.vars.outputs.sha_short }}
