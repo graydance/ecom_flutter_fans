@@ -43,7 +43,7 @@ jobs:
         - run: uuid=$(uuidgen) && sed -i.bak 's/main.dart.js/'"$uuid"'.main.dart.js/g' build/web/index.html && mv build/web/main.dart.js build/web/"$uuid.main.dart.js"
         - name: Deploy Web
           run: |
-            gsutil rsync -R build/web/ gs://ecom-${ECOM_ENV}-${ECOM_PROD}/
+            gsutil -m rsync -r -d build/web/ gs://cdn.${ECOM_ENV}.${ECOM_PROD}.fans.ramboo.live/
             gcloud compute url-maps invalidate-cdn-cache ha-dev-fans --async --path "/index.html" --async --host "cdn.${ECOM_ENV}.${ECOM_PROD}.ramboo.live" --project $GCLOUD_PROJECT
         - run: node -e "$VERSION_KEY" >./lib/env.dart
           env:
@@ -99,8 +99,8 @@ jobs:
             cp build/Runner.ipa $ECOM_GIT_VERSION/
             node -e "$MAINFEST_SCRIPT" >$ECOM_GIT_VERSION/mainfest.plist
             node -e "$INDEX_SCRIPT" >/tmp/index.html
-            gsutil cp /tmp/index.html gs://ecom-static/$ECOM_ENV/$ECOM_PROD/index.html
-            gsutil rsync -R $ECOM_GIT_VERSION gs://ecom-static/$ECOM_ENV/$ECOM_PROD/$ECOM_GIT_VERSION
+            gsutil cp /tmp/index.html gs://cdn.static.ramboo.live/$ECOM_ENV/$ECOM_PROD/index.html
+            gsutil -m rsync -r -d $ECOM_GIT_VERSION gs://cdn.static.ramboo.live/$ECOM_ENV/$ECOM_PROD/$ECOM_GIT_VERSION
             gcloud compute url-maps invalidate-cdn-cache ha-dev-fans --async --path "/$ECOM_ENV/$ECOM_PROD/index.html"  --host "cdn.static.ramboo.live"  --project $GCLOUD_PROJECT
           env:
             TIME: "${{ steps.time.outputs.time }}"
