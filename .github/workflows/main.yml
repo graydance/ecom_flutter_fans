@@ -47,13 +47,13 @@ jobs:
           run: |
             gsutil -m rsync -r -d build/web/ gs://cdn.${ECOM_ENV}.${ECOM_PROD}.ramboo.live/
             gcloud compute url-maps invalidate-cdn-cache ha-dev-fans --async --path "/index.html" --async --host "cdn.${ECOM_ENV}.${ECOM_PROD}.ramboo.live" --project $GCLOUD_PROJECT
-        - name: upload to OSS
-          uses: manyuanrong/setup-ossutil@v2.0
+        - uses: manyuanrong/setup-ossutil@v2.0
           with:
             endpoint: "oss-cn-beijing.aliyuncs.com"
             access-key-id: ${{ secrets.OSS_ACCESS_KEY_ID }}
             access-key-secret: ${{ secrets.OSS_ACCESS_KEY_SECRET }}
-          - run: ossutil cp -rf build/web/ oss://$OSS_WEB_BUCKET/
+        - name: upload to OSS
+          run: ossutil cp -rf build/web/ oss://$OSS_WEB_BUCKET/
         - run: node -e "$VERSION_KEY" >./lib/env.dart
           env:
             ECOM_PLATFORM: 'android'
