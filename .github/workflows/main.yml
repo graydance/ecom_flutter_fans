@@ -18,13 +18,16 @@ jobs:
     steps:
         - name: Set OSS env
           run: echo "OSS_WEB_BUCKET=ecom-$ECOM_ENV-$ECOM_PROD" >> $GITHUB_ENV
+        - uses: melphi2020/setup-ossutil
+          with:
+            endpoint: "oss-cn-beijing.aliyuncs.com"
+            access-key-id: ${{ secrets.OSS_ACCESS_KEY_ID }}
+            access-key-secret: ${{ secrets.OSS_ACCESS_KEY_SECRET }}
         - name: Set up Cloud SDK
           uses: google-github-actions/setup-gcloud@master
           with:
             service_account_key: ${{ secrets.GOOGLE_KEYFILE }}
             export_default_credentials: true
-        - name: Use gcloud CLI
-          run: gcloud info
         - uses: actions/checkout@v2
         - uses: actions/setup-node@v1
           with:
@@ -47,11 +50,6 @@ jobs:
           run: |
             gsutil -m rsync -r -d build/web/ gs://cdn.${ECOM_ENV}.${ECOM_PROD}.ramboo.live/
             gcloud compute url-maps invalidate-cdn-cache ha-dev-fans --async --path "/index.html" --async --host "cdn.${ECOM_ENV}.${ECOM_PROD}.ramboo.live" --project $GCLOUD_PROJECT
-        - uses: manyuanrong/setup-ossutil@v2.0
-          with:
-            endpoint: "oss-cn-beijing.aliyuncs.com"
-            access-key-id: ${{ secrets.OSS_ACCESS_KEY_ID }}
-            access-key-secret: ${{ secrets.OSS_ACCESS_KEY_SECRET }}
         - name: upload to OSS
           run: ossutil cp -rf build/web/ oss://$OSS_WEB_BUCKET/
         - run: node -e "$VERSION_KEY" >./lib/env.dart
