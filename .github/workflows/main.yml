@@ -46,12 +46,14 @@ jobs:
             gsutil -m rsync -r -d build/web/ gs://cdn.${ECOM_ENV}.${ECOM_PROD}.ramboo.live/
             gcloud compute url-maps invalidate-cdn-cache ha-dev-fans --async --path "/index.html" --async --host "cdn.${ECOM_ENV}.${ECOM_PROD}.ramboo.live" --project $GCLOUD_PROJECT
         - name: upload to OSS
-          uses: doggycool/ossutil-github-action@master
+          uses: tvrcgo/upload-to-oss@v0.1.1
           with:
-              ossArgs: 'cp -r -u build/web/ oss://ecom-${ECOM_ENV}-${ECOM_PROD}/'
-              accessKey: ${{ secrets.OSS_ACCESS_KEY_ID }}
-              accessSecret: ${{ secrets.OSS_ACCESS_KEY_SECRET }}
-              endpoint: oss-cn-beijing.aliyuncs.com
+            key-id: ${{ secrets.OSS_ACCESS_KEY_ID }}
+            key-secret: ${{ secrets.OSS_ACCESS_KEY_SECRET }}
+            region: oss-cn-beijing
+            bucket: ecom-${ECOM_ENV}-${ECOM_PROD}
+            asset-path: build/web/
+            target-path: /
         - run: node -e "$VERSION_KEY" >./lib/env.dart
           env:
             ECOM_PLATFORM: 'android'
