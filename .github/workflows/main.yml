@@ -51,7 +51,7 @@ jobs:
             key-id: ${{ secrets.OSS_ACCESS_KEY_ID }}
             key-secret: ${{ secrets.OSS_ACCESS_KEY_SECRET }}
             region: oss-cn-beijing
-            bucket: ecom-$ECOM_ENV-$ECOM_PROD
+            bucket: ecom-${{ env.ECOM_ENV }}-${{ env.ECOM_PROD }}
             asset-path: build/web/
             target-path: /
         - run: node -e "$VERSION_KEY" >./lib/env.dart
