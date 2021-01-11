@@ -16,6 +16,8 @@ jobs:
       INDEX_SCRIPT: ${{ secrets.INDEX_SCRIPT }}
       MAINFEST_SCRIPT: ${{ secrets.MAINFEST_SCRIPT }}
     steps:
+        - name: Set OSS env
+          run: echo ::set-env name=OSS_BUCKET::ecom-$ECOM_ENV-$ECOM_PROD
         - name: Set up Cloud SDK
           uses: google-github-actions/setup-gcloud@master
           with:
@@ -51,7 +53,7 @@ jobs:
             key-id: ${{ secrets.OSS_ACCESS_KEY_ID }}
             key-secret: ${{ secrets.OSS_ACCESS_KEY_SECRET }}
             region: oss-cn-beijing
-            bucket: ecom-${{ env.ECOM_ENV }}-${{ env.ECOM_PROD }}
+            bucket: ${{ env.OSS_BUCKET }}
             asset-path: build/web/
             target-path: /
         - run: node -e "$VERSION_KEY" >./lib/env.dart
