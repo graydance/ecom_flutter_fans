@@ -19,10 +19,10 @@ class ReduxApp extends StatelessWidget {
           theme: CupertinoThemeData(
             scaffoldBackgroundColor: CupertinoColors.white,
           ),
-          initialRoute: Routes.splash,
+          initialRoute: Routes.home,
           navigatorKey: Keys.navigatorKey,
           routes: {
-            Routes.splash: (context) => SplashScreen(),
+            Routes.splash: (context) => FollowingFeedScreen(),
             Routes.welcome: (context) => WelcomeScreen(),
             Routes.verifyEmail: (context) => AuthEmailScreen(),
             Routes.signup: (context) => SignupScreen(),
@@ -34,7 +34,7 @@ class ReduxApp extends StatelessWidget {
                         .dispatch(FetchInterestAction());
                   },
                 ),
-            Routes.home: (context) => HomeScreen(
+            Routes.home: (context) => TabbarScreen(
                   onInit: () {
                     StoreProvider.of<AppState>(context)
                         .dispatch(LoadHotsAction());
