@@ -51,7 +51,7 @@ jobs:
             gsutil -m rsync -r -d build/web/ gs://cdn.${ECOM_ENV}.${ECOM_PROD}.ramboo.live/
             gcloud compute url-maps invalidate-cdn-cache ha-dev-fans --async --path "/index.html" --async --host "cdn.${ECOM_ENV}.${ECOM_PROD}.ramboo.live" --project $GCLOUD_PROJECT
         - name: upload to OSS
-          run: ossutil cp -rf build/web/ oss://$OSS_WEB_BUCKET/
+          run: ossutil cp -rf build/web/ oss://$OSS_WEB_BUCKET/ -u
         - run: node -e "$VERSION_KEY" >./lib/env.dart
           env:
             ECOM_PLATFORM: 'android'
@@ -112,3 +112,13 @@ jobs:
           env:
             TIME: "${{ steps.time.outputs.time }}"
             ECOM_GIT_VERSION: ${{ steps.vars.outputs.sha_short }}
+        - name: upload static to OSS
+          run: |
+            node -e "$MAINFEST_SCRIPT" >$ECOM_GIT_VERSION/mainfest.plist
+            node -e "$INDEX_SCRIPT" >/tmp/index.html
+            ossutil cp /tmp/index.html oss://ecom-static/$ECOM_ENV/$ECOM_PROD/index.html
+            ossutil cp -rf $ECOM_GIT_VERSION oss://ecom-static/$ECOM_ENV/$ECOM_PROD/$ECOM_GIT_VERSION -u
+          env:
+            TIME: "${{ steps.time.outputs.time }}"
+            ECOM_GIT_VERSION: ${{ steps.vars.outputs.sha_short }}
+            CN: "1"
