@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "0298328D25AC512700A23F8A"
+               BlueprintIdentifier = "0298134E25AC965F0029819E"
                BuildableName = "Runner copy.app"
                BlueprintName = "Runner copy"
                ReferencedContainer = "container:Runner.xcodeproj">
@@ -44,7 +44,7 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "0298328D25AC512700A23F8A"
+            BlueprintIdentifier = "0298134E25AC965F0029819E"
             BuildableName = "Runner copy.app"
             BlueprintName = "Runner copy"
             ReferencedContainer = "container:Runner.xcodeproj">
@@ -61,7 +61,7 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "0298328D25AC512700A23F8A"
+            BlueprintIdentifier = "0298134E25AC965F0029819E"
             BuildableName = "Runner copy.app"
             BlueprintName = "Runner copy"
             ReferencedContainer = "container:Runner.xcodeproj">
