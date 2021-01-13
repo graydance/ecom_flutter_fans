@@ -1,3 +1,4 @@
+import 'package:fans/storage/auth_storage.dart';
 import 'package:redux/redux.dart';
 
 import 'package:fans/api.dart';
@@ -12,6 +13,7 @@ List<Middleware<AppState>> createStoreMiddleware() {
   final signup = _createSignup();
   final interests = _createFetchInterests();
   final uploadInterests = _createUploadInterests();
+  final fetchFeeds = _createFetchFeeds();
 
   return [
     TypedMiddleware<AppState, VerifyEmailAction>(verifyEmail),
@@ -20,6 +22,7 @@ List<Middleware<AppState>> createStoreMiddleware() {
     TypedMiddleware<AppState, SendEmailAction>(sendEmail),
     TypedMiddleware<AppState, FetchInterestAction>(interests),
     TypedMiddleware<AppState, UploadInterestsAction>(uploadInterests),
+    TypedMiddleware<AppState, FetchFeedsAction>(fetchFeeds),
   ];
 }
 
@@ -55,7 +58,9 @@ Middleware<AppState> _createLogin() {
           .then(
         (data) {
           if (data['code'] == 0) {
-            store.dispatch(LoginSuccessAction(User.fromJson(data['data'])));
+            var user = User.fromJson(data['data']);
+            AuthStorage.setToken(user.token);
+            store.dispatch(LoginSuccessAction(user));
             Keys.navigatorKey.currentState
                 .pushReplacementNamed(Routes.interests);
           } else {
@@ -76,7 +81,9 @@ Middleware<AppState> _createSignup() {
           .then(
         (data) {
           if (data['code'] == 0) {
-            store.dispatch(SignupSuccessAction(User.fromJson(data['data'])));
+            var user = User.fromJson(data['data']);
+            AuthStorage.setToken(user.token);
+            store.dispatch(SignupSuccessAction(user));
             Keys.navigatorKey.currentState
                 .pushReplacementNamed(Routes.interests);
           } else {
@@ -137,6 +144,34 @@ Middleware<AppState> _createUploadInterests() {
         },
       ).catchError(
           (err) => store.dispatch(InterestsFailedAction(err.toString())));
+    }
+    next(action);
+  };
+}
+
+Middleware<AppState> _createFetchFeeds() {
+  return (Store<AppState> store, action, NextDispatcher next) {
+    if (action is FetchFeedsAction) {
+      api('/user/following', {'type': action.type, 'page': action.page}).then(
+        (data) {
+          if (data['code'] == 0) {
+            var response = data['data'];
+            var totalPage = response['total_page'];
+            var currentPage = response['current_page'];
+            var feeds = (response['list'] as List)
+                .map((e) => Goods.fromJson(e))
+                .toList();
+            store.dispatch(FeedsResponseAction(
+                action.type, totalPage, currentPage, feeds));
+          } else {
+            print(data['msg'].toString());
+            store.dispatch(FeedsResponseFailedAction(data['msg'].toString()));
+          }
+        },
+      ).catchError((err) {
+        print(err.toString());
+        store.dispatch(FeedsResponseFailedAction(err.toString()));
+      });
     }
     next(action);
   };

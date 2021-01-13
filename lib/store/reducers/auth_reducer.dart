@@ -1,8 +1,9 @@
+import 'package:redux/redux.dart';
+
 import 'package:fans/store/actions.dart';
 import 'package:fans/store/states.dart';
 import 'package:fans/store/states/login_signup_state.dart';
 import 'package:fans/store/states/verify_email_state.dart';
-import 'package:redux/redux.dart';
 
 final verifyEmailReducer = combineReducers<VerifyEmailState>([
   TypedReducer<VerifyEmailState, LocalVerifyEmailAction>(

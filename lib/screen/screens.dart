@@ -5,4 +5,3 @@ export './sign_up_screen.dart';
 export './login_screen.dart';
 export './forgot_password_screen.dart';
 export './tabbar_screen.dart';
-export './feed_list_screen.dart';

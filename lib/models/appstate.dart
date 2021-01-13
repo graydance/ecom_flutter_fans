@@ -7,6 +7,7 @@ class AppState {
   final VerifyEmailState verifyEmail;
   final LoginOrSignupState auth;
   final InterestListState interests;
+  final HomeState feeds;
 
   final bool isLoading;
   final String error;
@@ -15,6 +16,7 @@ class AppState {
     this.verifyEmail = const VerifyEmailState(),
     this.auth = const LoginOrSignupState(),
     this.interests = const InterestListState(),
+    this.feeds = const HomeState(),
     this.isLoading = false,
     this.error,
   });

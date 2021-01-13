@@ -1,3 +1,4 @@
+import 'package:fans/storage/auth_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
@@ -19,10 +20,10 @@ class ReduxApp extends StatelessWidget {
             scaffoldBackgroundColor: Colors.white,
             primaryColor: Colors.white,
           ),
-          initialRoute: Routes.home,
+          initialRoute: Routes.splash,
           navigatorKey: Keys.navigatorKey,
           routes: {
-            Routes.splash: (context) => FeedListScreen(),
+            Routes.splash: (context) => SplashScreen(),
             Routes.welcome: (context) => WelcomeScreen(),
             Routes.verifyEmail: (context) => AuthEmailScreen(),
             Routes.signup: (context) => SignupScreen(),

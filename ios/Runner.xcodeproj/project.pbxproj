@@ -9,10 +9,6 @@
 /* Begin PBXBuildFile section */
 		0298135225AC965F0029819E /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74858FAE1ED2DC5600515810 /* AppDelegate.swift */; };
 		0298135325AC965F0029819E /* GeneratedPluginRegistrant.m in Sources */ = {isa = PBXBuildFile; fileRef = 1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */; };
-		0298135525AC965F0029819E /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DE17B907DB65D1780CBC3843 /* Pods_Runner.framework */; };
-		0298135625AC965F0029819E /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DE17B907DB65D1780CBC3843 /* Pods_Runner.framework */; };
-		0298135725AC965F0029819E /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DE17B907DB65D1780CBC3843 /* Pods_Runner.framework */; };
-		0298135825AC965F0029819E /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DE17B907DB65D1780CBC3843 /* Pods_Runner.framework */; };
 		0298135A25AC965F0029819E /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
 		0298135B25AC965F0029819E /* AppFrameworkInfo.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */; };
 		0298135C25AC965F0029819E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
@@ -21,6 +17,7 @@
 		1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */ = {isa = PBXBuildFile; fileRef = 1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */; };
 		1B6AE1F371EDE5EA147D8061 /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DE17B907DB65D1780CBC3843 /* Pods_Runner.framework */; };
 		3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */; };
+		67956B48C36592AFD8459985 /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DE17B907DB65D1780CBC3843 /* Pods_Runner.framework */; };
 		74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74858FAE1ED2DC5600515810 /* AppDelegate.swift */; };
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
@@ -79,10 +76,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0298135525AC965F0029819E /* Pods_Runner.framework in Frameworks */,
-				0298135625AC965F0029819E /* Pods_Runner.framework in Frameworks */,
-				0298135725AC965F0029819E /* Pods_Runner.framework in Frameworks */,
-				0298135825AC965F0029819E /* Pods_Runner.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -94,6 +87,7 @@
 				1B6AE1F371EDE5EA147D8061 /* Pods_Runner.framework in Frameworks */,
 				F7B8594DF4774FA1042BB501 /* Pods_Runner.framework in Frameworks */,
 				08F21D4F4C46E90CFA0EDBF7 /* Pods_Runner.framework in Frameworks */,
+				67956B48C36592AFD8459985 /* Pods_Runner.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -172,14 +166,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 0298136125AC965F0029819E /* Build configuration list for PBXNativeTarget "Runner copy" */;
 			buildPhases = (
-				0298134F25AC965F0029819E /* [CP] Check Pods Manifest.lock */,
 				0298135025AC965F0029819E /* Run Script */,
 				0298135125AC965F0029819E /* Sources */,
 				0298135425AC965F0029819E /* Frameworks */,
 				0298135925AC965F0029819E /* Resources */,
 				0298135E25AC965F0029819E /* Embed Frameworks */,
 				0298135F25AC965F0029819E /* Thin Binary */,
-				0298136025AC965F0029819E /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -272,28 +264,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		0298134F25AC965F0029819E /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-Runner-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
 		0298135025AC965F0029819E /* Run Script */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -321,23 +291,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "/bin/sh \"$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh\" embed_and_thin\n";
-		};
-		0298136025AC965F0029819E /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
 		};
 		3B06AD1E1E4923F5004D2608 /* Thin Binary */ = {
 			isa = PBXShellScriptBuildPhase;
