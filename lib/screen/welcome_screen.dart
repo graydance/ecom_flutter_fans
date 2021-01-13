@@ -1,7 +1,8 @@
+import 'package:flutter/material.dart';
+
 import 'package:fans/app.dart';
-import 'package:fans/screen/components/default_button.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:fans/screen/components/auth_hero_logo.dart';
+import 'package:fans/screen/components/default_button.dart';
 
 class WelcomeScreen extends StatefulWidget {
   WelcomeScreen({Key key}) : super(key: key);
@@ -13,8 +14,8 @@ class WelcomeScreen extends StatefulWidget {
 class _WelcomeScreenState extends State<WelcomeScreen> {
   @override
   Widget build(BuildContext context) {
-    return CupertinoPageScaffold(
-      child: Container(
+    return Scaffold(
+      body: Container(
         padding: EdgeInsets.symmetric(horizontal: 20),
         decoration: BoxDecoration(
           image: DecorationImage(
@@ -36,7 +37,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                   Text(
                     'SLOGAN',
                     style: TextStyle(
-                        color: CupertinoColors.white,
+                        color: Colors.white,
                         fontSize: 16,
                         fontWeight: FontWeight.w600),
                   ),

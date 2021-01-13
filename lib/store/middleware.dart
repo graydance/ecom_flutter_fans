@@ -1,4 +1,4 @@
-import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:fans/storage/auth_storage.dart';
 import 'package:redux/redux.dart';
 
 import 'package:fans/api.dart';
@@ -13,6 +13,7 @@ List<Middleware<AppState>> createStoreMiddleware() {
   final signup = _createSignup();
   final interests = _createFetchInterests();
   final uploadInterests = _createUploadInterests();
+  final fetchFeeds = _createFetchFeeds();
 
   return [
     TypedMiddleware<AppState, VerifyEmailAction>(verifyEmail),
@@ -21,17 +22,15 @@ List<Middleware<AppState>> createStoreMiddleware() {
     TypedMiddleware<AppState, SendEmailAction>(sendEmail),
     TypedMiddleware<AppState, FetchInterestAction>(interests),
     TypedMiddleware<AppState, UploadInterestsAction>(uploadInterests),
+    TypedMiddleware<AppState, FetchFeedsAction>(fetchFeeds),
   ];
 }
 
 Middleware<AppState> _createVerifyEmail() {
   return (Store<AppState> store, action, NextDispatcher next) {
     if (action is VerifyEmailAction) {
-      EasyLoading.show();
       var email = action.email;
-      api('/user/login', {'email': email, 'password': ''})
-          .whenComplete(() => EasyLoading.dismiss())
-          .then(
+      api('/user/login', {'email': email, 'password': ''}).then(
         (data) {
           var code = data['code'];
           if (code == 401) {
@@ -43,10 +42,10 @@ Middleware<AppState> _createVerifyEmail() {
             store.dispatch(VerifyEmailSuccessAction(email));
             Keys.navigatorKey.currentState.pushReplacementNamed(Routes.login);
           } else {
-            EasyLoading.showToast(data['msg'].toString());
+            print(data['msg'].toString());
           }
         },
-      ).catchError((error) => EasyLoading.showToast(error.toString()));
+      ).catchError((error) => print(error.toString()));
     }
     next(action);
   };
@@ -55,21 +54,21 @@ Middleware<AppState> _createVerifyEmail() {
 Middleware<AppState> _createLogin() {
   return (Store<AppState> store, action, NextDispatcher next) {
     if (action is LoginAction) {
-      EasyLoading.show();
       api('/user/login', {'email': action.email, 'password': action.password})
-          .whenComplete(() => EasyLoading.dismiss())
           .then(
         (data) {
           if (data['code'] == 0) {
-            store.dispatch(LoginSuccessAction(User.fromJson(data['data'])));
+            var user = User.fromJson(data['data']);
+            AuthStorage.setToken(user.token);
+            store.dispatch(LoginSuccessAction(user));
             Keys.navigatorKey.currentState
                 .pushReplacementNamed(Routes.interests);
           } else {
             // store.dispatch(LoginFailureAction(data['msg'].toString()));
-            EasyLoading.showToast(data['msg'].toString());
+            print(data['msg'].toString());
           }
         },
-      ).catchError((err) => EasyLoading.showToast(err.toString()));
+      ).catchError((err) => print(err.toString()));
     }
     next(action);
   };
@@ -78,21 +77,21 @@ Middleware<AppState> _createLogin() {
 Middleware<AppState> _createSignup() {
   return (Store<AppState> store, action, NextDispatcher next) {
     if (action is SignupAction) {
-      EasyLoading.show();
       api('/user/login', {'email': action.email, 'password': action.password})
-          .whenComplete(() => EasyLoading.dismiss())
           .then(
         (data) {
           if (data['code'] == 0) {
-            store.dispatch(SignupSuccessAction(User.fromJson(data['data'])));
+            var user = User.fromJson(data['data']);
+            AuthStorage.setToken(user.token);
+            store.dispatch(SignupSuccessAction(user));
             Keys.navigatorKey.currentState
                 .pushReplacementNamed(Routes.interests);
           } else {
-            EasyLoading.showToast(data['msg'].toString());
+            print(data['msg'].toString());
             // store.dispatch(SignupFailureAction(data['msg'].toString()));
           }
         },
-      ).catchError((err) => EasyLoading.showToast(err.toString()));
+      ).catchError((err) => print(err.toString()));
     }
     next(action);
   };
@@ -145,6 +144,34 @@ Middleware<AppState> _createUploadInterests() {
         },
       ).catchError(
           (err) => store.dispatch(InterestsFailedAction(err.toString())));
+    }
+    next(action);
+  };
+}
+
+Middleware<AppState> _createFetchFeeds() {
+  return (Store<AppState> store, action, NextDispatcher next) {
+    if (action is FetchFeedsAction) {
+      api('/user/following', {'type': action.type, 'page': action.page}).then(
+        (data) {
+          if (data['code'] == 0) {
+            var response = data['data'];
+            var totalPage = response['total_page'];
+            var currentPage = response['current_page'];
+            var feeds = (response['list'] as List)
+                .map((e) => Goods.fromJson(e))
+                .toList();
+            store.dispatch(FeedsResponseAction(
+                action.type, totalPage, currentPage, feeds));
+          } else {
+            print(data['msg'].toString());
+            store.dispatch(FeedsResponseFailedAction(data['msg'].toString()));
+          }
+        },
+      ).catchError((err) {
+        print(err.toString());
+        store.dispatch(FeedsResponseFailedAction(err.toString()));
+      });
     }
     next(action);
   };

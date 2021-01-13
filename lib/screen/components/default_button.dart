@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
 class DefaultButton extends StatelessWidget {
   const DefaultButton({
@@ -14,14 +14,14 @@ class DefaultButton extends StatelessWidget {
     return SizedBox(
       width: double.infinity,
       height: 50,
-      child: CupertinoButton(
-        color: CupertinoColors.white.withAlpha(56),
+      child: FlatButton(
+        color: Colors.white54,
         onPressed: press,
         child: Text(
           text,
           style: TextStyle(
             fontSize: 18,
-            color: CupertinoColors.white,
+            color: Colors.white,
           ),
         ),
       ),

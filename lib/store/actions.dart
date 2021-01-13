@@ -1,5 +1,4 @@
 import 'package:fans/models/models.dart';
-import 'package:flutter/foundation.dart';
 
 class StartLoadingAction {}
 
@@ -109,24 +108,34 @@ class UploadInterestsAction {
   UploadInterestsAction(this.idList);
 }
 
-// Other
+class FetchFeedsAction {
+  /// 类型选择( 0:following , 1:for you)
+  final int type;
+  final int page;
 
-class LoadHotsAction {}
-
-class HotsNotLoadedAction {
-  final String msg;
-  HotsNotLoadedAction(this.msg);
+  FetchFeedsAction(this.type, this.page);
 }
 
-class HotsLoadedAction {
-  final List<Idol> hotIdols;
-  final List<Goods> hotGoods;
-  final int cart;
+class FeedsResponseAction {
+  /// 类型选择( 0:following , 1:for you)
+  final int type;
+  final int totalPage;
+  final int currentPage;
+  final List<Goods> feeds;
 
-  HotsLoadedAction(this.hotIdols, this.hotGoods, this.cart);
+  FeedsResponseAction(this.type, this.totalPage, this.currentPage, this.feeds);
+}
 
-  @override
-  String toString() {
-    return 'HotsLoadedAction{hotIdols: $hotIdols hotGoods: $hotGoods cart: $cart}';
-  }
+class FeedsResponseFailedAction {
+  final String error;
+
+  FeedsResponseFailedAction(this.error);
+}
+
+class FetchRecommendUsersAction {}
+
+class RecommendUsersResponseAction {
+  final List<User> users;
+
+  RecommendUsersResponseAction(this.users);
 }
