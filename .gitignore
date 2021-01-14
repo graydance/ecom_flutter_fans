@@ -50,4 +50,4 @@ coverage/
 lib/env.dart
 
 # R file
-lib/r.g.dart
+# lib/r.g.dart
