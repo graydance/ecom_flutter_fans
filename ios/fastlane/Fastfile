@@ -9,6 +9,7 @@ lane :beta do
   )
   match(type: "adhoc", readonly: is_ci, keychain_name: "CI", keychain_password:'123456')
   gym(
+    scheme: "Runner",
     output_directory: '../build',
     export_options: {
       method: "ad-hoc", # 这可以不指定
