@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:fans/store/actions.dart';
 import 'package:fans/store/states.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:redux/redux.dart';
 
 import 'package:fans/models/models.dart';
@@ -75,14 +78,14 @@ class _HomeScreenState extends State<HomeScreen>
                   viewModel: model.followingViewModel,
                   onInit: () {
                     StoreProvider.of<AppState>(context)
-                        .dispatch(FetchFeedsAction(0, 1));
+                        .dispatch(FetchFeedsAction(0, 1, Completer()));
                   },
                 ),
                 FeedListScreen(
                   viewModel: model.foryouViewModel,
                   onInit: () {
                     StoreProvider.of<AppState>(context)
-                        .dispatch(FetchFeedsAction(1, 1));
+                        .dispatch(FetchFeedsAction(1, 1, Completer()));
                   },
                 ),
               ],
@@ -109,6 +112,8 @@ class FeedListScreen extends StatefulWidget {
 }
 
 class _FeedListScreenState extends State<FeedListScreen> {
+  final _refreshController = RefreshController(initialRefresh: false);
+
   @override
   void initState() {
     if (widget.onInit != null) widget.onInit();
@@ -119,59 +124,79 @@ class _FeedListScreenState extends State<FeedListScreen> {
   Widget build(BuildContext context) {
     return Container(
       color: Color(0xfff8f8f8),
-      child: ListView.builder(
-        itemBuilder: (ctx, i) {
-          if (i == 0 && widget.viewModel.showRecommends) {
-            return Padding(
-              padding: const EdgeInsets.only(top: 8),
-              child: RecommendListBar(),
-              // Column(
-              //   children: [
-              // Padding(
-              //   padding: const EdgeInsets.only(top: 12.0),
-              //   child: Text(
-              //     'Start by following your favorite stores!',
-              //     style: TextStyle(
-              //       color: Color(0xff0F1015),
-              //       fontSize: 16,
-              //       fontWeight: FontWeight.bold,
-              //     ),
-              //   ),
-              // ),
+      child: SmartRefresher(
+        controller: _refreshController,
+        onRefresh: () async {
+          var action = FetchFeedsAction(widget.viewModel.type, 1, Completer());
+          StoreProvider.of<AppState>(context).dispatch(action);
+          await action.completer.future;
+          _refreshController.refreshCompleted();
+        },
+        onLoading: () async {
+          var type = widget.viewModel.type;
+          var currentPage = widget.viewModel.model.currentPage;
+          var action = FetchFeedsAction(type, currentPage + 1, Completer());
+          StoreProvider.of<AppState>(context).dispatch(action);
+          await action.completer.future;
+          _refreshController.loadComplete();
+        },
+        enablePullDown: true,
+        enablePullUp: true,
+        child: ListView.builder(
+          itemBuilder: (ctx, i) {
+            if (i == 0 && widget.viewModel.showRecommends) {
+              return Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: RecommendListBar(),
+                // Column(
+                //   children: [
+                // Padding(
+                //   padding: const EdgeInsets.only(top: 12.0),
+                //   child: Text(
+                //     'Start by following your favorite stores!',
+                //     style: TextStyle(
+                //       color: Color(0xff0F1015),
+                //       fontSize: 16,
+                //       fontWeight: FontWeight.bold,
+                //     ),
+                //   ),
+                // ),
 
-              // ],
-            );
-          }
-          if (i == 1 && widget.viewModel.showRecommends) {
-            return Padding(
-              padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
-              child: Text(
-                'Recommended for you',
-                style: TextStyle(
-                  color: Color(0xff0F1015),
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
+                // ],
+              );
+            }
+            if (i == 1 && widget.viewModel.showRecommends) {
+              return Padding(
+                padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
+                child: Text(
+                  'Recommended for you',
+                  style: TextStyle(
+                    color: Color(0xff0F1015),
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
+              );
+            }
+
+            var childWidget;
+            if (i % 2 == 0) {
+              childWidget = ProductItem();
+            } else {
+              childWidget = ActivityItem();
+            }
+            return Padding(
+              padding: const EdgeInsets.only(top: 10.0),
+              child: Container(
+                color: Colors.white,
+                padding:
+                    const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+                child: childWidget,
               ),
             );
-          }
-
-          var childWidget;
-          if (i % 2 == 0) {
-            childWidget = ProductItem();
-          } else {
-            childWidget = ActivityItem();
-          }
-          return Padding(
-            padding: const EdgeInsets.only(top: 10.0),
-            child: Container(
-              color: Colors.white,
-              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
-              child: childWidget,
-            ),
-          );
-        },
-        itemCount: 20,
+          },
+          itemCount: 10,
+        ),
       ),
     );
   }
@@ -719,42 +744,32 @@ class _ViewModel {
 class _FeedViewModel {
   final bool isLoading;
   final String error;
+  final int type;
   final bool showRecommends;
   final FeedsState model;
-  final VoidCallback onRefresh;
-  final Function(int) loadMore;
 
   _FeedViewModel({
     this.isLoading = false,
     this.error = '',
+    this.type = 0,
     this.showRecommends = false,
     this.model,
-    this.onRefresh,
-    this.loadMore,
   });
 
   static _FeedViewModel fromStore(Store<AppState> store, int type) {
-    _onRefresh() {
-      store.dispatch(FetchFeedsAction(type, 1));
-    }
-
-    _loadMore(int page) {
-      store.dispatch(FetchFeedsAction(type, page));
-    }
-
     if (type == 0) {
-      return _FeedViewModel(
+      var model = _FeedViewModel(
+        type: type,
         model: store.state.feeds.followingFeeds,
         showRecommends: true,
-        onRefresh: _onRefresh,
-        loadMore: _loadMore,
       );
+      return model;
     }
 
-    return _FeedViewModel(
+    var model = _FeedViewModel(
+      type: type,
       model: store.state.feeds.forYouFeeds,
-      onRefresh: _onRefresh,
-      loadMore: _loadMore,
     );
+    return model;
   }
 }

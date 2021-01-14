@@ -152,25 +152,32 @@ Middleware<AppState> _createUploadInterests() {
 Middleware<AppState> _createFetchFeeds() {
   return (Store<AppState> store, action, NextDispatcher next) {
     if (action is FetchFeedsAction) {
+      store.dispatch(FetchFeedsStartLoadingAction(action.type));
       api('/user/following', {'type': action.type, 'page': action.page}).then(
         (data) {
           if (data['code'] == 0) {
             var response = data['data'];
             var totalPage = response['total_page'];
             var currentPage = response['current_page'];
-            var feeds = (response['list'] as List)
-                .map((e) => Goods.fromJson(e))
-                .toList();
+            var list = response['list'] as List;
+            var feeds = list.map((e) => Goods.fromJson(e)).toList();
+
+            action.completer.complete();
             store.dispatch(FeedsResponseAction(
                 action.type, totalPage, currentPage, feeds));
           } else {
             print(data['msg'].toString());
-            store.dispatch(FeedsResponseFailedAction(data['msg'].toString()));
+
+            action.completer.complete();
+            store.dispatch(
+                FeedsResponseFailedAction(action.type, data['msg'].toString()));
           }
         },
       ).catchError((err) {
         print(err.toString());
-        store.dispatch(FeedsResponseFailedAction(err.toString()));
+
+        action.completer.completeError(err);
+        store.dispatch(FeedsResponseFailedAction(action.type, err.toString()));
       });
     }
     next(action);
