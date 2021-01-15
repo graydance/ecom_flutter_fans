@@ -129,16 +129,28 @@ class _FeedListScreenState extends State<FeedListScreen> {
         onRefresh: () async {
           var action = FetchFeedsAction(widget.viewModel.type, 1, Completer());
           StoreProvider.of<AppState>(context).dispatch(action);
-          await action.completer.future;
-          _refreshController.refreshCompleted();
+          try {
+            await action.completer.future;
+            _refreshController.refreshCompleted();
+          } catch (e) {
+            _refreshController.refreshFailed();
+          }
         },
         onLoading: () async {
           var type = widget.viewModel.type;
           var currentPage = widget.viewModel.model.currentPage;
           var action = FetchFeedsAction(type, currentPage + 1, Completer());
           StoreProvider.of<AppState>(context).dispatch(action);
-          await action.completer.future;
-          _refreshController.loadComplete();
+          try {
+            bool isNoMore = await action.completer.future;
+            if (isNoMore) {
+              _refreshController.loadNoData();
+            } else {
+              _refreshController.loadComplete();
+            }
+          } catch (e) {
+            _refreshController.loadFailed();
+          }
         },
         enablePullDown: true,
         enablePullUp: true,

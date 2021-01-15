@@ -162,7 +162,8 @@ Middleware<AppState> _createFetchFeeds() {
             var list = response['list'] as List;
             List<Goods> feeds = list.map((e) => Goods.fromJson(e)).toList();
 
-            action.completer.complete();
+            bool isNoMore = feeds.isEmpty || currentPage == totalPage;
+            action.completer.complete(isNoMore);
             store.dispatch(FeedsResponseAction(
                 action.type, totalPage, currentPage, feeds));
           } else {
