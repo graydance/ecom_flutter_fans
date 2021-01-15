@@ -19,7 +19,7 @@ class ReduxApp extends StatelessWidget {
             scaffoldBackgroundColor: Colors.white,
             primaryColor: Colors.white,
           ),
-          initialRoute: Routes.searchByTag,
+          initialRoute: Routes.splash,
           navigatorKey: Keys.navigatorKey,
           routes: {
             Routes.splash: (context) => SplashScreen(),
