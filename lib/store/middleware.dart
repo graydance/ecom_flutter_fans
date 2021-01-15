@@ -160,7 +160,7 @@ Middleware<AppState> _createFetchFeeds() {
             var totalPage = response['total_page'];
             var currentPage = response['current_page'];
             var list = response['list'] as List;
-            var feeds = list.map((e) => Goods.fromJson(e)).toList();
+            List<Goods> feeds = list.map((e) => Goods.fromJson(e)).toList();
 
             action.completer.complete();
             store.dispatch(FeedsResponseAction(
@@ -168,7 +168,7 @@ Middleware<AppState> _createFetchFeeds() {
           } else {
             print(data['msg'].toString());
 
-            action.completer.complete();
+            action.completer.completeError(data['msg'].toString());
             store.dispatch(
                 FeedsResponseFailedAction(action.type, data['msg'].toString()));
           }

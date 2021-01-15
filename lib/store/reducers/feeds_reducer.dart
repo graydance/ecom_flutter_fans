@@ -1,3 +1,4 @@
+import 'package:fans/models/models.dart';
 import 'package:redux/redux.dart';
 
 import 'package:fans/store/actions.dart';
@@ -26,9 +27,9 @@ HomeState _setLoading(HomeState state, FetchFeedsStartLoadingAction action) {
 
 HomeState _setFeedsList(HomeState state, FeedsResponseAction action) {
   if (action.type == 0) {
-    var list = action.currentPage == 1
+    List<Goods> list = action.currentPage == 1
         ? action.feeds
-        : [state.followingFeeds, ...action.feeds];
+        : [...state.followingFeeds.list, ...action.feeds];
     return state.copyWith(
         followingFeeds: state.followingFeeds.copyWith(
       list: list,
@@ -39,7 +40,7 @@ HomeState _setFeedsList(HomeState state, FeedsResponseAction action) {
   if (action.type == 1) {
     var list = action.currentPage == 1
         ? action.feeds
-        : [state.forYouFeeds, ...action.feeds];
+        : [...state.forYouFeeds.list, ...action.feeds];
     return state.copyWith(
         forYouFeeds: state.forYouFeeds.copyWith(
       list: list,
