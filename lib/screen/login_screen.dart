@@ -1,9 +1,9 @@
-import 'package:fans/r.g.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
 
 import 'package:fans/models/appstate.dart';
+import 'package:fans/r.g.dart';
 import 'package:fans/screen/components/default_button.dart';
 import 'package:fans/store/actions.dart';
 

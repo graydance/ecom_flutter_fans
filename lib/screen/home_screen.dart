@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:fans/app.dart';
+import 'package:fans/screen/components/tag_button.dart';
 import 'package:fans/store/actions.dart';
 import 'package:fans/store/states.dart';
 import 'package:flutter/material.dart';
@@ -226,7 +228,7 @@ class RecommendListBar extends StatelessWidget {
         scrollDirection: Axis.horizontal,
         itemBuilder: (ctx, i) {
           return RecommendItem(
-            image: testLinks[0],
+            image: _testLinks[0],
             name: _users[0],
             tag: '#tag tag tag tag tag',
             desc: '$_users',
@@ -374,21 +376,21 @@ class _ProductItemState extends State<ProductItem> {
           ),
         ),
         SizedBox(
-          height: 214,
+          height: 300,
           child: ClipRRect(
             borderRadius: BorderRadius.circular(4.0),
             child: Container(
-              color: Colors.black26,
+              color: Color(0xfff8f8f8),
               child: Stack(
                 children: [
                   MediaCarouselWidget(
                     items: [
-                      ...videoLinks.map((url) {
+                      ..._videoLinks.map((url) {
                         return VideoPlayerWideget(
                           url: url,
                         );
                       }).toList(),
-                      ...testLinks.map((url) {
+                      ..._testLinks.map((url) {
                         return Image(
                           fit: BoxFit.cover,
                           image: NetworkImage(url),
@@ -511,22 +513,20 @@ class _ProductItemState extends State<ProductItem> {
           padding: const EdgeInsets.only(top: 4.0),
           child: Row(
             children: [
-              Text(
-                '#tag1',
-                style: TextStyle(
-                  color: Color(0xff48B6EF),
-                  fontSize: 12,
-                ),
+              TagButton(
+                onPressed: () {
+                  Keys.navigatorKey.currentState.pushNamed(Routes.searchByTag);
+                },
+                text: '#tag1',
               ),
               SizedBox(
                 width: 4,
               ),
-              Text(
-                '#lifestyle',
-                style: TextStyle(
-                  color: Color(0xff48B6EF),
-                  fontSize: 12,
-                ),
+              TagButton(
+                onPressed: () {
+                  Keys.navigatorKey.currentState.pushNamed(Routes.searchByTag);
+                },
+                text: '#lifestyle',
               ),
             ],
           ),
@@ -631,7 +631,7 @@ class _ActivityItemState extends State<ActivityItem> {
   }
 
   _buildGridItems() {
-    var list = testLinks..shuffle();
+    var list = _testLinks..shuffle();
     return list
         .map((url) => ClipRRect(
               borderRadius: BorderRadius.circular(4),
@@ -697,7 +697,7 @@ class _AdItemState extends State<AdItem> {
             child: Container(
                 height: 200,
                 child: MediaCarouselWidget(
-                    items: testLinks.map((url) {
+                    items: _testLinks.map((url) {
                   return Image(
                     fit: BoxFit.cover,
                     image: NetworkImage(url),
@@ -710,16 +710,16 @@ class _AdItemState extends State<AdItem> {
   }
 }
 
-final testLinks = [
-  'https://www.nio.cn/ecs/prod/s3fs-public/mynio-2021/images/et7/et7-hero-desktop.jpg',
+final _testLinks = [
   'https://www.nio.cn/ecs/prod/s3fs-public/ec6/hero-background-mobile.jpg',
   'https://www.nio.cn/ecs/prod/s3fs-public/mynio-2021/images/et7/design/et7-hero-design-aquila-desktop.jpg',
   'https://www.nio.cn/ecs/prod/s3fs-public/inline-images/es8-202004/es8-hero-pc.jpg',
   'https://tesla-cdn.thron.cn/delivery/public/image/tesla/3304be3b-dd0a-4128-9c26-eb61c0b98d61/bvlatuR/std/800x2100/Mobile-ModelY',
-  'https://tesla-cdn.thron.cn/delivery/public/image/tesla/011f6961-d539-48e9-b714-c154bfbaaf8b/bvlatuR/std/800x2100/homepage-model-3-hero-mobile-cn'
+  'https://tesla-cdn.thron.cn/delivery/public/image/tesla/011f6961-d539-48e9-b714-c154bfbaaf8b/bvlatuR/std/800x2100/homepage-model-3-hero-mobile-cn',
+  'https://www.nio.cn/ecs/prod/s3fs-public/mynio-2021/images/et7/et7-hero-desktop.jpg',
 ];
 
-final videoLinks = [
+final _videoLinks = [
   'https://www.runoob.com/try/demo_source/mov_bbb.mp4',
   'https://media.w3.org/2010/05/sintel/trailer.mp4',
   'http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4',

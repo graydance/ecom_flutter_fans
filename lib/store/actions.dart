@@ -157,11 +157,16 @@ class SearchByTagAction {
   final int page;
   final String tag;
   final int limit;
+  final Completer completer;
 
   SearchByTagAction(
-    this.userId,
-    this.page,
-    this.tag,
-    this.limit,
-  );
+      {this.userId, this.page, this.tag, this.limit, this.completer});
+}
+
+class SearchByTagResponseAction {
+  final int totalPage;
+  final int currentPage;
+  final List<Goods> feeds;
+
+  SearchByTagResponseAction(this.totalPage, this.currentPage, this.feeds);
 }
