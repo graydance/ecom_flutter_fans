@@ -14,6 +14,7 @@ List<Middleware<AppState>> createStoreMiddleware() {
   final interests = _createFetchInterests();
   final uploadInterests = _createUploadInterests();
   final fetchFeeds = _createFetchFeeds();
+  final searchByTag = _createSearchByTag();
 
   return [
     TypedMiddleware<AppState, VerifyEmailAction>(verifyEmail),
@@ -23,6 +24,7 @@ List<Middleware<AppState>> createStoreMiddleware() {
     TypedMiddleware<AppState, FetchInterestAction>(interests),
     TypedMiddleware<AppState, UploadInterestsAction>(uploadInterests),
     TypedMiddleware<AppState, FetchFeedsAction>(fetchFeeds),
+    TypedMiddleware<AppState, SearchByTagAction>(searchByTag),
   ];
 }
 
@@ -152,25 +154,70 @@ Middleware<AppState> _createUploadInterests() {
 Middleware<AppState> _createFetchFeeds() {
   return (Store<AppState> store, action, NextDispatcher next) {
     if (action is FetchFeedsAction) {
+      store.dispatch(FetchFeedsStartLoadingAction(action.type));
       api('/user/following', {'type': action.type, 'page': action.page}).then(
         (data) {
           if (data['code'] == 0) {
             var response = data['data'];
             var totalPage = response['total_page'];
             var currentPage = response['current_page'];
-            var feeds = (response['list'] as List)
-                .map((e) => Goods.fromJson(e))
-                .toList();
+            var list = response['list'] as List;
+            List<Goods> feeds = list.map((e) => Goods.fromJson(e)).toList();
+
+            bool isNoMore = feeds.isEmpty || currentPage == totalPage;
+            action.completer.complete(isNoMore);
             store.dispatch(FeedsResponseAction(
                 action.type, totalPage, currentPage, feeds));
           } else {
             print(data['msg'].toString());
-            store.dispatch(FeedsResponseFailedAction(data['msg'].toString()));
+
+            action.completer.completeError(data['msg'].toString());
+            store.dispatch(
+                FeedsResponseFailedAction(action.type, data['msg'].toString()));
           }
         },
       ).catchError((err) {
         print(err.toString());
-        store.dispatch(FeedsResponseFailedAction(err.toString()));
+
+        action.completer.completeError(err);
+        store.dispatch(FeedsResponseFailedAction(action.type, err.toString()));
+      });
+    }
+    next(action);
+  };
+}
+
+Middleware<AppState> _createSearchByTag() {
+  return (Store<AppState> store, action, NextDispatcher next) {
+    if (action is SearchByTagAction) {
+      api('/user/tag_search', {
+        'userId': action.userId,
+        'page': action.page,
+        'tag': action.tag,
+        'limit': action.limit,
+      }).then(
+        (data) {
+          if (data['code'] == 0) {
+            var response = data['data'];
+            var totalPage = response['total_page'];
+            var currentPage = response['current_page'];
+            var list = response['list'] as List;
+            List<Goods> feeds = list.map((e) => Goods.fromJson(e)).toList();
+
+            bool isNoMore = feeds.isEmpty || currentPage == totalPage;
+            action.completer.complete(isNoMore);
+            store.dispatch(
+                SearchByTagResponseAction(totalPage, currentPage, feeds));
+          } else {
+            print(data['msg'].toString());
+
+            action.completer.completeError(data['msg'].toString());
+          }
+        },
+      ).catchError((err) {
+        print(err.toString());
+
+        action.completer.completeError(err);
       });
     }
     next(action);

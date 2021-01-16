@@ -37,6 +37,12 @@ class ReduxApp extends StatelessWidget {
             Routes.home: (context) => TabbarScreen(
                   onInit: () {},
                 ),
+            Routes.searchByTag: (context) => SearchByTagScreen(
+                  onInit: () {
+                    StoreProvider.of<AppState>(context)
+                        .dispatch(SearchByTagAction());
+                  },
+                ),
           },
         ));
   }
@@ -55,4 +61,5 @@ class Routes {
   static final forgotPassword = '/forgot_password';
   static final interests = 'interests';
   static final home = '/home';
+  static final searchByTag = '/search_by_tag';
 }

@@ -1,7 +1,12 @@
+import 'dart:async';
+
+import 'package:fans/app.dart';
+import 'package:fans/screen/components/tag_button.dart';
 import 'package:fans/store/actions.dart';
 import 'package:fans/store/states.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:redux/redux.dart';
 
 import 'package:fans/models/models.dart';
@@ -75,14 +80,14 @@ class _HomeScreenState extends State<HomeScreen>
                   viewModel: model.followingViewModel,
                   onInit: () {
                     StoreProvider.of<AppState>(context)
-                        .dispatch(FetchFeedsAction(0, 1));
+                        .dispatch(FetchFeedsAction(0, 1, Completer()));
                   },
                 ),
                 FeedListScreen(
                   viewModel: model.foryouViewModel,
                   onInit: () {
                     StoreProvider.of<AppState>(context)
-                        .dispatch(FetchFeedsAction(1, 1));
+                        .dispatch(FetchFeedsAction(1, 1, Completer()));
                   },
                 ),
               ],
@@ -109,6 +114,8 @@ class FeedListScreen extends StatefulWidget {
 }
 
 class _FeedListScreenState extends State<FeedListScreen> {
+  final _refreshController = RefreshController(initialRefresh: false);
+
   @override
   void initState() {
     if (widget.onInit != null) widget.onInit();
@@ -119,59 +126,91 @@ class _FeedListScreenState extends State<FeedListScreen> {
   Widget build(BuildContext context) {
     return Container(
       color: Color(0xfff8f8f8),
-      child: ListView.builder(
-        itemBuilder: (ctx, i) {
-          if (i == 0 && widget.viewModel.showRecommends) {
-            return Padding(
-              padding: const EdgeInsets.only(top: 8),
-              child: RecommendListBar(),
-              // Column(
-              //   children: [
-              // Padding(
-              //   padding: const EdgeInsets.only(top: 12.0),
-              //   child: Text(
-              //     'Start by following your favorite stores!',
-              //     style: TextStyle(
-              //       color: Color(0xff0F1015),
-              //       fontSize: 16,
-              //       fontWeight: FontWeight.bold,
-              //     ),
-              //   ),
-              // ),
-
-              // ],
-            );
+      child: SmartRefresher(
+        controller: _refreshController,
+        onRefresh: () async {
+          var action = FetchFeedsAction(widget.viewModel.type, 1, Completer());
+          StoreProvider.of<AppState>(context).dispatch(action);
+          try {
+            await action.completer.future;
+            _refreshController.refreshCompleted();
+          } catch (e) {
+            _refreshController.refreshFailed();
           }
-          if (i == 1 && widget.viewModel.showRecommends) {
-            return Padding(
-              padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
-              child: Text(
-                'Recommended for you',
-                style: TextStyle(
-                  color: Color(0xff0F1015),
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
+        },
+        onLoading: () async {
+          var type = widget.viewModel.type;
+          var currentPage = widget.viewModel.model.currentPage;
+          var action = FetchFeedsAction(type, currentPage + 1, Completer());
+          StoreProvider.of<AppState>(context).dispatch(action);
+          try {
+            bool isNoMore = await action.completer.future;
+            if (isNoMore) {
+              _refreshController.loadNoData();
+            } else {
+              _refreshController.loadComplete();
+            }
+          } catch (e) {
+            _refreshController.loadFailed();
+          }
+        },
+        enablePullDown: true,
+        enablePullUp: true,
+        child: ListView.builder(
+          itemBuilder: (ctx, i) {
+            if (i == 0 && widget.viewModel.showRecommends) {
+              return Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: RecommendListBar(),
+                // Column(
+                //   children: [
+                // Padding(
+                //   padding: const EdgeInsets.only(top: 12.0),
+                //   child: Text(
+                //     'Start by following your favorite stores!',
+                //     style: TextStyle(
+                //       color: Color(0xff0F1015),
+                //       fontSize: 16,
+                //       fontWeight: FontWeight.bold,
+                //     ),
+                //   ),
+                // ),
+
+                // ],
+              );
+            }
+            if (i == 1 && widget.viewModel.showRecommends) {
+              return Padding(
+                padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
+                child: Text(
+                  'Recommended for you',
+                  style: TextStyle(
+                    color: Color(0xff0F1015),
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
+              );
+            }
+
+            var childWidget;
+            if (i % 2 == 0) {
+              childWidget = ProductItem();
+            } else {
+              childWidget = ActivityItem();
+            }
+            return Padding(
+              padding: const EdgeInsets.only(top: 10.0),
+              child: Container(
+                color: Colors.white,
+                padding:
+                    const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
+                child: childWidget,
               ),
             );
-          }
-
-          var childWidget;
-          if (i % 2 == 0) {
-            childWidget = ProductItem();
-          } else {
-            childWidget = ActivityItem();
-          }
-          return Padding(
-            padding: const EdgeInsets.only(top: 10.0),
-            child: Container(
-              color: Colors.white,
-              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
-              child: childWidget,
-            ),
-          );
-        },
-        itemCount: 20,
+          },
+          itemCount: 10,
+        ),
       ),
     );
   }
@@ -189,7 +228,7 @@ class RecommendListBar extends StatelessWidget {
         scrollDirection: Axis.horizontal,
         itemBuilder: (ctx, i) {
           return RecommendItem(
-            image: testLinks[0],
+            image: _testLinks[0],
             name: _users[0],
             tag: '#tag tag tag tag tag',
             desc: '$_users',
@@ -337,21 +376,21 @@ class _ProductItemState extends State<ProductItem> {
           ),
         ),
         SizedBox(
-          height: 214,
+          height: 300,
           child: ClipRRect(
             borderRadius: BorderRadius.circular(4.0),
             child: Container(
-              color: Colors.black26,
+              color: Color(0xfff8f8f8),
               child: Stack(
                 children: [
                   MediaCarouselWidget(
                     items: [
-                      ...videoLinks.map((url) {
+                      ..._videoLinks.map((url) {
                         return VideoPlayerWideget(
                           url: url,
                         );
                       }).toList(),
-                      ...testLinks.map((url) {
+                      ..._testLinks.map((url) {
                         return Image(
                           fit: BoxFit.cover,
                           image: NetworkImage(url),
@@ -474,22 +513,20 @@ class _ProductItemState extends State<ProductItem> {
           padding: const EdgeInsets.only(top: 4.0),
           child: Row(
             children: [
-              Text(
-                '#tag1',
-                style: TextStyle(
-                  color: Color(0xff48B6EF),
-                  fontSize: 12,
-                ),
+              TagButton(
+                onPressed: () {
+                  Keys.navigatorKey.currentState.pushNamed(Routes.searchByTag);
+                },
+                text: '#tag1',
               ),
               SizedBox(
                 width: 4,
               ),
-              Text(
-                '#lifestyle',
-                style: TextStyle(
-                  color: Color(0xff48B6EF),
-                  fontSize: 12,
-                ),
+              TagButton(
+                onPressed: () {
+                  Keys.navigatorKey.currentState.pushNamed(Routes.searchByTag);
+                },
+                text: '#lifestyle',
               ),
             ],
           ),
@@ -594,7 +631,7 @@ class _ActivityItemState extends State<ActivityItem> {
   }
 
   _buildGridItems() {
-    var list = testLinks..shuffle();
+    var list = _testLinks..shuffle();
     return list
         .map((url) => ClipRRect(
               borderRadius: BorderRadius.circular(4),
@@ -660,7 +697,7 @@ class _AdItemState extends State<AdItem> {
             child: Container(
                 height: 200,
                 child: MediaCarouselWidget(
-                    items: testLinks.map((url) {
+                    items: _testLinks.map((url) {
                   return Image(
                     fit: BoxFit.cover,
                     image: NetworkImage(url),
@@ -673,16 +710,16 @@ class _AdItemState extends State<AdItem> {
   }
 }
 
-final testLinks = [
-  'https://www.nio.cn/ecs/prod/s3fs-public/mynio-2021/images/et7/et7-hero-desktop.jpg',
+final _testLinks = [
   'https://www.nio.cn/ecs/prod/s3fs-public/ec6/hero-background-mobile.jpg',
   'https://www.nio.cn/ecs/prod/s3fs-public/mynio-2021/images/et7/design/et7-hero-design-aquila-desktop.jpg',
   'https://www.nio.cn/ecs/prod/s3fs-public/inline-images/es8-202004/es8-hero-pc.jpg',
   'https://tesla-cdn.thron.cn/delivery/public/image/tesla/3304be3b-dd0a-4128-9c26-eb61c0b98d61/bvlatuR/std/800x2100/Mobile-ModelY',
-  'https://tesla-cdn.thron.cn/delivery/public/image/tesla/011f6961-d539-48e9-b714-c154bfbaaf8b/bvlatuR/std/800x2100/homepage-model-3-hero-mobile-cn'
+  'https://tesla-cdn.thron.cn/delivery/public/image/tesla/011f6961-d539-48e9-b714-c154bfbaaf8b/bvlatuR/std/800x2100/homepage-model-3-hero-mobile-cn',
+  'https://www.nio.cn/ecs/prod/s3fs-public/mynio-2021/images/et7/et7-hero-desktop.jpg',
 ];
 
-final videoLinks = [
+final _videoLinks = [
   'https://www.runoob.com/try/demo_source/mov_bbb.mp4',
   'https://media.w3.org/2010/05/sintel/trailer.mp4',
   'http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4',
@@ -719,42 +756,32 @@ class _ViewModel {
 class _FeedViewModel {
   final bool isLoading;
   final String error;
+  final int type;
   final bool showRecommends;
   final FeedsState model;
-  final VoidCallback onRefresh;
-  final Function(int) loadMore;
 
   _FeedViewModel({
     this.isLoading = false,
     this.error = '',
+    this.type = 0,
     this.showRecommends = false,
     this.model,
-    this.onRefresh,
-    this.loadMore,
   });
 
   static _FeedViewModel fromStore(Store<AppState> store, int type) {
-    _onRefresh() {
-      store.dispatch(FetchFeedsAction(type, 1));
-    }
-
-    _loadMore(int page) {
-      store.dispatch(FetchFeedsAction(type, page));
-    }
-
     if (type == 0) {
-      return _FeedViewModel(
+      var model = _FeedViewModel(
+        type: type,
         model: store.state.feeds.followingFeeds,
         showRecommends: true,
-        onRefresh: _onRefresh,
-        loadMore: _loadMore,
       );
+      return model;
     }
 
-    return _FeedViewModel(
+    var model = _FeedViewModel(
+      type: type,
       model: store.state.feeds.forYouFeeds,
-      onRefresh: _onRefresh,
-      loadMore: _loadMore,
     );
+    return model;
   }
 }

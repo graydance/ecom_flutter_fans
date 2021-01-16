@@ -13,7 +13,7 @@ Future<Map<String, dynamic>> api(path, data) async {
   var token = await AuthStorage.readToken();
   // TEST code
   if (token == null || token.isEmpty) {
-    token = 'aa10fc17-e4db-4237-b644-9a7aa7223eec';
+    token = '586ba346-de7b-4d3b-a9aa-d4a02ea78f4b';
   }
   Response rsp = await dio.post('$apiEntry$path',
       data: data, options: Options(headers: {'x-token': token}));
