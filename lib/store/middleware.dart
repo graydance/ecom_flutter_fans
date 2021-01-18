@@ -15,6 +15,7 @@ List<Middleware<AppState>> createStoreMiddleware() {
   final uploadInterests = _createUploadInterests();
   final fetchFeeds = _createFetchFeeds();
   final searchByTag = _createSearchByTag();
+  final fetchShopDetail = _createShopDetail();
 
   return [
     TypedMiddleware<AppState, VerifyEmailAction>(verifyEmail),
@@ -25,6 +26,7 @@ List<Middleware<AppState>> createStoreMiddleware() {
     TypedMiddleware<AppState, UploadInterestsAction>(uploadInterests),
     TypedMiddleware<AppState, FetchFeedsAction>(fetchFeeds),
     TypedMiddleware<AppState, SearchByTagAction>(searchByTag),
+    TypedMiddleware<AppState, FetchShopDetailAction>(fetchShopDetail),
   ];
 }
 
@@ -162,7 +164,7 @@ Middleware<AppState> _createFetchFeeds() {
             var totalPage = response['total_page'];
             var currentPage = response['current_page'];
             var list = response['list'] as List;
-            List<Goods> feeds = list.map((e) => Goods.fromJson(e)).toList();
+            List<Feed> feeds = list.map((e) => Feed.fromJson(e)).toList();
 
             bool isNoMore = feeds.isEmpty || currentPage == totalPage;
             action.completer.complete(isNoMore);
@@ -218,6 +220,35 @@ Middleware<AppState> _createSearchByTag() {
         print(err.toString());
 
         action.completer.completeError(err);
+      });
+    }
+    next(action);
+  };
+}
+
+Middleware<AppState> _createShopDetail() {
+  return (Store<AppState> store, action, NextDispatcher next) {
+    if (action is FetchShopDetailAction) {
+      api('/user/detail', {
+        'userId': action.userId,
+      }).then(
+        (data) {
+          if (data['code'] == 0) {
+            var response = data['data'];
+            var user = User.fromJson(response);
+
+            store.dispatch(ShopDetailResponseAction(user: user));
+          } else {
+            print(data['msg'].toString());
+
+            store.dispatch(
+                ShopDetailFailedAction(error: data['msg'].toString()));
+          }
+        },
+      ).catchError((err) {
+        print(err.toString());
+
+        store.dispatch(ShopDetailFailedAction(error: err.toString()));
       });
     }
     next(action);

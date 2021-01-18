@@ -1,3 +1,4 @@
+import 'package:fans/screen/shop_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
@@ -43,6 +44,7 @@ class ReduxApp extends StatelessWidget {
                         .dispatch(SearchByTagAction());
                   },
                 ),
+            Routes.shop: (context) => ShopDetailScreen(),
           },
         ));
   }
@@ -62,4 +64,5 @@ class Routes {
   static final interests = 'interests';
   static final home = '/home';
   static final searchByTag = '/search_by_tag';
+  static final shop = 'shop';
 }

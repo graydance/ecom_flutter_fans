@@ -11,16 +11,16 @@ class Interest {
   factory Interest.fromJson(Map<String, dynamic> json) {
     return Interest(
       id: json['id'] as String,
-      interestPortrait: json['interest_portrait'] as String,
-      interestName: json['interest_name'] as String,
+      interestPortrait: json['interestPortrait'] as String,
+      interestName: json['interestName'] as String,
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'interest_portrait': interestPortrait,
-      'interest_name': interestName,
+      'interestPortrait': interestPortrait,
+      'interestName': interestName,
     };
   }
 

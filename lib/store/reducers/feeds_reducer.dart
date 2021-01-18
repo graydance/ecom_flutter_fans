@@ -27,7 +27,7 @@ HomeState _setLoading(HomeState state, FetchFeedsStartLoadingAction action) {
 
 HomeState _setFeedsList(HomeState state, FeedsResponseAction action) {
   if (action.type == 0) {
-    List<Goods> list = action.currentPage == 1
+    var list = action.currentPage == 1
         ? action.feeds
         : [...state.followingFeeds.list, ...action.feeds];
     return state.copyWith(

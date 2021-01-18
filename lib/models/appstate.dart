@@ -1,7 +1,6 @@
 import 'package:meta/meta.dart';
 
 import 'package:fans/store/states.dart';
-import 'package:fans/store/states/search_by_tag_state.dart';
 
 @immutable
 class AppState {
@@ -10,6 +9,7 @@ class AppState {
   final InterestListState interests;
   final HomeState feeds;
   final SearchByTagState tagSearch;
+  final ShopDetailState shopDetail;
 
   final bool isLoading;
   final String error;
@@ -20,6 +20,7 @@ class AppState {
     this.interests = const InterestListState(),
     this.feeds = const HomeState(),
     this.tagSearch = const SearchByTagState(),
+    this.shopDetail = const ShopDetailState(),
     this.isLoading = false,
     this.error,
   });
@@ -32,6 +33,7 @@ class AppState {
     InterestListState interests,
     HomeState feeds,
     SearchByTagState tagSearch,
+    ShopDetailState shopDetail,
     bool isLoading,
     String error,
   }) {
@@ -41,9 +43,15 @@ class AppState {
       interests: interests ?? this.interests,
       feeds: feeds ?? this.feeds,
       tagSearch: tagSearch ?? this.tagSearch,
+      shopDetail: shopDetail ?? this.shopDetail,
       isLoading: isLoading ?? this.isLoading,
       error: error ?? this.error,
     );
+  }
+
+  @override
+  String toString() {
+    return 'AppState(verifyEmail: $verifyEmail, auth: $auth, interests: $interests, feeds: $feeds, tagSearch: $tagSearch, shopDetail: $shopDetail, isLoading: $isLoading, error: $error)';
   }
 
   @override
@@ -56,6 +64,7 @@ class AppState {
         o.interests == interests &&
         o.feeds == feeds &&
         o.tagSearch == tagSearch &&
+        o.shopDetail == shopDetail &&
         o.isLoading == isLoading &&
         o.error == error;
   }
@@ -67,12 +76,8 @@ class AppState {
         interests.hashCode ^
         feeds.hashCode ^
         tagSearch.hashCode ^
+        shopDetail.hashCode ^
         isLoading.hashCode ^
         error.hashCode;
-  }
-
-  @override
-  String toString() {
-    return 'AppState(verifyEmail: $verifyEmail, auth: $auth, interests: $interests, feeds: $feeds, tagSearch: $tagSearch, isLoading: $isLoading, error: $error)';
   }
 }

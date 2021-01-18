@@ -43,7 +43,7 @@ class HomeState {
 class FeedsState {
   final bool isLoading;
   final String error;
-  final List<Goods> list;
+  final List<Feed> list;
   final List<User> recommendUsers;
   final int currentPage;
   final int totalPage;
@@ -60,7 +60,7 @@ class FeedsState {
   FeedsState copyWith({
     bool isLoading,
     String error,
-    List<Goods> list,
+    List<Feed> list,
     List<User> recommendUsers,
     int currentPage,
     int totalPage,
