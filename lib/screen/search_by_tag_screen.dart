@@ -1,7 +1,5 @@
 import 'dart:async';
 
-import 'package:fans/screen/components/tag_button.dart';
-import 'package:fans/store/actions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -11,6 +9,8 @@ import 'package:fans/models/models.dart';
 import 'package:fans/r.g.dart';
 import 'package:fans/screen/components/avatar_widget.dart';
 import 'package:fans/screen/components/meida_carousel_widget.dart';
+import 'package:fans/screen/components/tag_button.dart';
+import 'package:fans/store/actions.dart';
 
 class SearchByTagScreen extends StatefulWidget {
   final VoidCallback onInit;

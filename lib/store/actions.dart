@@ -131,7 +131,7 @@ class FeedsResponseAction {
   final int type;
   final int totalPage;
   final int currentPage;
-  final List<Goods> feeds;
+  final List<Feed> feeds;
 
   FeedsResponseAction(this.type, this.totalPage, this.currentPage, this.feeds);
 }
@@ -169,4 +169,32 @@ class SearchByTagResponseAction {
   final List<Goods> feeds;
 
   SearchByTagResponseAction(this.totalPage, this.currentPage, this.feeds);
+}
+
+class ShowShopDetailAction {
+  final String userId;
+
+  ShowShopDetailAction({
+    this.userId,
+  });
+}
+
+class FetchShopDetailAction {
+  final String userId;
+
+  FetchShopDetailAction({
+    this.userId,
+  });
+}
+
+class ShopDetailResponseAction {
+  final User user;
+
+  ShopDetailResponseAction({this.user});
+}
+
+class ShopDetailFailedAction {
+  final String error;
+
+  ShopDetailFailedAction({this.error});
 }

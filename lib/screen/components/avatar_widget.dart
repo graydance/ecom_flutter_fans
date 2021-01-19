@@ -1,3 +1,4 @@
+import 'package:fans/r.g.dart';
 import 'package:flutter/material.dart';
 
 class AvatarWidget extends StatelessWidget {
@@ -14,11 +15,15 @@ class AvatarWidget extends StatelessWidget {
     final size = isLarge ? 60.0 : 40.0;
     return GestureDetector(
       onTap: onTap,
-      child: CircleAvatar(
-        radius: size / 2,
-        backgroundImage: NetworkImage(image.isEmpty
-            ? 'https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=159637421,4079816873&fm=26&gp=0.jpg'
-            : image),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(size / 2.0),
+        child: FadeInImage(
+          width: size,
+          height: size,
+          placeholder: R.image.avatar_placeholder(),
+          image: NetworkImage(image),
+          fit: BoxFit.cover,
+        ),
       ),
     );
   }

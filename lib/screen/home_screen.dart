@@ -39,6 +39,12 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     TextStyle selectedStyle = new TextStyle(
       color: Color(0xff0F1015),
@@ -126,97 +132,103 @@ class _FeedListScreenState extends State<FeedListScreen> {
   Widget build(BuildContext context) {
     return Container(
       color: Color(0xfff8f8f8),
-      child: SmartRefresher(
-        controller: _refreshController,
-        onRefresh: () async {
-          var action = FetchFeedsAction(widget.viewModel.type, 1, Completer());
-          StoreProvider.of<AppState>(context).dispatch(action);
-          try {
-            await action.completer.future;
-            _refreshController.refreshCompleted();
-          } catch (e) {
-            _refreshController.refreshFailed();
-          }
-        },
-        onLoading: () async {
-          var type = widget.viewModel.type;
-          var currentPage = widget.viewModel.model.currentPage;
-          var action = FetchFeedsAction(type, currentPage + 1, Completer());
-          StoreProvider.of<AppState>(context).dispatch(action);
-          try {
-            bool isNoMore = await action.completer.future;
-            if (isNoMore) {
-              _refreshController.loadNoData();
-            } else {
-              _refreshController.loadComplete();
-            }
-          } catch (e) {
-            _refreshController.loadFailed();
-          }
-        },
-        enablePullDown: true,
-        enablePullUp: true,
-        child: ListView.builder(
-          itemBuilder: (ctx, i) {
-            if (i == 0 && widget.viewModel.showRecommends) {
-              return Padding(
-                padding: const EdgeInsets.only(top: 8),
-                child: RecommendListBar(),
-                // Column(
-                //   children: [
-                // Padding(
-                //   padding: const EdgeInsets.only(top: 12.0),
-                //   child: Text(
-                //     'Start by following your favorite stores!',
-                //     style: TextStyle(
-                //       color: Color(0xff0F1015),
-                //       fontSize: 16,
-                //       fontWeight: FontWeight.bold,
-                //     ),
-                //   ),
-                // ),
+      child: widget.viewModel.isEmpty
+          ? Center(
+              child: Text('No Data'),
+            )
+          : SmartRefresher(
+              controller: _refreshController,
+              onRefresh: () async {
+                var action =
+                    FetchFeedsAction(widget.viewModel.type, 1, Completer());
+                StoreProvider.of<AppState>(context).dispatch(action);
+                try {
+                  await action.completer.future;
+                  _refreshController.refreshCompleted();
+                } catch (e) {
+                  _refreshController.refreshFailed();
+                }
+              },
+              onLoading: () async {
+                var type = widget.viewModel.type;
+                var currentPage = widget.viewModel.state.currentPage;
+                var action =
+                    FetchFeedsAction(type, currentPage + 1, Completer());
+                StoreProvider.of<AppState>(context).dispatch(action);
+                try {
+                  bool isNoMore = await action.completer.future;
+                  if (isNoMore) {
+                    _refreshController.loadNoData();
+                  } else {
+                    _refreshController.loadComplete();
+                  }
+                } catch (e) {
+                  _refreshController.loadFailed();
+                }
+              },
+              enablePullDown: true,
+              enablePullUp: true,
+              child: ListView.builder(
+                itemCount:
+                    widget.viewModel.items.length + widget.viewModel.offset,
+                itemBuilder: (ctx, i) {
+                  if (i == 0 && widget.viewModel.showRecommends) {
+                    // 'Start by following your favorite stores!',
+                    return Padding(
+                      padding: const EdgeInsets.only(top: 8),
+                      child: RecommendListBar(
+                          list: widget.viewModel.recommendUsers),
+                    );
+                  }
+                  if (i == 1 && widget.viewModel.showRecommends) {
+                    return Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
+                      child: Text(
+                        'Recommended for you',
+                        style: TextStyle(
+                          color: Color(0xff0F1015),
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    );
+                  }
 
-                // ],
-              );
-            }
-            if (i == 1 && widget.viewModel.showRecommends) {
-              return Padding(
-                padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
-                child: Text(
-                  'Recommended for you',
-                  style: TextStyle(
-                    color: Color(0xff0F1015),
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              );
-            }
+                  if (widget.viewModel.items.isEmpty) {
+                    return Center(
+                      child: Text('Following is empty'),
+                    );
+                  }
 
-            var childWidget;
-            if (i % 2 == 0) {
-              childWidget = ProductItem();
-            } else {
-              childWidget = ActivityItem();
-            }
-            return Padding(
-              padding: const EdgeInsets.only(top: 10.0),
-              child: Container(
-                color: Colors.white,
-                padding:
-                    const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
-                child: childWidget,
+                  var item =
+                      widget.viewModel.items[i - widget.viewModel.offset];
+                  var childWidget;
+                  if (item.model.responseType == 0) {
+                    childWidget = ProductItem(viewModel: item);
+                  } else {
+                    childWidget = ActivityItem();
+                  }
+                  return Padding(
+                    padding: const EdgeInsets.only(top: 10.0),
+                    child: Container(
+                      color: Colors.white,
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 12, horizontal: 20),
+                      child: childWidget,
+                    ),
+                  );
+                },
               ),
-            );
-          },
-          itemCount: 10,
-        ),
-      ),
+            ),
     );
   }
 }
 
 class RecommendListBar extends StatelessWidget {
+  final List<_RecommendItemViewModel> list;
+
+  const RecommendListBar({Key key, this.list}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -227,28 +239,18 @@ class RecommendListBar extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 12),
         scrollDirection: Axis.horizontal,
         itemBuilder: (ctx, i) {
-          return RecommendItem(
-            image: _testLinks[0],
-            name: _users[0],
-            tag: '#tag tag tag tag tag',
-            desc: '$_users',
-          );
+          return RecommendItem(viewModel: list[i]);
         },
-        itemCount: _users.length,
+        itemCount: list.length,
       ),
     );
   }
 }
 
 class RecommendItem extends StatelessWidget {
-  final String image;
-  final String name;
-  final String tag;
-  final String desc;
+  final _RecommendItemViewModel viewModel;
 
-  const RecommendItem(
-      {Key key, this.image = '', this.name = '', this.tag = '', this.desc = ''})
-      : super(key: key);
+  const RecommendItem({Key key, this.viewModel}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -259,7 +261,8 @@ class RecommendItem extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           AvatarWidget(
-            image: image,
+            image: viewModel.model.portrait,
+            onTap: viewModel.onTapAvatar,
           ),
           SizedBox(
             height: 4,
@@ -269,7 +272,7 @@ class RecommendItem extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                name,
+                viewModel.model.nickName,
                 style: TextStyle(color: Color(0xffED8514), fontSize: 14),
               ),
               SizedBox(
@@ -287,16 +290,7 @@ class RecommendItem extends StatelessWidget {
             height: 4,
           ),
           Text(
-            tag,
-            textAlign: TextAlign.center,
-            maxLines: 1,
-            textScaleFactor: 0.9,
-          ),
-          SizedBox(
-            height: 4,
-          ),
-          Text(
-            desc,
+            viewModel.model.aboutMe,
             textAlign: TextAlign.center,
             maxLines: 2,
             textScaleFactor: 0.9,
@@ -318,7 +312,9 @@ class RecommendItem extends StatelessWidget {
 }
 
 class ProductItem extends StatefulWidget {
-  ProductItem({Key key}) : super(key: key);
+  final _FeedItemViewModel viewModel;
+
+  const ProductItem({Key key, this.viewModel}) : super(key: key);
 
   @override
   _ProductItemState createState() => _ProductItemState();
@@ -327,19 +323,22 @@ class ProductItem extends StatefulWidget {
 class _ProductItemState extends State<ProductItem> {
   @override
   Widget build(BuildContext context) {
+    var viewModel = widget.viewModel;
     return Column(
       children: [
         // User Details
         Row(
           children: [
-            AvatarWidget(),
+            AvatarWidget(
+              onTap: viewModel.onTapAvatar,
+            ),
             SizedBox(
               width: 8,
             ),
             Row(
               children: [
                 Text(
-                  'User.name',
+                  viewModel.model.nickName,
                   style: TextStyle(
                     color: Color(0xffED8514),
                     fontSize: 14,
@@ -367,7 +366,7 @@ class _ProductItemState extends State<ProductItem> {
           child: Align(
             alignment: Alignment.centerLeft,
             child: Text(
-              'Product Name',
+              viewModel.model.productName,
               style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 14,
@@ -384,19 +383,12 @@ class _ProductItemState extends State<ProductItem> {
               child: Stack(
                 children: [
                   MediaCarouselWidget(
-                    items: [
-                      ..._videoLinks.map((url) {
-                        return VideoPlayerWideget(
-                          url: url,
-                        );
-                      }).toList(),
-                      ..._testLinks.map((url) {
-                        return Image(
-                          fit: BoxFit.cover,
-                          image: NetworkImage(url),
-                        );
-                      }).toList()
-                    ],
+                    items: viewModel.model.goods.map((goods) {
+                      return Image(
+                        fit: BoxFit.cover,
+                        image: NetworkImage(goods.picture),
+                      );
+                    }).toList(),
                   ),
                   Positioned(
                     top: 0,
@@ -430,7 +422,7 @@ class _ProductItemState extends State<ProductItem> {
                           children: [
                             Image(image: R.image.add_cart()),
                             Text(
-                              '233',
+                              viewModel.model.shoppingCar,
                               style:
                                   TextStyle(color: Colors.white, fontSize: 12),
                             ),
@@ -443,7 +435,7 @@ class _ProductItemState extends State<ProductItem> {
                           children: [
                             Image(image: R.image.favorite()),
                             Text(
-                              '1.4k',
+                              viewModel.model.collectNum,
                               style:
                                   TextStyle(color: Colors.white, fontSize: 12),
                             ),
@@ -464,7 +456,7 @@ class _ProductItemState extends State<ProductItem> {
             textBaseline: TextBaseline.ideographic,
             children: [
               Text(
-                '\$21',
+                viewModel.model.currentPrice,
                 style: TextStyle(
                     color: Color(0xff0F1015),
                     fontSize: 18,
@@ -474,7 +466,7 @@ class _ProductItemState extends State<ProductItem> {
                 width: 8,
               ),
               Text(
-                '\$30',
+                viewModel.model.originalPrice,
                 style: TextStyle(
                     color: Color(0xff979AA9),
                     fontSize: 12,
@@ -502,7 +494,7 @@ class _ProductItemState extends State<ProductItem> {
         Align(
           alignment: Alignment.centerLeft,
           child: Text(
-            'Product description product description product description product description xxxxxx',
+            viewModel.model.goodsDescription,
             style: TextStyle(
               color: Color(0xff555764),
               fontSize: 12,
@@ -511,24 +503,17 @@ class _ProductItemState extends State<ProductItem> {
         ),
         Padding(
           padding: const EdgeInsets.only(top: 4.0),
-          child: Row(
-            children: [
-              TagButton(
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: viewModel.model.tagSelected.length,
+            itemBuilder: (ctx, i) {
+              return TagButton(
                 onPressed: () {
                   Keys.navigatorKey.currentState.pushNamed(Routes.searchByTag);
                 },
-                text: '#tag1',
-              ),
-              SizedBox(
-                width: 4,
-              ),
-              TagButton(
-                onPressed: () {
-                  Keys.navigatorKey.currentState.pushNamed(Routes.searchByTag);
-                },
-                text: '#lifestyle',
-              ),
-            ],
+                text: viewModel.model.tagSelected[i],
+              );
+            },
           ),
         ),
       ],
@@ -758,30 +743,89 @@ class _FeedViewModel {
   final String error;
   final int type;
   final bool showRecommends;
-  final FeedsState model;
+  final FeedsState state;
+  final List<_RecommendItemViewModel> recommendUsers;
+  final List<_FeedItemViewModel> items;
+  final int offset;
+  final bool isEmpty;
 
   _FeedViewModel({
     this.isLoading = false,
     this.error = '',
     this.type = 0,
     this.showRecommends = false,
-    this.model,
+    this.state = const FeedsState(),
+    this.recommendUsers = const [],
+    this.items = const [],
+    this.offset = 0,
+    this.isEmpty = true,
   });
 
   static _FeedViewModel fromStore(Store<AppState> store, int type) {
     if (type == 0) {
+      var items = store.state.feeds.followingFeeds.list
+          .map((model) => _FeedItemViewModel.fromStore(store, model))
+          .toList();
+      var recommendUsers = store.state.feeds.followingFeeds.recommendUsers
+          .map((model) => _RecommendItemViewModel.fromStore(store, model))
+          .toList();
+      var offset = recommendUsers.isNotEmpty ? 2 : 0;
+      var isEmpty = (items.length + offset) == 0;
       var model = _FeedViewModel(
         type: type,
-        model: store.state.feeds.followingFeeds,
-        showRecommends: true,
+        showRecommends: recommendUsers.isNotEmpty,
+        state: store.state.feeds.followingFeeds,
+        recommendUsers: recommendUsers,
+        items: items,
+        offset: offset,
+        isEmpty: isEmpty,
       );
       return model;
     }
 
+    var items = store.state.feeds.forYouFeeds.list
+        .map((model) => _FeedItemViewModel.fromStore(store, model))
+        .toList();
     var model = _FeedViewModel(
       type: type,
-      model: store.state.feeds.forYouFeeds,
+      items: items,
+      state: store.state.feeds.forYouFeeds,
+      isEmpty: items.isEmpty,
     );
     return model;
+  }
+}
+
+class _RecommendItemViewModel {
+  final User model;
+  final VoidCallback onTapAvatar;
+
+  _RecommendItemViewModel({this.model, this.onTapAvatar});
+
+  static _RecommendItemViewModel fromStore(Store<AppState> store, User item) {
+    _onTapAvatar(String userId) {
+      store.dispatch(ShowShopDetailAction(userId: userId));
+      Keys.navigatorKey.currentState.pushNamed(Routes.shop);
+    }
+
+    return _RecommendItemViewModel(
+        model: item, onTapAvatar: _onTapAvatar(item.id));
+  }
+}
+
+class _FeedItemViewModel {
+  final Feed model;
+  final VoidCallback onTapAvatar;
+
+  _FeedItemViewModel({this.model, this.onTapAvatar});
+
+  static _FeedItemViewModel fromStore(Store<AppState> store, Feed item) {
+    _onTapAvatar(String userId) {
+      store.dispatch(ShowShopDetailAction(userId: userId));
+      Keys.navigatorKey.currentState.pushNamed(Routes.shop);
+    }
+
+    return _FeedItemViewModel(
+        model: item, onTapAvatar: _onTapAvatar(item.userId));
   }
 }
