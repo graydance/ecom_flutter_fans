@@ -8,6 +8,7 @@ import 'package:fans/store/states/verify_email_state.dart';
 final verifyEmailReducer = combineReducers<VerifyEmailState>([
   TypedReducer<VerifyEmailState, LocalVerifyEmailAction>(
       _setLocalVerifyEmailError),
+  TypedReducer<VerifyEmailState, VerifyEmailLoadingAction>(_setLoading),
   TypedReducer<VerifyEmailState, VerifyEmailSuccessAction>(_setEmail),
   TypedReducer<VerifyEmailState, VerifyEmailFailedAction>(_setVerifyEmailError),
 ]);
@@ -18,14 +19,19 @@ VerifyEmailState _setLocalVerifyEmailError(
   return state.copyWith(error: error);
 }
 
+VerifyEmailState _setLoading(
+    VerifyEmailState state, VerifyEmailLoadingAction action) {
+  return state.copyWith(isLoading: true, error: '');
+}
+
 VerifyEmailState _setEmail(
     VerifyEmailState state, VerifyEmailSuccessAction action) {
-  return state.copyWith(email: action.email);
+  return state.copyWith(email: action.email, isLoading: false, error: '');
 }
 
 VerifyEmailState _setVerifyEmailError(
     VerifyEmailState state, VerifyEmailFailedAction action) {
-  return state.copyWith(error: action.error);
+  return state.copyWith(isLoading: false, error: action.error);
 }
 
 bool _validateEmail(String email) {

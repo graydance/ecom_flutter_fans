@@ -14,12 +14,12 @@ class SplashScreen extends StatefulWidget {
 class SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
-    AuthStorage.readToken().then((token) {
-      var root = token == null || token.isEmpty ? Routes.welcome : Routes.home;
+    var user = AuthStorage.getUser();
+    var root = user.token.isEmpty ? Routes.welcome : Routes.home;
 
-      Timer(Duration(seconds: 2),
-          () => Keys.navigatorKey.currentState.pushReplacementNamed(root));
-    });
+    Timer(Duration(seconds: 1),
+        () => Keys.navigatorKey.currentState.pushReplacementNamed(root));
+
     super.initState();
   }
 

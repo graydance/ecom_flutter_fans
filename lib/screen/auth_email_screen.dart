@@ -6,6 +6,7 @@ import 'package:fans/models/models.dart';
 import 'package:fans/screen/components/auth_hero_logo.dart';
 import 'package:fans/screen/components/default_button.dart';
 import 'package:fans/store/actions.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 class AuthEmailScreen extends StatefulWidget {
   AuthEmailScreen({Key key}) : super(key: key);
@@ -18,7 +19,15 @@ class _AuthEmailScreenState extends State<AuthEmailScreen> {
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _ViewModel>(
+      distinct: true,
       converter: _ViewModel.fromStore,
+      onDidChange: (viewModel) {
+        if (viewModel.isLoading) {
+          EasyLoading.show();
+        } else {
+          EasyLoading.dismiss();
+        }
+      },
       builder: (ctx, model) => Scaffold(
         body: GestureDetector(
           behavior: HitTestBehavior.translucent,
@@ -65,11 +74,14 @@ class _AuthEmailScreenState extends State<AuthEmailScreen> {
               SizedBox(height: 40),
               DefaultButton(
                 text: "Log in/Sign up".toUpperCase(),
-                press: () {
-                  if (model.error.isEmpty && _controller.text.isNotEmpty) {
-                    model.onCheckEmail(_controller.text);
-                  }
-                },
+                press: model.isLoading
+                    ? null
+                    : () {
+                        if (model.error.isEmpty &&
+                            _controller.text.isNotEmpty) {
+                          model.onCheckEmail(_controller.text);
+                        }
+                      },
               ),
             ],
           ),
@@ -116,11 +128,17 @@ class _AuthEmailScreenState extends State<AuthEmailScreen> {
 }
 
 class _ViewModel {
+  final bool isLoading;
   final String error;
   final Function(String) onClientCheckEmail;
   final Function(String) onCheckEmail;
 
-  _ViewModel(this.error, this.onClientCheckEmail, this.onCheckEmail);
+  _ViewModel({
+    this.isLoading,
+    this.error,
+    this.onClientCheckEmail,
+    this.onCheckEmail,
+  });
   static _ViewModel fromStore(Store<AppState> store) {
     _onClientCheckEmail(String email) {
       store.dispatch(LocalVerifyEmailAction(email));
@@ -131,6 +149,10 @@ class _ViewModel {
     }
 
     return _ViewModel(
-        store.state.verifyEmail.error, _onClientCheckEmail, _onCheckEmail);
+      isLoading: store.state.verifyEmail.isLoading,
+      error: store.state.verifyEmail.error,
+      onClientCheckEmail: _onClientCheckEmail,
+      onCheckEmail: _onCheckEmail,
+    );
   }
 }
