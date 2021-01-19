@@ -65,6 +65,7 @@ Middleware<AppState> _createVerifyEmail() {
 Middleware<AppState> _createLogin() {
   return (Store<AppState> store, action, NextDispatcher next) {
     if (action is LoginAction) {
+      store.dispatch(AuthLoadingAction());
       Networking.request(
               LoginAPI(email: action.email, password: action.password))
           .then(
@@ -72,10 +73,11 @@ Middleware<AppState> _createLogin() {
           var user = User.fromMap(data['data']);
           AuthStorage.setToken(user.token);
           AuthStorage.setUser(user);
-          store.dispatch(LoginSuccessAction(user));
+          store.dispatch(LoginOrSignupSuccessAction(user));
           Keys.navigatorKey.currentState.pushReplacementNamed(Routes.interests);
         },
-      ).catchError((err) => store.dispatch(LoginFailureAction(err.toString())));
+      ).catchError((err) =>
+              store.dispatch(LoginOrSignupFailureAction(err.toString())));
     }
     next(action);
   };
@@ -84,6 +86,7 @@ Middleware<AppState> _createLogin() {
 Middleware<AppState> _createSignup() {
   return (Store<AppState> store, action, NextDispatcher next) {
     if (action is SignupAction) {
+      store.dispatch(AuthLoadingAction());
       Networking.request(
               LoginAPI(email: action.email, password: action.password))
           .then(
@@ -91,11 +94,11 @@ Middleware<AppState> _createSignup() {
           var user = User.fromMap(data['data']);
           AuthStorage.setToken(user.token);
           AuthStorage.setUser(user);
-          store.dispatch(SignupSuccessAction(user));
+          store.dispatch(LoginOrSignupSuccessAction(user));
           Keys.navigatorKey.currentState.pushReplacementNamed(Routes.interests);
         },
-      ).catchError(
-              (err) => store.dispatch(SignupFailureAction(err.toString())));
+      ).catchError((err) =>
+              store.dispatch(LoginOrSignupFailureAction(err.toString())));
     }
     next(action);
   };
@@ -134,6 +137,7 @@ Middleware<AppState> _createUploadInterests() {
       store.dispatch(FetchInterestStartLoadingAction());
       Networking.request(UploadInterestsAPI(action.idList)).then(
         (data) {
+          store.dispatch(UploadInterestsSuccessAction());
           store.dispatch(
               Keys.navigatorKey.currentState.pushReplacementNamed(Routes.home));
         },

@@ -45,40 +45,39 @@ bool _validateEmail(String email) {
 final authReducer = combineReducers<LoginOrSignupState>([
   TypedReducer<LoginOrSignupState, CheckPasswordAction>(
       _setAuthCheckPasswordError),
+  TypedReducer<LoginOrSignupState, AuthLoadingAction>(
+      _setAuthCheckPasswordLoading),
+  TypedReducer<LoginOrSignupState, LoginOrSignupSuccessAction>(_setAuthSuccess),
+  TypedReducer<LoginOrSignupState, LoginOrSignupFailureAction>(_setAuthError),
+  TypedReducer<LoginOrSignupState, SendEmailFailureAction>(_setSendEmailError),
 ]);
 
 LoginOrSignupState _setAuthCheckPasswordError(
     LoginOrSignupState state, CheckPasswordAction action) {
   String password = action.password;
   return state.copyWith(
-      error: password.length < 8 ? 'Make sure it’s at least 8 characters' : '');
+      error: password.length < 8 ? 'Make sure it’s at least 8 characters' : '',
+      isLoading: false);
 }
 
-// other
-
-final validPasswordReducer = combineReducers<String>([
-  TypedReducer<String, CheckPasswordAction>(_setCheckPasswordError),
-]);
-
-final errorReducer = combineReducers<String>([
-  TypedReducer<String, LoginFailureAction>(_setLoginError),
-  TypedReducer<String, SendEmailFailureAction>(_setSendEmailError),
-]);
-
-String _setLoginError(String state, LoginFailureAction action) {
-  return action.error;
+LoginOrSignupState _setAuthCheckPasswordLoading(
+    LoginOrSignupState state, AuthLoadingAction action) {
+  return state.copyWith(isLoading: true, error: '');
 }
 
-String _setSendEmailError(String state, SendEmailFailureAction action) {
-  return action.error;
+LoginOrSignupState _setAuthSuccess(
+    LoginOrSignupState state, LoginOrSignupSuccessAction action) {
+  return state.copyWith(isLoading: false, error: '', user: action.user);
 }
 
-String _setCheckPasswordError(String state, CheckPasswordAction action) {
-  String password = action.password;
-  if (password.isEmpty || password.length >= 8) {
-    return null;
-  }
-  return 'Make sure it’s at least 8 characters';
+LoginOrSignupState _setAuthError(
+    LoginOrSignupState state, LoginOrSignupFailureAction action) {
+  return state.copyWith(isLoading: false, error: action.error);
+}
+
+LoginOrSignupState _setSendEmailError(
+    LoginOrSignupState state, SendEmailFailureAction action) {
+  return state.copyWith(isLoading: false, error: action.error);
 }
 
 // Interests
@@ -88,19 +87,27 @@ final interestReducer = combineReducers<InterestListState>([
   TypedReducer<InterestListState, InterestsFailedAction>(_setInterestListError),
   TypedReducer<InterestListState, FetchInterestStartLoadingAction>(
       _setInterestListLoading),
+  TypedReducer<InterestListState, UploadInterestsSuccessAction>(
+      _setUploadInterestsSuccess),
 ]);
 
 InterestListState _setInterestList(
     InterestListState state, FetchInterestSuccessAction action) {
-  return state.copyWith(interests: action.interests);
+  return state.copyWith(
+      interests: action.interests, isLoading: false, error: '');
 }
 
 InterestListState _setInterestListError(
     InterestListState state, InterestsFailedAction action) {
-  return state.copyWith(error: action.error);
+  return state.copyWith(isLoading: false, error: action.error);
 }
 
 InterestListState _setInterestListLoading(
     InterestListState state, FetchInterestStartLoadingAction action) {
-  return state.copyWith(isLoading: true);
+  return state.copyWith(isLoading: true, error: '');
+}
+
+InterestListState _setUploadInterestsSuccess(
+    InterestListState state, UploadInterestsSuccessAction action) {
+  return state.copyWith(isLoading: false, error: '');
 }

@@ -4,10 +4,6 @@ import 'dart:async';
 
 import 'package:fans/models/models.dart';
 
-class StartLoadingAction {}
-
-class StopLoadingAction {}
-
 class FetchFeedsStartLoadingAction {
   /// 类型选择( 0:following , 1:for you)
   final int type;

@@ -32,6 +32,8 @@ class CheckPasswordAction {
   CheckPasswordAction(this.password);
 }
 
+class AuthLoadingAction {}
+
 class LoginAction {
   final String email;
   final String password;
@@ -39,16 +41,16 @@ class LoginAction {
   LoginAction(this.email, this.password);
 }
 
-class LoginSuccessAction {
+class LoginOrSignupSuccessAction {
   final User user;
 
-  LoginSuccessAction(this.user);
+  LoginOrSignupSuccessAction(this.user);
 }
 
-class LoginFailureAction {
+class LoginOrSignupFailureAction {
   final String error;
 
-  LoginFailureAction(this.error);
+  LoginOrSignupFailureAction(this.error);
 }
 
 class SignupAction {
@@ -56,18 +58,6 @@ class SignupAction {
   final String password;
 
   SignupAction(this.email, this.password);
-}
-
-class SignupSuccessAction {
-  final User user;
-
-  SignupSuccessAction(this.user);
-}
-
-class SignupFailureAction {
-  final String error;
-
-  SignupFailureAction(this.error);
 }
 
 class SendEmailFailureAction {
@@ -103,3 +93,5 @@ class UploadInterestsAction {
 
   UploadInterestsAction(this.idList);
 }
+
+class UploadInterestsSuccessAction {}

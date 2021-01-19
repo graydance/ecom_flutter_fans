@@ -1,3 +1,4 @@
+import 'package:fans/storage/auth_storage.dart';
 import 'package:flutter/material.dart';
 
 enum HttpMethod { GET, POST }
@@ -17,6 +18,7 @@ extension HttpMethodExt on HttpMethod {
 
 abstract class TargetType {
   String get path;
+  Map<String, String> get headers;
   HttpMethod get method;
   Map<String, dynamic> get parameters;
 }
@@ -25,6 +27,18 @@ class API extends TargetType {
   @override
   HttpMethod get method {
     return HttpMethod.POST;
+  }
+
+  @override
+  Map<String, String> get headers {
+    var headers;
+    var token = AuthStorage.getToken();
+    if (token != null && token.isNotEmpty) {
+      headers = {
+        'x-token': token,
+      };
+    }
+    return headers ?? Map();
   }
 
   @override
@@ -59,8 +73,7 @@ class UploadInterestsAPI extends API {
   UploadInterestsAPI(this.interestIdList);
 
   @override
-  Map<String, dynamic> get parameters =>
-      {'interestIdList': interestIdList.join(',')};
+  Map<String, dynamic> get parameters => {'interestIdList': interestIdList};
 
   @override
   String get path => '/user/interest_updata';

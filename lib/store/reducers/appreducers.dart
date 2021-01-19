@@ -12,6 +12,5 @@ AppState appReducer(AppState state, action) {
     feeds: feedsReducer(state.feeds, action),
     tagSearch: searchByTagReducer(state.tagSearch, action),
     shopDetail: shopDetailReducer(state.shopDetail, action),
-    error: errorReducer(state.error, action),
   );
 }

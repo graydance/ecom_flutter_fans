@@ -21,7 +21,7 @@ void main() {
   test('check password action test', () {
     var store = Store<AppState>(
       appReducer,
-      initialState: AppState.loading(),
+      initialState: AppState(),
     );
 
     store.dispatch(CheckPasswordAction('123'));
