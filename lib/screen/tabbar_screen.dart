@@ -1,10 +1,7 @@
-import 'package:fans/screen/home_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_redux/flutter_redux.dart';
-import 'package:redux/redux.dart';
 
-import 'package:fans/models/models.dart';
 import 'package:fans/r.g.dart';
+import 'package:fans/screen/home_screen.dart';
 import 'package:fans/screen/screens.dart';
 
 class TabbarScreen extends StatefulWidget {
@@ -27,10 +24,7 @@ class TabbarScreenState extends State<TabbarScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return StoreConnector<AppState, _ViewModel>(
-      converter: _ViewModel.fromStore,
-      builder: (ctx, model) => _buildBottomTabBar(),
-    );
+    return _buildBottomTabBar();
   }
 
   var _pages = [
@@ -91,14 +85,5 @@ class TabbarScreenState extends State<TabbarScreen> {
         ),
       ),
     );
-  }
-}
-
-class _ViewModel {
-  final bool loading;
-  final String error;
-  _ViewModel(this.loading, this.error);
-  static _ViewModel fromStore(Store<AppState> store) {
-    return _ViewModel(store.state.isLoading, store.state.error);
   }
 }

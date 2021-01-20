@@ -11,9 +11,6 @@ class AppState {
   final SearchByTagState tagSearch;
   final ShopDetailState shopDetail;
 
-  final bool isLoading;
-  final String error;
-
   AppState({
     this.verifyEmail = const VerifyEmailState(),
     this.auth = const LoginOrSignupState(),
@@ -21,11 +18,9 @@ class AppState {
     this.feeds = const HomeState(),
     this.tagSearch = const SearchByTagState(),
     this.shopDetail = const ShopDetailState(),
-    this.isLoading = false,
-    this.error,
   });
 
-  factory AppState.loading() => AppState(isLoading: true);
+  factory AppState.init() => AppState();
 
   AppState copyWith({
     VerifyEmailState verifyEmail,
@@ -44,14 +39,12 @@ class AppState {
       feeds: feeds ?? this.feeds,
       tagSearch: tagSearch ?? this.tagSearch,
       shopDetail: shopDetail ?? this.shopDetail,
-      isLoading: isLoading ?? this.isLoading,
-      error: error ?? this.error,
     );
   }
 
   @override
   String toString() {
-    return 'AppState(verifyEmail: $verifyEmail, auth: $auth, interests: $interests, feeds: $feeds, tagSearch: $tagSearch, shopDetail: $shopDetail, isLoading: $isLoading, error: $error)';
+    return 'AppState(verifyEmail: $verifyEmail, auth: $auth, interests: $interests, feeds: $feeds, tagSearch: $tagSearch, shopDetail: $shopDetail)';
   }
 
   @override
@@ -64,9 +57,7 @@ class AppState {
         o.interests == interests &&
         o.feeds == feeds &&
         o.tagSearch == tagSearch &&
-        o.shopDetail == shopDetail &&
-        o.isLoading == isLoading &&
-        o.error == error;
+        o.shopDetail == shopDetail;
   }
 
   @override
@@ -76,8 +67,6 @@ class AppState {
         interests.hashCode ^
         feeds.hashCode ^
         tagSearch.hashCode ^
-        shopDetail.hashCode ^
-        isLoading.hashCode ^
-        error.hashCode;
+        shopDetail.hashCode;
   }
 }

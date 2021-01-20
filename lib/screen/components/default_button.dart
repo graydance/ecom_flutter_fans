@@ -16,6 +16,8 @@ class DefaultButton extends StatelessWidget {
       height: 50,
       child: FlatButton(
         color: Colors.white54,
+        disabledColor: Colors.white12,
+        disabledTextColor: Colors.white38,
         onPressed: press,
         child: Text(
           text,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
 
@@ -28,6 +29,13 @@ class _InterestListScreenState extends State<InterestListScreen> {
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _ViewModel>(
       converter: _ViewModel.fromStore,
+      onDidChange: (viewModel) {
+        if (viewModel.isLoading) {
+          EasyLoading.show();
+        } else {
+          EasyLoading.dismiss();
+        }
+      },
       builder: (ctx, model) => Scaffold(
         body: Container(
           width: double.infinity,

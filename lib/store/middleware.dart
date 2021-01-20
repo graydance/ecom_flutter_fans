@@ -1,7 +1,9 @@
+import 'package:fans/networking/api_exceptions.dart';
+import 'package:fans/networking/networking.dart';
 import 'package:fans/storage/auth_storage.dart';
 import 'package:redux/redux.dart';
 
-import 'package:fans/api.dart';
+import 'package:fans/networking/api.dart';
 import 'package:fans/app.dart';
 import 'package:fans/models/models.dart';
 import 'package:fans/store/actions.dart';
@@ -33,23 +35,28 @@ List<Middleware<AppState>> createStoreMiddleware() {
 Middleware<AppState> _createVerifyEmail() {
   return (Store<AppState> store, action, NextDispatcher next) {
     if (action is VerifyEmailAction) {
+      store.dispatch(VerifyEmailLoadingAction());
       var email = action.email;
-      api('/user/login', {'email': email, 'password': ''}).then(
-        (data) {
-          var code = data['code'];
-          if (code == 401) {
+      Networking.request(LoginAPI(email: action.email, password: ''))
+          .then((data) {
+        store.dispatch(VerifyEmailFailedAction(data.toString()));
+      }).catchError((error) {
+        if (error is APIException) {
+          if (error.code == 401) {
             // 用户不存在
             store.dispatch(VerifyEmailSuccessAction(email));
             Keys.navigatorKey.currentState.pushReplacementNamed(Routes.signup);
-          } else if (code == 402) {
+          } else if (error.code == 402) {
             // 邮箱已注册
             store.dispatch(VerifyEmailSuccessAction(email));
             Keys.navigatorKey.currentState.pushReplacementNamed(Routes.login);
           } else {
-            print(data['msg'].toString());
+            store.dispatch(VerifyEmailFailedAction(error.message));
           }
-        },
-      ).catchError((error) => print(error.toString()));
+        } else {
+          store.dispatch(VerifyEmailFailedAction(error.toString()));
+        }
+      });
     }
     next(action);
   };
@@ -58,21 +65,19 @@ Middleware<AppState> _createVerifyEmail() {
 Middleware<AppState> _createLogin() {
   return (Store<AppState> store, action, NextDispatcher next) {
     if (action is LoginAction) {
-      api('/user/login', {'email': action.email, 'password': action.password})
+      store.dispatch(AuthLoadingAction());
+      Networking.request(
+              LoginAPI(email: action.email, password: action.password))
           .then(
         (data) {
-          if (data['code'] == 0) {
-            var user = User.fromJson(data['data']);
-            AuthStorage.setToken(user.token);
-            store.dispatch(LoginSuccessAction(user));
-            Keys.navigatorKey.currentState
-                .pushReplacementNamed(Routes.interests);
-          } else {
-            // store.dispatch(LoginFailureAction(data['msg'].toString()));
-            print(data['msg'].toString());
-          }
+          var user = User.fromMap(data['data']);
+          AuthStorage.setToken(user.token);
+          AuthStorage.setUser(user);
+          store.dispatch(LoginOrSignupSuccessAction(user));
+          Keys.navigatorKey.currentState.pushReplacementNamed(Routes.interests);
         },
-      ).catchError((err) => print(err.toString()));
+      ).catchError((err) =>
+              store.dispatch(LoginOrSignupFailureAction(err.toString())));
     }
     next(action);
   };
@@ -81,21 +86,19 @@ Middleware<AppState> _createLogin() {
 Middleware<AppState> _createSignup() {
   return (Store<AppState> store, action, NextDispatcher next) {
     if (action is SignupAction) {
-      api('/user/login', {'email': action.email, 'password': action.password})
+      store.dispatch(AuthLoadingAction());
+      Networking.request(
+              LoginAPI(email: action.email, password: action.password))
           .then(
         (data) {
-          if (data['code'] == 0) {
-            var user = User.fromJson(data['data']);
-            AuthStorage.setToken(user.token);
-            store.dispatch(SignupSuccessAction(user));
-            Keys.navigatorKey.currentState
-                .pushReplacementNamed(Routes.interests);
-          } else {
-            print(data['msg'].toString());
-            // store.dispatch(SignupFailureAction(data['msg'].toString()));
-          }
+          var user = User.fromMap(data['data']);
+          AuthStorage.setToken(user.token);
+          AuthStorage.setUser(user);
+          store.dispatch(LoginOrSignupSuccessAction(user));
+          Keys.navigatorKey.currentState.pushReplacementNamed(Routes.interests);
         },
-      ).catchError((err) => print(err.toString()));
+      ).catchError((err) =>
+              store.dispatch(LoginOrSignupFailureAction(err.toString())));
     }
     next(action);
   };
@@ -115,16 +118,11 @@ Middleware<AppState> _createFetchInterests() {
   return (Store<AppState> store, action, NextDispatcher next) {
     if (action is FetchInterestAction) {
       store.dispatch(FetchInterestStartLoadingAction());
-      api('/user/interest_list', {}).then(
+      Networking.request(InterestListAPI()).then(
         (data) {
-          if (data['code'] == 0) {
-            var list = (data['data'] as List)
-                .map((e) => Interest.fromJson(e))
-                .toList();
-            store.dispatch(FetchInterestSuccessAction(list));
-          } else {
-            store.dispatch(InterestsFailedAction(data['msg'].toString()));
-          }
+          var list =
+              (data['data'] as List).map((e) => Interest.fromJson(e)).toList();
+          store.dispatch(FetchInterestSuccessAction(list));
         },
       ).catchError(
           (err) => store.dispatch(InterestsFailedAction(err.toString())));
@@ -137,14 +135,11 @@ Middleware<AppState> _createUploadInterests() {
   return (Store<AppState> store, action, NextDispatcher next) {
     if (action is UploadInterestsAction) {
       store.dispatch(FetchInterestStartLoadingAction());
-      api('/user/interest_updata', {'interestIdList': action.idList}).then(
+      Networking.request(UploadInterestsAPI(action.idList)).then(
         (data) {
-          if (data['code'] == 0) {
-            store.dispatch(Keys.navigatorKey.currentState
-                .pushReplacementNamed(Routes.home));
-          } else {
-            store.dispatch(InterestsFailedAction(data['msg'].toString()));
-          }
+          store.dispatch(UploadInterestsSuccessAction());
+          store.dispatch(
+              Keys.navigatorKey.currentState.pushReplacementNamed(Routes.home));
         },
       ).catchError(
           (err) => store.dispatch(InterestsFailedAction(err.toString())));
@@ -157,30 +152,20 @@ Middleware<AppState> _createFetchFeeds() {
   return (Store<AppState> store, action, NextDispatcher next) {
     if (action is FetchFeedsAction) {
       store.dispatch(FetchFeedsStartLoadingAction(action.type));
-      api('/user/following', {'type': action.type, 'page': action.page}).then(
+      Networking.request(FeedsAPI(type: action.type, page: action.page)).then(
         (data) {
-          if (data['code'] == 0) {
-            var response = data['data'];
-            var totalPage = response['total_page'];
-            var currentPage = response['current_page'];
-            var list = response['list'] as List;
-            List<Feed> feeds = list.map((e) => Feed.fromJson(e)).toList();
+          var response = data['data'];
+          var totalPage = response['total_page'];
+          var currentPage = response['current_page'];
+          var list = response['list'] as List;
+          List<Feed> feeds = list.map((e) => Feed.fromJson(e)).toList();
 
-            bool isNoMore = feeds.isEmpty || currentPage == totalPage;
-            action.completer.complete(isNoMore);
-            store.dispatch(FeedsResponseAction(
-                action.type, totalPage, currentPage, feeds));
-          } else {
-            print(data['msg'].toString());
-
-            action.completer.completeError(data['msg'].toString());
-            store.dispatch(
-                FeedsResponseFailedAction(action.type, data['msg'].toString()));
-          }
+          bool isNoMore = feeds.isEmpty || currentPage == totalPage;
+          action.completer.complete(isNoMore);
+          store.dispatch(
+              FeedsResponseAction(action.type, totalPage, currentPage, feeds));
         },
       ).catchError((err) {
-        print(err.toString());
-
         action.completer.completeError(err);
         store.dispatch(FeedsResponseFailedAction(action.type, err.toString()));
       });
@@ -192,34 +177,26 @@ Middleware<AppState> _createFetchFeeds() {
 Middleware<AppState> _createSearchByTag() {
   return (Store<AppState> store, action, NextDispatcher next) {
     if (action is SearchByTagAction) {
-      api('/user/tag_search', {
-        'userId': action.userId,
-        'page': action.page,
-        'tag': action.tag,
-        'limit': action.limit,
-      }).then(
+      Networking.request(TagSearchAPI(
+              tag: action.tag,
+              userId: action.userId,
+              page: action.page,
+              limit: action.limit))
+          .then(
         (data) {
-          if (data['code'] == 0) {
-            var response = data['data'];
-            var totalPage = response['total_page'];
-            var currentPage = response['current_page'];
-            var list = response['list'] as List;
-            List<Goods> feeds = list.map((e) => Goods.fromJson(e)).toList();
+          var response = data['data'];
+          var totalPage = response['total_page'];
+          var currentPage = response['current_page'];
+          var list = response['list'] as List;
+          List<Goods> feeds = list.map((e) => Goods.fromJson(e)).toList();
 
-            bool isNoMore = feeds.isEmpty || currentPage == totalPage;
-            action.completer.complete(isNoMore);
-            store.dispatch(
-                SearchByTagResponseAction(totalPage, currentPage, feeds));
-          } else {
-            print(data['msg'].toString());
-
-            action.completer.completeError(data['msg'].toString());
-          }
+          bool isNoMore = feeds.isEmpty || currentPage == totalPage;
+          action.completer.complete(isNoMore);
+          store.dispatch(
+              SearchByTagResponseAction(totalPage, currentPage, feeds));
         },
       ).catchError((err) {
-        print(err.toString());
-
-        action.completer.completeError(err);
+        action.completer.completeError(err.toString());
       });
     }
     next(action);
@@ -229,25 +206,14 @@ Middleware<AppState> _createSearchByTag() {
 Middleware<AppState> _createShopDetail() {
   return (Store<AppState> store, action, NextDispatcher next) {
     if (action is FetchShopDetailAction) {
-      api('/user/detail', {
-        'userId': action.userId,
-      }).then(
+      Networking.request(ShopDetailAPI(action.userId)).then(
         (data) {
-          if (data['code'] == 0) {
-            var response = data['data'];
-            var user = User.fromJson(response);
+          var response = data['data'];
+          var user = User.fromJson(response);
 
-            store.dispatch(ShopDetailResponseAction(user: user));
-          } else {
-            print(data['msg'].toString());
-
-            store.dispatch(
-                ShopDetailFailedAction(error: data['msg'].toString()));
-          }
+          store.dispatch(ShopDetailResponseAction(user: user));
         },
       ).catchError((err) {
-        print(err.toString());
-
         store.dispatch(ShopDetailFailedAction(error: err.toString()));
       });
     }

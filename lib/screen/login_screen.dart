@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
 
@@ -19,6 +20,13 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _ViewModel>(
       converter: _ViewModel.fromStore,
+      onDidChange: (viewModel) {
+        if (viewModel.isLoading) {
+          EasyLoading.show();
+        } else {
+          EasyLoading.dismiss();
+        }
+      },
       builder: (ctx, model) => Scaffold(
         body: GestureDetector(
           behavior: HitTestBehavior.translucent,
@@ -92,9 +100,7 @@ class _LoginScreenState extends State<LoginScreen> {
               DefaultButton(
                 text: "login in".toUpperCase(),
                 press: () {
-                  if (model.error.isEmpty && _controller.text.isNotEmpty) {
-                    model.onLogin(_controller.text);
-                  }
+                  model.onLogin(_controller.text);
                 },
               ),
             ],
@@ -165,13 +171,14 @@ class _LoginScreenState extends State<LoginScreen> {
 }
 
 class _ViewModel {
-  final bool loading;
+  final bool isLoading;
   final String error;
   final String email;
   final Function(String) onLogin;
   final Function(String) onCheck;
 
-  _ViewModel(this.loading, this.error, this.email, this.onLogin, this.onCheck);
+  _ViewModel(
+      this.isLoading, this.error, this.email, this.onLogin, this.onCheck);
   static _ViewModel fromStore(Store<AppState> store) {
     _onLogin(String password) {
       store.dispatch(LoginAction(store.state.verifyEmail.email, password));

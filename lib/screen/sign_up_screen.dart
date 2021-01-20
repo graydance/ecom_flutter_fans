@@ -1,5 +1,6 @@
 import 'package:fans/r.g.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
 
@@ -19,6 +20,13 @@ class _SignupScreenState extends State<SignupScreen> {
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _ViewModel>(
       converter: _ViewModel.fromStore,
+      onDidChange: (viewModel) {
+        if (viewModel.isLoading) {
+          EasyLoading.show();
+        } else {
+          EasyLoading.dismiss();
+        }
+      },
       builder: (ctx, model) => Scaffold(
         body: GestureDetector(
           behavior: HitTestBehavior.translucent,
@@ -83,9 +91,7 @@ class _SignupScreenState extends State<SignupScreen> {
               DefaultButton(
                 text: "Sign up".toUpperCase(),
                 press: () {
-                  if (model.error.isEmpty && _controller.text.isNotEmpty) {
-                    model.onSignup(_controller.text);
-                  }
+                  model.onSignup(_controller.text);
                 },
               ),
             ],
@@ -156,13 +162,14 @@ class _SignupScreenState extends State<SignupScreen> {
 }
 
 class _ViewModel {
-  final bool loading;
+  final bool isLoading;
   final String error;
   final String email;
   final Function(String) onSignup;
   final Function(String) onCheck;
 
-  _ViewModel(this.loading, this.error, this.email, this.onSignup, this.onCheck);
+  _ViewModel(
+      this.isLoading, this.error, this.email, this.onSignup, this.onCheck);
   static _ViewModel fromStore(Store<AppState> store) {
     _onSignup(String password) {
       store.dispatch(SignupAction(store.state.verifyEmail.email, password));
