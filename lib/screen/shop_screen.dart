@@ -493,9 +493,10 @@ class ProfileHeader extends StatelessWidget {
                 ),
                 Spacer(),
                 SizedBox(
-                    height: 26,
-                    width: 90,
-                    child: FollowButton(onPressed: () {})),
+                  height: 26,
+                  width: 90,
+                  child: FollowButton(isFollowed: false),
+                ),
               ],
             ),
           ),

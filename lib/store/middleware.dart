@@ -1,3 +1,4 @@
+import 'package:fans/models/seller.dart';
 import 'package:fans/networking/api_exceptions.dart';
 import 'package:fans/networking/networking.dart';
 import 'package:fans/storage/auth_storage.dart';
@@ -18,6 +19,7 @@ List<Middleware<AppState>> createStoreMiddleware() {
   final fetchFeeds = _createFetchFeeds();
   final searchByTag = _createSearchByTag();
   final fetchShopDetail = _createShopDetail();
+  final fetchRecommends = _createFetchRecommends();
 
   return [
     TypedMiddleware<AppState, VerifyEmailAction>(verifyEmail),
@@ -27,6 +29,7 @@ List<Middleware<AppState>> createStoreMiddleware() {
     TypedMiddleware<AppState, FetchInterestAction>(interests),
     TypedMiddleware<AppState, UploadInterestsAction>(uploadInterests),
     TypedMiddleware<AppState, FetchFeedsAction>(fetchFeeds),
+    TypedMiddleware<AppState, FetchRecommendSellersAction>(fetchRecommends),
     TypedMiddleware<AppState, SearchByTagAction>(searchByTag),
     TypedMiddleware<AppState, FetchShopDetailAction>(fetchShopDetail),
   ];
@@ -174,6 +177,25 @@ Middleware<AppState> _createFetchFeeds() {
   };
 }
 
+Middleware<AppState> _createFetchRecommends() {
+  return (Store<AppState> store, action, NextDispatcher next) {
+    if (action is FetchRecommendSellersAction) {
+      Networking.request(RecommendSellerAPI()).then(
+        (data) {
+          var response = data['data'];
+          var list = response['list'] as List;
+          List<Seller> models = list.map((e) => Seller.fromMap(e)).toList();
+
+          store.dispatch(RecommendSellersResponseAction(models));
+        },
+      ).catchError((err) {
+        print(err.toString());
+      });
+    }
+    next(action);
+  };
+}
+
 Middleware<AppState> _createSearchByTag() {
   return (Store<AppState> store, action, NextDispatcher next) {
     if (action is SearchByTagAction) {
@@ -208,10 +230,8 @@ Middleware<AppState> _createShopDetail() {
     if (action is FetchShopDetailAction) {
       Networking.request(ShopDetailAPI(action.userId)).then(
         (data) {
-          var response = data['data'];
-          var user = User.fromJson(response);
-
-          store.dispatch(ShopDetailResponseAction(user: user));
+          var seller = Seller.fromMap(data['data']);
+          store.dispatch(ShopDetailResponseAction(seller: seller));
         },
       ).catchError((err) {
         store.dispatch(ShopDetailFailedAction(error: err.toString()));

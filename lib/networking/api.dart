@@ -95,6 +95,11 @@ class FeedsAPI extends API {
   String get path => '/user/following';
 }
 
+class RecommendSellerAPI extends API {
+  @override
+  String get path => '/user/recommend';
+}
+
 class TagSearchAPI extends API {
   final String tag;
   final String userId;
@@ -121,6 +126,18 @@ class ShopDetailAPI extends API {
 
   @override
   String get path => '/user/detail';
+}
+
+class FollowAPI extends API {
+  final String userId;
+
+  FollowAPI(this.userId);
+
+  @override
+  Map<String, dynamic> get parameters => {'idolId': userId};
+
+  @override
+  String get path => '/user/follow_me';
 }
 
 // var version = '';

@@ -8,6 +8,7 @@ final feedsReducer = combineReducers<HomeState>([
   TypedReducer<HomeState, FetchFeedsStartLoadingAction>(_setLoading),
   TypedReducer<HomeState, FeedsResponseAction>(_setFeedsList),
   TypedReducer<HomeState, FeedsResponseFailedAction>(_setFeedsListError),
+  TypedReducer<HomeState, RecommendSellersResponseAction>(_setRecommendList),
 ]);
 
 HomeState _setLoading(HomeState state, FetchFeedsStartLoadingAction action) {
@@ -64,5 +65,13 @@ HomeState _setFeedsListError(
       forYouFeeds: state.forYouFeeds.copyWith(
     isLoading: false,
     error: action.error,
+  ));
+}
+
+HomeState _setRecommendList(
+    HomeState state, RecommendSellersResponseAction action) {
+  return state.copyWith(
+      followingFeeds: state.followingFeeds.copyWith(
+    recommendUsers: action.sellers,
   ));
 }

@@ -115,7 +115,10 @@ class _InterestListScreenState extends State<InterestListScreen> {
                       },
                     ),
                   ),
-                  Text(model.error)
+                  Text(
+                    model.error,
+                    style: TextStyle(color: Colors.white, fontSize: 12),
+                  ),
                 ],
               ),
             ),

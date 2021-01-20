@@ -21,7 +21,7 @@ Future<void> main() async {
     store: Store<AppState>(
       appReducer,
       initialState: AppState(),
-      middleware: [...createStoreMiddleware()],
+      middleware: [...createStoreMiddleware(), middleware],
     ),
   ));
 }

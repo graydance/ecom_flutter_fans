@@ -19,6 +19,6 @@ ShopDetailState _setDetail(
   return state.copyWith(
     isLoading: false,
     error: '',
-    user: action.user,
+    user: action.seller,
   );
 }
