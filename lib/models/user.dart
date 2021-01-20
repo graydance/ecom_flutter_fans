@@ -148,21 +148,21 @@ class User {
     if (map == null) return null;
 
     return User(
-      id: map['id'],
-      nickName: map['nickName'],
-      portrait: map['portrait'],
-      email: map['email'],
-      gender: map['gender'],
-      aboutMe: map['aboutMe'],
-      bindPhone: map['bindPhone'],
-      availableBalance: map['availableBalance'],
-      lifetimeEarnings: map['lifetimeEarnings'],
-      monetaryCountry: map['monetaryCountry'],
-      monetaryUnit: map['monetaryUnit'],
-      shopStatus: map['shopStatus'],
-      heatRank: map['heatRank'],
-      bioLink: map['bioLink'],
-      token: map['token'],
+      id: map['id'] ?? '',
+      nickName: map['nickName'] ?? '',
+      portrait: map['portrait'] ?? '',
+      email: map['email'] ?? '',
+      gender: map['gender'] ?? 0,
+      aboutMe: map['aboutMe'] ?? '',
+      bindPhone: map['bindPhone'] ?? '',
+      availableBalance: map['availableBalance'] ?? 0,
+      lifetimeEarnings: map['lifetimeEarnings'] ?? 0,
+      monetaryCountry: map['monetaryCountry'] ?? '',
+      monetaryUnit: map['monetaryUnit'] ?? '',
+      shopStatus: map['shopStatus'] ?? 0,
+      heatRank: map['heatRank'] ?? 0,
+      bioLink: map['bioLink'] ?? '',
+      token: map['token'] ?? '',
     );
   }
 

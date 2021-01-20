@@ -14,7 +14,6 @@ import 'package:fans/r.g.dart';
 import 'package:fans/screen/components/avatar_widget.dart';
 import 'package:fans/screen/components/follow_button.dart';
 import 'package:fans/screen/components/meida_carousel_widget.dart';
-import 'package:fans/screen/components/video_player_widget.dart';
 
 class HomeScreen extends StatefulWidget {
   HomeScreen({Key key}) : super(key: key);
@@ -56,6 +55,12 @@ class _HomeScreenState extends State<HomeScreen>
     );
     return StoreConnector<AppState, _ViewModel>(
       converter: _ViewModel.fromStore,
+      distinct: true,
+      onInit: (store) {
+        store.dispatch(FetchRecommendSellersAction());
+        store.dispatch(FetchFeedsAction(0, 1, Completer()));
+        store.dispatch(FetchFeedsAction(1, 1, Completer()));
+      },
       builder: (ctx, model) => Column(
         children: [
           Padding(
@@ -84,17 +89,9 @@ class _HomeScreenState extends State<HomeScreen>
               children: [
                 FeedListScreen(
                   viewModel: model.followingViewModel,
-                  onInit: () {
-                    StoreProvider.of<AppState>(context)
-                        .dispatch(FetchFeedsAction(0, 1, Completer()));
-                  },
                 ),
                 FeedListScreen(
                   viewModel: model.foryouViewModel,
-                  onInit: () {
-                    StoreProvider.of<AppState>(context)
-                        .dispatch(FetchFeedsAction(1, 1, Completer()));
-                  },
                 ),
               ],
             ),
@@ -142,6 +139,9 @@ class _FeedListScreenState extends State<FeedListScreen> {
                 var action =
                     FetchFeedsAction(widget.viewModel.type, 1, Completer());
                 StoreProvider.of<AppState>(context).dispatch(action);
+
+                StoreProvider.of<AppState>(context)
+                    .dispatch(FetchRecommendSellersAction());
                 try {
                   await action.completer.future;
                   _refreshController.refreshCompleted();
@@ -169,6 +169,7 @@ class _FeedListScreenState extends State<FeedListScreen> {
               enablePullDown: true,
               enablePullUp: true,
               child: ListView.builder(
+                addAutomaticKeepAlives: true,
                 itemCount:
                     widget.viewModel.items.length + widget.viewModel.offset,
                 itemBuilder: (ctx, i) {
@@ -234,7 +235,7 @@ class RecommendListBar extends StatelessWidget {
     return Container(
       color: Colors.white,
       padding: const EdgeInsets.only(top: 20),
-      height: 210.0,
+      height: 210,
       child: ListView.builder(
         padding: const EdgeInsets.symmetric(horizontal: 12),
         scrollDirection: Axis.horizontal,
@@ -272,7 +273,9 @@ class RecommendItem extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                viewModel.model.nickName,
+                viewModel.model.nickName.isNotEmpty
+                    ? viewModel.model.nickName
+                    : 'Nick name',
                 style: TextStyle(color: Color(0xffED8514), fontSize: 14),
               ),
               SizedBox(
@@ -290,7 +293,9 @@ class RecommendItem extends StatelessWidget {
             height: 4,
           ),
           Text(
-            viewModel.model.aboutMe,
+            viewModel.model.aboutMe.isNotEmpty
+                ? viewModel.model.aboutMe
+                : 'Desc',
             textAlign: TextAlign.center,
             maxLines: 2,
             textScaleFactor: 0.9,
@@ -301,8 +306,8 @@ class RecommendItem extends StatelessWidget {
           SizedBox(
             height: 30,
             child: FollowButton(
-              followed: false,
-              onPressed: () {},
+              userId: viewModel.model.id,
+              isFollowed: viewModel.model.followStatus == 1,
             ),
           ),
         ],
@@ -573,7 +578,7 @@ class _ActivityItemState extends State<ActivityItem> {
               ),
               Spacer(),
               FollowButton(
-                onPressed: () {},
+                userId: 'eLRGN8Bw',
               ),
             ],
           ),
@@ -704,28 +709,26 @@ final _testLinks = [
   'https://www.nio.cn/ecs/prod/s3fs-public/mynio-2021/images/et7/et7-hero-desktop.jpg',
 ];
 
-final _videoLinks = [
-  'https://www.runoob.com/try/demo_source/mov_bbb.mp4',
-  'https://media.w3.org/2010/05/sintel/trailer.mp4',
-  'http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4',
-];
+// final _videoLinks = [
+//   'https://www.runoob.com/try/demo_source/mov_bbb.mp4',
+//   'https://media.w3.org/2010/05/sintel/trailer.mp4',
+//   'http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4',
+// ];
 
-final _users = <String>[
-  'currentUser',
-  'grootlover',
-  'rocket',
-  'nebula',
-  'starlord',
-  'gamora',
-];
+// final _users = <String>[
+//   'currentUser',
+//   'grootlover',
+//   'rocket',
+//   'nebula',
+//   'starlord',
+//   'gamora',
+// ];
 
 class _ViewModel {
-  final List<User> recommends;
   final _FeedViewModel followingViewModel;
   final _FeedViewModel foryouViewModel;
 
   _ViewModel({
-    this.recommends = const [],
     this.followingViewModel,
     this.foryouViewModel,
   });
@@ -769,11 +772,15 @@ class _FeedViewModel {
       var recommendUsers = store.state.feeds.followingFeeds.recommendUsers
           .map((model) => _RecommendItemViewModel.fromStore(store, model))
           .toList();
-      var offset = recommendUsers.isNotEmpty ? 2 : 0;
+      var showRecommends = recommendUsers.isNotEmpty;
+      var offset = 0;
+      if (showRecommends) {
+        offset = items.isEmpty ? 1 : 2;
+      }
       var isEmpty = (items.length + offset) == 0;
       var model = _FeedViewModel(
         type: type,
-        showRecommends: recommendUsers.isNotEmpty,
+        showRecommends: showRecommends,
         state: store.state.feeds.followingFeeds,
         recommendUsers: recommendUsers,
         items: items,
@@ -797,19 +804,18 @@ class _FeedViewModel {
 }
 
 class _RecommendItemViewModel {
-  final User model;
+  final Seller model;
   final VoidCallback onTapAvatar;
 
   _RecommendItemViewModel({this.model, this.onTapAvatar});
 
-  static _RecommendItemViewModel fromStore(Store<AppState> store, User item) {
-    _onTapAvatar(String userId) {
-      store.dispatch(ShowShopDetailAction(userId: userId));
+  static _RecommendItemViewModel fromStore(Store<AppState> store, Seller item) {
+    _onTapAvatar() {
+      store.dispatch(ShowShopDetailAction(userId: item.id));
       Keys.navigatorKey.currentState.pushNamed(Routes.shop);
     }
 
-    return _RecommendItemViewModel(
-        model: item, onTapAvatar: _onTapAvatar(item.id));
+    return _RecommendItemViewModel(model: item, onTapAvatar: _onTapAvatar);
   }
 }
 
@@ -820,12 +826,11 @@ class _FeedItemViewModel {
   _FeedItemViewModel({this.model, this.onTapAvatar});
 
   static _FeedItemViewModel fromStore(Store<AppState> store, Feed item) {
-    _onTapAvatar(String userId) {
-      store.dispatch(ShowShopDetailAction(userId: userId));
+    _onTapAvatar() {
+      store.dispatch(ShowShopDetailAction(userId: item.userId));
       Keys.navigatorKey.currentState.pushNamed(Routes.shop);
     }
 
-    return _FeedItemViewModel(
-        model: item, onTapAvatar: _onTapAvatar(item.userId));
+    return _FeedItemViewModel(model: item, onTapAvatar: _onTapAvatar);
   }
 }

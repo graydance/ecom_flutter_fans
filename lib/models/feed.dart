@@ -62,7 +62,7 @@ class Feed {
       followNum: json['followNum'] as String,
       bioLink: json['bioLink'] as String,
       goods: (json['goods'] as List)?.map((e) {
-        return e == null ? null : Goods.fromJson(e);
+        return e == null ? null : Goods.fromMap(e);
       })?.toList(),
     );
   }

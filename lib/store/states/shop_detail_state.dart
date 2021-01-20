@@ -7,15 +7,15 @@ class ShopDetailState {
   final bool isLoading;
   final String error;
   final String userId;
-  final User user;
-  final List<GoodsImage> photos;
-  final List<GoodsImage> albums;
+  final Seller seller;
+  final List<Goods> photos;
+  final List<Goods> albums;
 
   const ShopDetailState({
     this.isLoading = false,
     this.error = '',
     this.userId = '',
-    this.user = const User(),
+    this.seller = const Seller(),
     this.photos = const [],
     this.albums = const [],
   });
@@ -24,15 +24,15 @@ class ShopDetailState {
     bool isLoading,
     String error,
     String userId,
-    User user,
-    List<GoodsImage> photos,
-    List<GoodsImage> albums,
+    Seller user,
+    List<Goods> photos,
+    List<Goods> albums,
   }) {
     return ShopDetailState(
       isLoading: isLoading ?? this.isLoading,
       error: error ?? this.error,
       userId: userId ?? this.userId,
-      user: user ?? this.user,
+      seller: user ?? this.seller,
       photos: photos ?? this.photos,
       albums: albums ?? this.albums,
     );
@@ -46,7 +46,7 @@ class ShopDetailState {
         o.isLoading == isLoading &&
         o.error == error &&
         o.userId == userId &&
-        o.user == user &&
+        o.seller == seller &&
         listEquals(o.photos, photos) &&
         listEquals(o.albums, albums);
   }
@@ -56,13 +56,8 @@ class ShopDetailState {
     return isLoading.hashCode ^
         error.hashCode ^
         userId.hashCode ^
-        user.hashCode ^
+        seller.hashCode ^
         photos.hashCode ^
         albums.hashCode;
-  }
-
-  @override
-  String toString() {
-    return 'ShopDetailState(isLoading: $isLoading, error: $error, userId: $userId, user: $user, photos: $photos, albums: $albums)';
   }
 }

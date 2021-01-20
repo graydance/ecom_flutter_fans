@@ -44,47 +44,61 @@ class APIException implements Exception {
             switch (errCode) {
               case 400:
                 {
-                  return BadRequestException(errCode, "请求语法错误");
+                  // "请求语法错误"
+                  return BadRequestException(
+                      errCode, error.response.statusMessage);
                 }
                 break;
               case 401:
                 {
-                  return UnauthorisedException(errCode, "没有权限");
+                  // "没有权限"
+                  return UnauthorisedException(
+                      errCode, error.response.statusMessage);
                 }
                 break;
               case 403:
                 {
-                  return UnauthorisedException(errCode, "服务器拒绝执行");
+                  return UnauthorisedException(
+                      errCode, error.response.statusMessage);
                 }
                 break;
               case 404:
                 {
-                  return UnauthorisedException(errCode, "无法连接服务器");
+                  return UnauthorisedException(
+                      errCode, error.response.statusMessage);
                 }
                 break;
               case 405:
                 {
-                  return UnauthorisedException(errCode, "请求方法被禁止");
+                  return UnauthorisedException(
+                      errCode, error.response.statusMessage);
                 }
                 break;
               case 500:
                 {
-                  return UnauthorisedException(errCode, "服务器内部错误");
+                  return UnauthorisedException(
+                      errCode, error.response.statusMessage);
                 }
                 break;
               case 502:
                 {
-                  return UnauthorisedException(errCode, "无效的请求");
+                  // "无效的请求"
+                  return UnauthorisedException(
+                      errCode, error.response.statusMessage);
                 }
                 break;
               case 503:
                 {
-                  return UnauthorisedException(errCode, "服务器挂了");
+                  // "服务器挂了"
+                  return UnauthorisedException(
+                      errCode, error.response.statusMessage);
                 }
                 break;
               case 505:
                 {
-                  return UnauthorisedException(errCode, "不支持HTTP协议请求");
+                  // "不支持HTTP协议请求"
+                  return UnauthorisedException(
+                      errCode, error.response.statusMessage);
                 }
                 break;
               default:
@@ -93,19 +107,19 @@ class APIException implements Exception {
                 }
             }
           } on Exception catch (_) {
-            return APIException(-1, "未知错误");
+            return APIException(-1, error.response.statusMessage);
           }
         }
         break;
       default:
         {
-          return APIException(-1, error.message);
+          return APIException(-1, error.response.statusMessage);
         }
     }
   }
 
   @override
-  String toString() => 'Something went wrong! [$code][$message]';
+  String toString() => '$message[$code]';
 }
 
 /// 请求错误
