@@ -41,7 +41,7 @@ class FetchShopDetailAction {
 }
 
 class ShopDetailResponseAction {
-  final Seller seller;
+  final Feed seller;
 
   ShopDetailResponseAction({this.seller});
 }

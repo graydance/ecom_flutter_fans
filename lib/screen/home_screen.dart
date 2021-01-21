@@ -461,7 +461,7 @@ class _ProductItemState extends State<ProductItem> {
             textBaseline: TextBaseline.ideographic,
             children: [
               Text(
-                viewModel.model.currentPrice,
+                viewModel.model.currentPriceStr,
                 style: TextStyle(
                     color: Color(0xff0F1015),
                     fontSize: 18,
@@ -471,7 +471,7 @@ class _ProductItemState extends State<ProductItem> {
                 width: 8,
               ),
               Text(
-                viewModel.model.originalPrice,
+                viewModel.model.originalPriceStr,
                 style: TextStyle(
                     color: Color(0xff979AA9),
                     fontSize: 12,
@@ -804,12 +804,12 @@ class _FeedViewModel {
 }
 
 class _RecommendItemViewModel {
-  final Seller model;
+  final Feed model;
   final VoidCallback onTapAvatar;
 
   _RecommendItemViewModel({this.model, this.onTapAvatar});
 
-  static _RecommendItemViewModel fromStore(Store<AppState> store, Seller item) {
+  static _RecommendItemViewModel fromStore(Store<AppState> store, Feed item) {
     _onTapAvatar() {
       store.dispatch(ShowShopDetailAction(userId: item.id));
       Keys.navigatorKey.currentState.pushNamed(Routes.shop);
