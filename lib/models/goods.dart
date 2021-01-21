@@ -1,68 +1,78 @@
-import 'package:flutter/cupertino.dart';
+import 'dart:convert';
+
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 
 @immutable
 class Goods {
   final String id;
-  final String idolName;
-  final String idolAvatar;
-  final String name;
-  final String media;
-  final String description;
-  final List<String> tags;
-  final double originPrice;
-  final double price;
+  final String picture;
+  final int width;
+  final int height;
 
-  Goods(this.id, this.idolName, this.idolAvatar, this.name, this.media,
-      this.description, this.tags, this.originPrice, this.price);
+  const Goods({
+    this.id = '',
+    this.picture = '',
+    this.width = 1,
+    this.height = 1,
+  });
 
-  Goods copyWith(
-      {bool following,
-      String id,
-      String name,
-      String description,
-      String avatar}) {
+  Goods copyWith({
+    String id,
+    String picture,
+    int width,
+    int height,
+  }) {
     return Goods(
-      id ?? this.id,
-      idolName ?? this.idolName,
-      idolAvatar ?? this.idolAvatar,
-      name ?? this.name,
-      media ?? this.media,
-      description ?? this.description,
-      tags ?? this.tags,
-      originPrice ?? this.originPrice,
-      price ?? this.price,
+      id: id ?? this.id,
+      picture: picture ?? this.picture,
+      width: width ?? this.width,
+      height: height ?? this.height,
     );
   }
 
-  @override
-  int get hashCode =>
-      id.hashCode ^
-      idolName.hashCode ^
-      idolAvatar.hashCode ^
-      name.hashCode ^
-      media.hashCode ^
-      description.hashCode ^
-      tags.hashCode ^
-      originPrice.hashCode ^
-      price.hashCode;
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'picture': picture,
+      'width': width,
+      'height': height,
+    };
+  }
 
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is Goods &&
-          runtimeType == other.runtimeType &&
-          id == other.id &&
-          idolName == other.idolName &&
-          idolAvatar == other.idolAvatar &&
-          name == other.name &&
-          media == other.media &&
-          description == other.description &&
-          tags == other.tags &&
-          originPrice == other.originPrice &&
-          price == other.price;
+  factory Goods.fromMap(Map<String, dynamic> map) {
+    if (map == null) return null;
+
+    return Goods(
+      id: map['id'],
+      picture: map['picture'],
+      width: map['width'],
+      height: map['height'],
+    );
+  }
+
+  String toJson() => json.encode(toMap());
+
+  factory Goods.fromJson(String source) => Goods.fromMap(json.decode(source));
 
   @override
   String toString() {
-    return 'Goods{id: $id, idolName: $idolName, idolAvatar: $idolAvatar name: $name media: $media description: $description tags: $tags originPrice: $originPrice price: $price}';
+    return 'Goods(id: $id, picture: $picture, width: $width, height: $height)';
+  }
+
+  @override
+  bool operator ==(Object o) {
+    if (identical(this, o)) return true;
+
+    return o is Goods &&
+        o.id == id &&
+        o.picture == picture &&
+        o.width == width &&
+        o.height == height;
+  }
+
+  @override
+  int get hashCode {
+    return id.hashCode ^ picture.hashCode ^ width.hashCode ^ height.hashCode;
   }
 }

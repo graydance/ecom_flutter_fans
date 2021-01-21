@@ -1,9 +1,11 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_redux/flutter_redux.dart';
+import 'package:redux/redux.dart';
+
 import 'package:fans/models/models.dart';
 import 'package:fans/screen/components/default_button.dart';
 import 'package:fans/store/actions.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter_redux/flutter_redux.dart';
-import 'package:redux/redux.dart';
 
 class InterestListScreen extends StatefulWidget {
   final void Function() onInit;
@@ -27,8 +29,15 @@ class _InterestListScreenState extends State<InterestListScreen> {
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _ViewModel>(
       converter: _ViewModel.fromStore,
-      builder: (ctx, model) => CupertinoPageScaffold(
-        child: Container(
+      onDidChange: (viewModel) {
+        if (viewModel.isLoading) {
+          EasyLoading.show();
+        } else {
+          EasyLoading.dismiss();
+        }
+      },
+      builder: (ctx, model) => Scaffold(
+        body: Container(
           width: double.infinity,
           height: double.infinity,
           decoration: BoxDecoration(
@@ -58,12 +67,12 @@ class _InterestListScreenState extends State<InterestListScreen> {
                     child: Container(
                       padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                        color: CupertinoColors.white.withAlpha(40),
+                        color: Colors.white54,
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: model.isLoading && model.items.isEmpty
                           ? Center(
-                              child: CupertinoActivityIndicator(),
+                              child: CircularProgressIndicator(),
                             )
                           : Column(
                               children: [
@@ -106,7 +115,10 @@ class _InterestListScreenState extends State<InterestListScreen> {
                       },
                     ),
                   ),
-                  Text(model.error)
+                  Text(
+                    model.error,
+                    style: TextStyle(color: Colors.white, fontSize: 12),
+                  ),
                 ],
               ),
             ),
@@ -173,8 +185,7 @@ class _InterestItemState extends State<InterestItem> {
                       ClipRRect(
                         borderRadius: BorderRadius.circular(60 / 2),
                         child: Container(
-                          decoration: BoxDecoration(
-                              color: CupertinoColors.white.withAlpha(50)),
+                          decoration: BoxDecoration(color: Colors.white54),
                           child: Image(
                             image: NetworkImage(viewModel.interestPortrait),
                             height: 60,

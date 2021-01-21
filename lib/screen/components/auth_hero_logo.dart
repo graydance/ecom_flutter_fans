@@ -1,4 +1,5 @@
-import 'package:flutter/cupertino.dart';
+import 'package:fans/r.g.dart';
+import 'package:flutter/material.dart';
 
 class AuthHeroLogo extends StatelessWidget {
   const AuthHeroLogo({Key key}) : super(key: key);
@@ -8,13 +9,9 @@ class AuthHeroLogo extends StatelessWidget {
     return Container(
       child: Hero(
         tag: 'hero_logo',
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(160 / 2),
-          child: Image(
-            image: AssetImage('assets/images/logo.png'),
-            height: 160,
-            width: 160,
-          ),
+        child: CircleAvatar(
+          radius: 80,
+          backgroundImage: R.image.logo(),
         ),
       ),
     );

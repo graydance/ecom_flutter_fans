@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
@@ -21,7 +21,7 @@ void main() {
             verifyEmail: VerifyEmailState(error: 'error test'),
           ),
         ),
-        child: CupertinoApp(
+        child: MaterialApp(
           home: AuthEmailScreen(),
         )));
 
@@ -39,7 +39,7 @@ void main() {
             auth: LoginOrSignupState(error: 'error test'),
           ),
         ),
-        child: CupertinoApp(
+        child: MaterialApp(
           home: LoginScreen(),
         )));
 
@@ -58,7 +58,7 @@ void main() {
             auth: LoginOrSignupState(error: 'error test'),
           ),
         ),
-        child: CupertinoApp(
+        child: MaterialApp(
           home: SignupScreen(),
         )));
 
@@ -76,7 +76,7 @@ void main() {
             verifyEmail: VerifyEmailState(email: 'email@test.com'),
           ),
         ),
-        child: CupertinoApp(
+        child: MaterialApp(
           home: ForgotPasswordScreen(),
         )));
 

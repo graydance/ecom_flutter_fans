@@ -1,7 +1,8 @@
 import 'dart:async';
 
 import 'package:fans/app.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:fans/storage/auth_storage.dart';
+import 'package:flutter/material.dart';
 
 import 'package:fans/screen/components/auth_hero_logo.dart';
 
@@ -13,17 +14,19 @@ class SplashScreen extends StatefulWidget {
 class SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
-    Timer(
-        Duration(seconds: 3),
-        () => Keys.navigatorKey.currentState
-            .pushReplacementNamed(Routes.welcome));
+    var token = AuthStorage.getToken() ?? '';
+    var root = token.isEmpty ? Routes.welcome : Routes.home;
+
+    Timer(Duration(seconds: 1),
+        () => Keys.navigatorKey.currentState.pushReplacementNamed(root));
+
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return CupertinoPageScaffold(
-      child: Container(
+    return Scaffold(
+      body: Container(
         child: Center(
           child: AuthHeroLogo(),
         ),

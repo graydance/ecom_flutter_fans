@@ -1,5 +1,6 @@
-export './idol.dart';
-export './goods.dart';
 export './appstate.dart';
-export './user.dart';
 export './interest.dart';
+export './user.dart';
+export './goods.dart';
+export './seller.dart';
+export './feed.dart';

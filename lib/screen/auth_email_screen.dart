@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
 
@@ -6,6 +6,7 @@ import 'package:fans/models/models.dart';
 import 'package:fans/screen/components/auth_hero_logo.dart';
 import 'package:fans/screen/components/default_button.dart';
 import 'package:fans/store/actions.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 class AuthEmailScreen extends StatefulWidget {
   AuthEmailScreen({Key key}) : super(key: key);
@@ -18,9 +19,17 @@ class _AuthEmailScreenState extends State<AuthEmailScreen> {
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _ViewModel>(
+      distinct: true,
       converter: _ViewModel.fromStore,
-      builder: (ctx, model) => CupertinoPageScaffold(
-        child: GestureDetector(
+      onDidChange: (viewModel) {
+        if (viewModel.isLoading) {
+          EasyLoading.show();
+        } else {
+          EasyLoading.dismiss();
+        }
+      },
+      builder: (ctx, model) => Scaffold(
+        body: GestureDetector(
           behavior: HitTestBehavior.translucent,
           onTap: () {
             // 触摸收起键盘
@@ -65,11 +74,14 @@ class _AuthEmailScreenState extends State<AuthEmailScreen> {
               SizedBox(height: 40),
               DefaultButton(
                 text: "Log in/Sign up".toUpperCase(),
-                press: () {
-                  if (model.error.isEmpty && _controller.text.isNotEmpty) {
-                    model.onCheckEmail(_controller.text);
-                  }
-                },
+                press: model.isLoading
+                    ? null
+                    : () {
+                        if (model.error.isEmpty &&
+                            _controller.text.isNotEmpty) {
+                          model.onCheckEmail(_controller.text);
+                        }
+                      },
               ),
             ],
           ),
@@ -79,25 +91,24 @@ class _AuthEmailScreenState extends State<AuthEmailScreen> {
   }
 
   _buildTextField(_ViewModel model) {
-    var color = model.error.isEmpty
-        ? CupertinoColors.white
-        : CupertinoColors.destructiveRed;
+    var color = model.error.isEmpty ? Colors.white : Colors.redAccent;
     return Column(
       children: [
-        CupertinoTextField(
+        TextField(
           controller: _controller,
-          placeholder: "Enter your email",
-          placeholderStyle: TextStyle(color: CupertinoColors.white),
+          decoration: InputDecoration(
+              border: InputBorder.none,
+              focusedBorder: InputBorder.none,
+              enabledBorder: InputBorder.none,
+              errorBorder: InputBorder.none,
+              disabledBorder: InputBorder.none,
+              contentPadding:
+                  EdgeInsets.only(left: 15, bottom: 11, top: 11, right: 15),
+              hintText: "Enter your email",
+              hintStyle: TextStyle(color: Colors.white)),
           keyboardType: TextInputType.emailAddress,
           textAlign: TextAlign.center,
-          clearButtonMode: OverlayVisibilityMode.editing,
           onChanged: (value) => model.onClientCheckEmail(value),
-          decoration: BoxDecoration(
-            border: Border.all(
-              width: 0.0,
-              color: Color(0x00FFFFFF),
-            ),
-          ),
           style: TextStyle(color: color),
         ),
         Container(
@@ -108,7 +119,7 @@ class _AuthEmailScreenState extends State<AuthEmailScreen> {
           padding: const EdgeInsets.only(top: 8),
           child: Text(
             model.error,
-            style: TextStyle(color: CupertinoColors.white, fontSize: 12),
+            style: TextStyle(color: Colors.white, fontSize: 12),
           ),
         ),
       ],
@@ -117,11 +128,17 @@ class _AuthEmailScreenState extends State<AuthEmailScreen> {
 }
 
 class _ViewModel {
+  final bool isLoading;
   final String error;
   final Function(String) onClientCheckEmail;
   final Function(String) onCheckEmail;
 
-  _ViewModel(this.error, this.onClientCheckEmail, this.onCheckEmail);
+  _ViewModel({
+    this.isLoading,
+    this.error,
+    this.onClientCheckEmail,
+    this.onCheckEmail,
+  });
   static _ViewModel fromStore(Store<AppState> store) {
     _onClientCheckEmail(String email) {
       store.dispatch(LocalVerifyEmailAction(email));
@@ -132,6 +149,10 @@ class _ViewModel {
     }
 
     return _ViewModel(
-        store.state.verifyEmail.error, _onClientCheckEmail, _onCheckEmail);
+      isLoading: store.state.verifyEmail.isLoading,
+      error: store.state.verifyEmail.error,
+      onClientCheckEmail: _onClientCheckEmail,
+      onCheckEmail: _onCheckEmail,
+    );
   }
 }
