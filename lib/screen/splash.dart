@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:fans/app.dart';
+import 'package:fans/r.g.dart';
 import 'package:fans/storage/auth_storage.dart';
 import 'package:flutter/material.dart';
 
@@ -32,8 +33,9 @@ class SplashScreenState extends State<SplashScreen> {
         ),
         decoration: BoxDecoration(
           image: DecorationImage(
-              image: AssetImage('assets/images/auth_background.png'),
-              fit: BoxFit.cover),
+            image: R.image.auth_background(),
+            fit: BoxFit.cover,
+          ),
         ),
       ),
     );

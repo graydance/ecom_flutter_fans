@@ -51,7 +51,7 @@ class _SearchByTagScreenState extends State<SearchByTagScreen> {
                 height: 12,
                 margin: const EdgeInsets.only(left: 4),
                 child: Image(
-                  image: R.image.interest_selected(),
+                  image: R.image.verified(),
                 ),
               ),
             ],
@@ -152,7 +152,7 @@ class TagProductItem extends StatelessWidget {
                         height: 12,
                         margin: const EdgeInsets.only(left: 4),
                         child: Image(
-                          image: R.image.interest_selected(),
+                          image: R.image.verified(),
                         ),
                       ),
                     ],

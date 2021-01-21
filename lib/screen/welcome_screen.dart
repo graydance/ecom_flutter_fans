@@ -1,3 +1,4 @@
+import 'package:fans/r.g.dart';
 import 'package:flutter/material.dart';
 
 import 'package:fans/app.dart';
@@ -19,8 +20,9 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
         padding: EdgeInsets.symmetric(horizontal: 20),
         decoration: BoxDecoration(
           image: DecorationImage(
-              image: AssetImage('assets/images/auth_background.png'),
-              fit: BoxFit.cover),
+            image: R.image.auth_background(),
+            fit: BoxFit.cover,
+          ),
         ),
         child: SafeArea(
           child: Column(

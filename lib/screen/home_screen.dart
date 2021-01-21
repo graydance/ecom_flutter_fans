@@ -284,7 +284,7 @@ class RecommendItem extends StatelessWidget {
               SizedBox(
                 height: 12,
                 child: Image(
-                  image: R.image.interest_selected(),
+                  image: R.image.verified(),
                 ),
               ),
             ],
@@ -353,14 +353,14 @@ class _ProductItemState extends State<ProductItem> {
                   height: 12,
                   margin: const EdgeInsets.only(left: 4),
                   child: Image(
-                    image: R.image.interest_selected(),
+                    image: R.image.verified(),
                   ),
                 ),
               ],
             ),
             Spacer(),
             IconButton(
-              icon: Icon(Icons.more_vert),
+              icon: Image(image: R.image.more_vert()),
               alignment: Alignment.centerRight,
               onPressed: () {},
             ),
@@ -562,7 +562,7 @@ class _ActivityItemState extends State<ActivityItem> {
                         height: 12,
                         margin: const EdgeInsets.only(left: 4),
                         child: Image(
-                          image: R.image.interest_selected(),
+                          image: R.image.verified(),
                         ),
                       ),
                     ],
