@@ -201,10 +201,11 @@ class _InterestItemState extends State<InterestItem> {
                     height: 15,
                     child: Container(
                       alignment: Alignment.topRight,
-                      child: isSelected
-                          ? Image.asset('assets/images/interest_selected.png')
-                          : Image.asset(
-                              'assets/images/interest_unselected.png'),
+                      child: Image(
+                        image: isSelected
+                            ? R.image.interest_selected()
+                            : R.image.interest_unselected(),
+                      ),
                     ),
                   ),
                 ],
