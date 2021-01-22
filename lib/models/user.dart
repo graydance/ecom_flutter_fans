@@ -1,4 +1,6 @@
-import 'package:flutter/foundation.dart';
+import 'dart:convert';
+
+import 'package:flutter/material.dart';
 
 @immutable
 class User {
@@ -6,9 +8,20 @@ class User {
   final String nickName;
   final String portrait;
   final String email;
+
+  /// 0:默认 1:男 2:女 3:自定义
   final int gender;
   final String aboutMe;
   final String bindPhone;
+  final int availableBalance;
+  final int lifetimeEarnings;
+  final String monetaryCountry;
+  final String monetaryUnit;
+
+  /// 用户开店状态用 默认0,0 未开店,1 已开店,2 店铺违规关闭
+  final int shopStatus;
+  final int heatRank;
+  final String bioLink;
   final String token;
 
   const User({
@@ -19,33 +32,19 @@ class User {
     this.gender = 0,
     this.aboutMe = '',
     this.bindPhone = '',
+    this.availableBalance = 0,
+    this.lifetimeEarnings = 0,
+    this.monetaryCountry = '',
+    this.monetaryUnit = '',
+    this.shopStatus = 0,
+    this.heatRank = 0,
+    this.bioLink = '',
     this.token = '',
   });
 
-  factory User.fromJson(Map<String, dynamic> json) {
-    return User(
-      id: json['id'] as String,
-      nickName: json['nick_name'] as String,
-      portrait: json['portrait'] as String,
-      email: json['email'] as String,
-      gender: json['gender'] as int,
-      aboutMe: json['about_me'] as String,
-      bindPhone: json['bind_phone'] as String,
-      token: json['token'] as String,
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'nick_name': nickName,
-      'portrait': portrait,
-      'email': email,
-      'gender': gender,
-      'about_me': aboutMe,
-      'bind_phone': bindPhone,
-      'token': token,
-    };
+  @override
+  String toString() {
+    return 'User(id: $id, nickName: $nickName, portrait: $portrait, email: $email, gender: $gender, aboutMe: $aboutMe, bindPhone: $bindPhone, availableBalance: $availableBalance, lifetimeEarnings: $lifetimeEarnings, monetaryCountry: $monetaryCountry, monetaryUnit: $monetaryUnit, shopStatus: $shopStatus, heatRank: $heatRank, bioLink: $bioLink, token: $token)';
   }
 
   User copyWith({
@@ -56,6 +55,13 @@ class User {
     int gender,
     String aboutMe,
     String bindPhone,
+    int availableBalance,
+    int lifetimeEarnings,
+    String monetaryCountry,
+    String monetaryUnit,
+    int shopStatus,
+    int heatRank,
+    String bioLink,
     String token,
   }) {
     return User(
@@ -66,13 +72,15 @@ class User {
       gender: gender ?? this.gender,
       aboutMe: aboutMe ?? this.aboutMe,
       bindPhone: bindPhone ?? this.bindPhone,
+      availableBalance: availableBalance ?? this.availableBalance,
+      lifetimeEarnings: lifetimeEarnings ?? this.lifetimeEarnings,
+      monetaryCountry: monetaryCountry ?? this.monetaryCountry,
+      monetaryUnit: monetaryUnit ?? this.monetaryUnit,
+      shopStatus: shopStatus ?? this.shopStatus,
+      heatRank: heatRank ?? this.heatRank,
+      bioLink: bioLink ?? this.bioLink,
       token: token ?? this.token,
     );
-  }
-
-  @override
-  String toString() {
-    return 'User(id: $id, nickName: $nickName, portrait: $portrait, email: $email, gender: $gender, aboutMe: $aboutMe, bindPhone: $bindPhone, token: $token)';
   }
 
   @override
@@ -87,6 +95,13 @@ class User {
         o.gender == gender &&
         o.aboutMe == aboutMe &&
         o.bindPhone == bindPhone &&
+        o.availableBalance == availableBalance &&
+        o.lifetimeEarnings == lifetimeEarnings &&
+        o.monetaryCountry == monetaryCountry &&
+        o.monetaryUnit == monetaryUnit &&
+        o.shopStatus == shopStatus &&
+        o.heatRank == heatRank &&
+        o.bioLink == bioLink &&
         o.token == token;
   }
 
@@ -99,6 +114,59 @@ class User {
         gender.hashCode ^
         aboutMe.hashCode ^
         bindPhone.hashCode ^
+        availableBalance.hashCode ^
+        lifetimeEarnings.hashCode ^
+        monetaryCountry.hashCode ^
+        monetaryUnit.hashCode ^
+        shopStatus.hashCode ^
+        heatRank.hashCode ^
+        bioLink.hashCode ^
         token.hashCode;
   }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'nickName': nickName,
+      'portrait': portrait,
+      'email': email,
+      'gender': gender,
+      'aboutMe': aboutMe,
+      'bindPhone': bindPhone,
+      'availableBalance': availableBalance,
+      'lifetimeEarnings': lifetimeEarnings,
+      'monetaryCountry': monetaryCountry,
+      'monetaryUnit': monetaryUnit,
+      'shopStatus': shopStatus,
+      'heatRank': heatRank,
+      'bioLink': bioLink,
+      'token': token,
+    };
+  }
+
+  factory User.fromMap(Map<String, dynamic> map) {
+    if (map == null) return null;
+
+    return User(
+      id: map['id'] ?? '',
+      nickName: map['nickName'] ?? '',
+      portrait: map['portrait'] ?? '',
+      email: map['email'] ?? '',
+      gender: map['gender'] ?? 0,
+      aboutMe: map['aboutMe'] ?? '',
+      bindPhone: map['bindPhone'] ?? '',
+      availableBalance: map['availableBalance'] ?? 0,
+      lifetimeEarnings: map['lifetimeEarnings'] ?? 0,
+      monetaryCountry: map['monetaryCountry'] ?? '',
+      monetaryUnit: map['monetaryUnit'] ?? '',
+      shopStatus: map['shopStatus'] ?? 0,
+      heatRank: map['heatRank'] ?? 0,
+      bioLink: map['bioLink'] ?? '',
+      token: map['token'] ?? '',
+    );
+  }
+
+  String toJson() => json.encode(toMap());
+
+  factory User.fromJson(String source) => User.fromMap(json.decode(source));
 }

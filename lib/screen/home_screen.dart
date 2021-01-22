@@ -1,7 +1,12 @@
+import 'dart:async';
+
+import 'package:fans/app.dart';
+import 'package:fans/screen/components/tag_button.dart';
 import 'package:fans/store/actions.dart';
 import 'package:fans/store/states.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:redux/redux.dart';
 
 import 'package:fans/models/models.dart';
@@ -9,7 +14,6 @@ import 'package:fans/r.g.dart';
 import 'package:fans/screen/components/avatar_widget.dart';
 import 'package:fans/screen/components/follow_button.dart';
 import 'package:fans/screen/components/meida_carousel_widget.dart';
-import 'package:fans/screen/components/video_player_widget.dart';
 
 class HomeScreen extends StatefulWidget {
   HomeScreen({Key key}) : super(key: key);
@@ -34,6 +38,12 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     TextStyle selectedStyle = new TextStyle(
       color: Color(0xff0F1015),
@@ -45,6 +55,12 @@ class _HomeScreenState extends State<HomeScreen>
     );
     return StoreConnector<AppState, _ViewModel>(
       converter: _ViewModel.fromStore,
+      distinct: true,
+      onInit: (store) {
+        store.dispatch(FetchRecommendSellersAction());
+        store.dispatch(FetchFeedsAction(0, 1, Completer()));
+        store.dispatch(FetchFeedsAction(1, 1, Completer()));
+      },
       builder: (ctx, model) => Column(
         children: [
           Padding(
@@ -73,17 +89,9 @@ class _HomeScreenState extends State<HomeScreen>
               children: [
                 FeedListScreen(
                   viewModel: model.followingViewModel,
-                  onInit: () {
-                    StoreProvider.of<AppState>(context)
-                        .dispatch(FetchFeedsAction(0, 1));
-                  },
                 ),
                 FeedListScreen(
                   viewModel: model.foryouViewModel,
-                  onInit: () {
-                    StoreProvider.of<AppState>(context)
-                        .dispatch(FetchFeedsAction(1, 1));
-                  },
                 ),
               ],
             ),
@@ -109,6 +117,8 @@ class FeedListScreen extends StatefulWidget {
 }
 
 class _FeedListScreenState extends State<FeedListScreen> {
+  final _refreshController = RefreshController(initialRefresh: false);
+
   @override
   void initState() {
     if (widget.onInit != null) widget.onInit();
@@ -119,97 +129,129 @@ class _FeedListScreenState extends State<FeedListScreen> {
   Widget build(BuildContext context) {
     return Container(
       color: Color(0xfff8f8f8),
-      child: ListView.builder(
-        itemBuilder: (ctx, i) {
-          if (i == 0 && widget.viewModel.showRecommends) {
-            return Padding(
-              padding: const EdgeInsets.only(top: 8),
-              child: RecommendListBar(),
-              // Column(
-              //   children: [
-              // Padding(
-              //   padding: const EdgeInsets.only(top: 12.0),
-              //   child: Text(
-              //     'Start by following your favorite stores!',
-              //     style: TextStyle(
-              //       color: Color(0xff0F1015),
-              //       fontSize: 16,
-              //       fontWeight: FontWeight.bold,
-              //     ),
-              //   ),
-              // ),
+      child: widget.viewModel.isEmpty
+          ? Center(
+              child: Text('No Data'),
+            )
+          : SmartRefresher(
+              controller: _refreshController,
+              onRefresh: () async {
+                var action =
+                    FetchFeedsAction(widget.viewModel.type, 1, Completer());
+                StoreProvider.of<AppState>(context).dispatch(action);
 
-              // ],
-            );
-          }
-          if (i == 1 && widget.viewModel.showRecommends) {
-            return Padding(
-              padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
-              child: Text(
-                'Recommended for you',
-                style: TextStyle(
-                  color: Color(0xff0F1015),
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
+                StoreProvider.of<AppState>(context)
+                    .dispatch(FetchRecommendSellersAction());
+                try {
+                  await action.completer.future;
+                  _refreshController.refreshCompleted();
+                } catch (e) {
+                  _refreshController.refreshFailed();
+                }
+              },
+              onLoading: () async {
+                var type = widget.viewModel.type;
+                var currentPage = widget.viewModel.state.currentPage;
+                var action =
+                    FetchFeedsAction(type, currentPage + 1, Completer());
+                StoreProvider.of<AppState>(context).dispatch(action);
+                try {
+                  bool isNoMore = await action.completer.future;
+                  if (isNoMore) {
+                    _refreshController.loadNoData();
+                  } else {
+                    _refreshController.loadComplete();
+                  }
+                } catch (e) {
+                  _refreshController.loadFailed();
+                }
+              },
+              enablePullDown: true,
+              enablePullUp: true,
+              child: ListView.builder(
+                addAutomaticKeepAlives: true,
+                itemCount:
+                    widget.viewModel.items.length + widget.viewModel.offset,
+                itemBuilder: (ctx, i) {
+                  if (i == 0 && widget.viewModel.showRecommends) {
+                    // 'Start by following your favorite stores!',
+                    return Padding(
+                      padding: const EdgeInsets.only(top: 8),
+                      child: RecommendListBar(
+                          list: widget.viewModel.recommendUsers),
+                    );
+                  }
+                  if (i == 1 && widget.viewModel.showRecommends) {
+                    return Padding(
+                      padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
+                      child: Text(
+                        'Recommended for you',
+                        style: TextStyle(
+                          color: Color(0xff0F1015),
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    );
+                  }
+
+                  if (widget.viewModel.items.isEmpty) {
+                    return Center(
+                      child: Text('Following is empty'),
+                    );
+                  }
+
+                  var item =
+                      widget.viewModel.items[i - widget.viewModel.offset];
+                  var childWidget;
+                  if (item.model.responseType == 0) {
+                    childWidget = ProductItem(viewModel: item);
+                  } else {
+                    childWidget = ActivityItem();
+                  }
+                  return Padding(
+                    padding: const EdgeInsets.only(top: 10.0),
+                    child: Container(
+                      color: Colors.white,
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 12, horizontal: 20),
+                      child: childWidget,
+                    ),
+                  );
+                },
               ),
-            );
-          }
-
-          var childWidget;
-          if (i % 2 == 0) {
-            childWidget = ProductItem();
-          } else {
-            childWidget = ActivityItem();
-          }
-          return Padding(
-            padding: const EdgeInsets.only(top: 10.0),
-            child: Container(
-              color: Colors.white,
-              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 20),
-              child: childWidget,
             ),
-          );
-        },
-        itemCount: 20,
-      ),
     );
   }
 }
 
 class RecommendListBar extends StatelessWidget {
+  final List<_RecommendItemViewModel> list;
+
+  const RecommendListBar({Key key, this.list}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Container(
       color: Colors.white,
       padding: const EdgeInsets.only(top: 20),
-      height: 210.0,
+      height: 210,
       child: ListView.builder(
         padding: const EdgeInsets.symmetric(horizontal: 12),
         scrollDirection: Axis.horizontal,
         itemBuilder: (ctx, i) {
-          return RecommendItem(
-            image: testLinks[0],
-            name: _users[0],
-            tag: '#tag tag tag tag tag',
-            desc: '$_users',
-          );
+          return RecommendItem(viewModel: list[i]);
         },
-        itemCount: _users.length,
+        itemCount: list.length,
       ),
     );
   }
 }
 
 class RecommendItem extends StatelessWidget {
-  final String image;
-  final String name;
-  final String tag;
-  final String desc;
+  final _RecommendItemViewModel viewModel;
 
-  const RecommendItem(
-      {Key key, this.image = '', this.name = '', this.tag = '', this.desc = ''})
-      : super(key: key);
+  const RecommendItem({Key key, this.viewModel}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -220,7 +262,8 @@ class RecommendItem extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           AvatarWidget(
-            image: image,
+            image: viewModel.model.portrait,
+            onTap: viewModel.onTapAvatar,
           ),
           SizedBox(
             height: 4,
@@ -230,7 +273,9 @@ class RecommendItem extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                name,
+                viewModel.model.nickName.isNotEmpty
+                    ? viewModel.model.nickName
+                    : 'Nick name',
                 style: TextStyle(color: Color(0xffED8514), fontSize: 14),
               ),
               SizedBox(
@@ -248,16 +293,9 @@ class RecommendItem extends StatelessWidget {
             height: 4,
           ),
           Text(
-            tag,
-            textAlign: TextAlign.center,
-            maxLines: 1,
-            textScaleFactor: 0.9,
-          ),
-          SizedBox(
-            height: 4,
-          ),
-          Text(
-            desc,
+            viewModel.model.aboutMe.isNotEmpty
+                ? viewModel.model.aboutMe
+                : 'Desc',
             textAlign: TextAlign.center,
             maxLines: 2,
             textScaleFactor: 0.9,
@@ -268,8 +306,8 @@ class RecommendItem extends StatelessWidget {
           SizedBox(
             height: 30,
             child: FollowButton(
-              followed: false,
-              onPressed: () {},
+              userId: viewModel.model.id,
+              isFollowed: viewModel.model.followStatus == 1,
             ),
           ),
         ],
@@ -279,7 +317,9 @@ class RecommendItem extends StatelessWidget {
 }
 
 class ProductItem extends StatefulWidget {
-  ProductItem({Key key}) : super(key: key);
+  final _FeedItemViewModel viewModel;
+
+  const ProductItem({Key key, this.viewModel}) : super(key: key);
 
   @override
   _ProductItemState createState() => _ProductItemState();
@@ -288,19 +328,22 @@ class ProductItem extends StatefulWidget {
 class _ProductItemState extends State<ProductItem> {
   @override
   Widget build(BuildContext context) {
+    var viewModel = widget.viewModel;
     return Column(
       children: [
         // User Details
         Row(
           children: [
-            AvatarWidget(),
+            AvatarWidget(
+              onTap: viewModel.onTapAvatar,
+            ),
             SizedBox(
               width: 8,
             ),
             Row(
               children: [
                 Text(
-                  'User.name',
+                  viewModel.model.nickName,
                   style: TextStyle(
                     color: Color(0xffED8514),
                     fontSize: 14,
@@ -328,7 +371,7 @@ class _ProductItemState extends State<ProductItem> {
           child: Align(
             alignment: Alignment.centerLeft,
             child: Text(
-              'Product Name',
+              viewModel.model.productName,
               style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 14,
@@ -337,27 +380,20 @@ class _ProductItemState extends State<ProductItem> {
           ),
         ),
         SizedBox(
-          height: 214,
+          height: 300,
           child: ClipRRect(
             borderRadius: BorderRadius.circular(4.0),
             child: Container(
-              color: Colors.black26,
+              color: Color(0xfff8f8f8),
               child: Stack(
                 children: [
                   MediaCarouselWidget(
-                    items: [
-                      ...videoLinks.map((url) {
-                        return VideoPlayerWideget(
-                          url: url,
-                        );
-                      }).toList(),
-                      ...testLinks.map((url) {
-                        return Image(
-                          fit: BoxFit.cover,
-                          image: NetworkImage(url),
-                        );
-                      }).toList()
-                    ],
+                    items: viewModel.model.goods.map((goods) {
+                      return Image(
+                        fit: BoxFit.cover,
+                        image: NetworkImage(goods.picture),
+                      );
+                    }).toList(),
                   ),
                   Positioned(
                     top: 0,
@@ -391,7 +427,7 @@ class _ProductItemState extends State<ProductItem> {
                           children: [
                             Image(image: R.image.add_cart()),
                             Text(
-                              '233',
+                              viewModel.model.shoppingCar,
                               style:
                                   TextStyle(color: Colors.white, fontSize: 12),
                             ),
@@ -404,7 +440,7 @@ class _ProductItemState extends State<ProductItem> {
                           children: [
                             Image(image: R.image.favorite()),
                             Text(
-                              '1.4k',
+                              viewModel.model.collectNum,
                               style:
                                   TextStyle(color: Colors.white, fontSize: 12),
                             ),
@@ -425,7 +461,7 @@ class _ProductItemState extends State<ProductItem> {
             textBaseline: TextBaseline.ideographic,
             children: [
               Text(
-                '\$21',
+                viewModel.model.currentPrice,
                 style: TextStyle(
                     color: Color(0xff0F1015),
                     fontSize: 18,
@@ -435,7 +471,7 @@ class _ProductItemState extends State<ProductItem> {
                 width: 8,
               ),
               Text(
-                '\$30',
+                viewModel.model.originalPrice,
                 style: TextStyle(
                     color: Color(0xff979AA9),
                     fontSize: 12,
@@ -463,7 +499,7 @@ class _ProductItemState extends State<ProductItem> {
         Align(
           alignment: Alignment.centerLeft,
           child: Text(
-            'Product description product description product description product description xxxxxx',
+            viewModel.model.goodsDescription,
             style: TextStyle(
               color: Color(0xff555764),
               fontSize: 12,
@@ -472,26 +508,17 @@ class _ProductItemState extends State<ProductItem> {
         ),
         Padding(
           padding: const EdgeInsets.only(top: 4.0),
-          child: Row(
-            children: [
-              Text(
-                '#tag1',
-                style: TextStyle(
-                  color: Color(0xff48B6EF),
-                  fontSize: 12,
-                ),
-              ),
-              SizedBox(
-                width: 4,
-              ),
-              Text(
-                '#lifestyle',
-                style: TextStyle(
-                  color: Color(0xff48B6EF),
-                  fontSize: 12,
-                ),
-              ),
-            ],
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: viewModel.model.tagSelected.length,
+            itemBuilder: (ctx, i) {
+              return TagButton(
+                onPressed: () {
+                  Keys.navigatorKey.currentState.pushNamed(Routes.searchByTag);
+                },
+                text: viewModel.model.tagSelected[i],
+              );
+            },
           ),
         ),
       ],
@@ -551,7 +578,7 @@ class _ActivityItemState extends State<ActivityItem> {
               ),
               Spacer(),
               FollowButton(
-                onPressed: () {},
+                userId: 'eLRGN8Bw',
               ),
             ],
           ),
@@ -594,7 +621,7 @@ class _ActivityItemState extends State<ActivityItem> {
   }
 
   _buildGridItems() {
-    var list = testLinks..shuffle();
+    var list = _testLinks..shuffle();
     return list
         .map((url) => ClipRRect(
               borderRadius: BorderRadius.circular(4),
@@ -660,7 +687,7 @@ class _AdItemState extends State<AdItem> {
             child: Container(
                 height: 200,
                 child: MediaCarouselWidget(
-                    items: testLinks.map((url) {
+                    items: _testLinks.map((url) {
                   return Image(
                     fit: BoxFit.cover,
                     image: NetworkImage(url),
@@ -673,37 +700,35 @@ class _AdItemState extends State<AdItem> {
   }
 }
 
-final testLinks = [
-  'https://www.nio.cn/ecs/prod/s3fs-public/mynio-2021/images/et7/et7-hero-desktop.jpg',
+final _testLinks = [
   'https://www.nio.cn/ecs/prod/s3fs-public/ec6/hero-background-mobile.jpg',
   'https://www.nio.cn/ecs/prod/s3fs-public/mynio-2021/images/et7/design/et7-hero-design-aquila-desktop.jpg',
   'https://www.nio.cn/ecs/prod/s3fs-public/inline-images/es8-202004/es8-hero-pc.jpg',
   'https://tesla-cdn.thron.cn/delivery/public/image/tesla/3304be3b-dd0a-4128-9c26-eb61c0b98d61/bvlatuR/std/800x2100/Mobile-ModelY',
-  'https://tesla-cdn.thron.cn/delivery/public/image/tesla/011f6961-d539-48e9-b714-c154bfbaaf8b/bvlatuR/std/800x2100/homepage-model-3-hero-mobile-cn'
+  'https://tesla-cdn.thron.cn/delivery/public/image/tesla/011f6961-d539-48e9-b714-c154bfbaaf8b/bvlatuR/std/800x2100/homepage-model-3-hero-mobile-cn',
+  'https://www.nio.cn/ecs/prod/s3fs-public/mynio-2021/images/et7/et7-hero-desktop.jpg',
 ];
 
-final videoLinks = [
-  'https://www.runoob.com/try/demo_source/mov_bbb.mp4',
-  'https://media.w3.org/2010/05/sintel/trailer.mp4',
-  'http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4',
-];
+// final _videoLinks = [
+//   'https://www.runoob.com/try/demo_source/mov_bbb.mp4',
+//   'https://media.w3.org/2010/05/sintel/trailer.mp4',
+//   'http://clips.vorwaerts-gmbh.de/big_buck_bunny.mp4',
+// ];
 
-final _users = <String>[
-  'currentUser',
-  'grootlover',
-  'rocket',
-  'nebula',
-  'starlord',
-  'gamora',
-];
+// final _users = <String>[
+//   'currentUser',
+//   'grootlover',
+//   'rocket',
+//   'nebula',
+//   'starlord',
+//   'gamora',
+// ];
 
 class _ViewModel {
-  final List<User> recommends;
   final _FeedViewModel followingViewModel;
   final _FeedViewModel foryouViewModel;
 
   _ViewModel({
-    this.recommends = const [],
     this.followingViewModel,
     this.foryouViewModel,
   });
@@ -719,42 +744,93 @@ class _ViewModel {
 class _FeedViewModel {
   final bool isLoading;
   final String error;
+  final int type;
   final bool showRecommends;
-  final FeedsState model;
-  final VoidCallback onRefresh;
-  final Function(int) loadMore;
+  final FeedsState state;
+  final List<_RecommendItemViewModel> recommendUsers;
+  final List<_FeedItemViewModel> items;
+  final int offset;
+  final bool isEmpty;
 
   _FeedViewModel({
     this.isLoading = false,
     this.error = '',
+    this.type = 0,
     this.showRecommends = false,
-    this.model,
-    this.onRefresh,
-    this.loadMore,
+    this.state = const FeedsState(),
+    this.recommendUsers = const [],
+    this.items = const [],
+    this.offset = 0,
+    this.isEmpty = true,
   });
 
   static _FeedViewModel fromStore(Store<AppState> store, int type) {
-    _onRefresh() {
-      store.dispatch(FetchFeedsAction(type, 1));
-    }
-
-    _loadMore(int page) {
-      store.dispatch(FetchFeedsAction(type, page));
-    }
-
     if (type == 0) {
-      return _FeedViewModel(
-        model: store.state.feeds.followingFeeds,
-        showRecommends: true,
-        onRefresh: _onRefresh,
-        loadMore: _loadMore,
+      var items = store.state.feeds.followingFeeds.list
+          .map((model) => _FeedItemViewModel.fromStore(store, model))
+          .toList();
+      var recommendUsers = store.state.feeds.followingFeeds.recommendUsers
+          .map((model) => _RecommendItemViewModel.fromStore(store, model))
+          .toList();
+      var showRecommends = recommendUsers.isNotEmpty;
+      var offset = 0;
+      if (showRecommends) {
+        offset = items.isEmpty ? 1 : 2;
+      }
+      var isEmpty = (items.length + offset) == 0;
+      var model = _FeedViewModel(
+        type: type,
+        showRecommends: showRecommends,
+        state: store.state.feeds.followingFeeds,
+        recommendUsers: recommendUsers,
+        items: items,
+        offset: offset,
+        isEmpty: isEmpty,
       );
+      return model;
     }
 
-    return _FeedViewModel(
-      model: store.state.feeds.forYouFeeds,
-      onRefresh: _onRefresh,
-      loadMore: _loadMore,
+    var items = store.state.feeds.forYouFeeds.list
+        .map((model) => _FeedItemViewModel.fromStore(store, model))
+        .toList();
+    var model = _FeedViewModel(
+      type: type,
+      items: items,
+      state: store.state.feeds.forYouFeeds,
+      isEmpty: items.isEmpty,
     );
+    return model;
+  }
+}
+
+class _RecommendItemViewModel {
+  final Seller model;
+  final VoidCallback onTapAvatar;
+
+  _RecommendItemViewModel({this.model, this.onTapAvatar});
+
+  static _RecommendItemViewModel fromStore(Store<AppState> store, Seller item) {
+    _onTapAvatar() {
+      store.dispatch(ShowShopDetailAction(userId: item.id));
+      Keys.navigatorKey.currentState.pushNamed(Routes.shop);
+    }
+
+    return _RecommendItemViewModel(model: item, onTapAvatar: _onTapAvatar);
+  }
+}
+
+class _FeedItemViewModel {
+  final Feed model;
+  final VoidCallback onTapAvatar;
+
+  _FeedItemViewModel({this.model, this.onTapAvatar});
+
+  static _FeedItemViewModel fromStore(Store<AppState> store, Feed item) {
+    _onTapAvatar() {
+      store.dispatch(ShowShopDetailAction(userId: item.userId));
+      Keys.navigatorKey.currentState.pushNamed(Routes.shop);
+    }
+
+    return _FeedItemViewModel(model: item, onTapAvatar: _onTapAvatar);
   }
 }

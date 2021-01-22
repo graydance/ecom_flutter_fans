@@ -1,7 +1,10 @@
+import 'package:fans/models/seller.dart';
+import 'package:fans/networking/api_exceptions.dart';
+import 'package:fans/networking/networking.dart';
 import 'package:fans/storage/auth_storage.dart';
 import 'package:redux/redux.dart';
 
-import 'package:fans/api.dart';
+import 'package:fans/networking/api.dart';
 import 'package:fans/app.dart';
 import 'package:fans/models/models.dart';
 import 'package:fans/store/actions.dart';
@@ -14,6 +17,9 @@ List<Middleware<AppState>> createStoreMiddleware() {
   final interests = _createFetchInterests();
   final uploadInterests = _createUploadInterests();
   final fetchFeeds = _createFetchFeeds();
+  final searchByTag = _createSearchByTag();
+  final fetchShopDetail = _createShopDetail();
+  final fetchRecommends = _createFetchRecommends();
 
   return [
     TypedMiddleware<AppState, VerifyEmailAction>(verifyEmail),
@@ -23,29 +29,37 @@ List<Middleware<AppState>> createStoreMiddleware() {
     TypedMiddleware<AppState, FetchInterestAction>(interests),
     TypedMiddleware<AppState, UploadInterestsAction>(uploadInterests),
     TypedMiddleware<AppState, FetchFeedsAction>(fetchFeeds),
+    TypedMiddleware<AppState, FetchRecommendSellersAction>(fetchRecommends),
+    TypedMiddleware<AppState, SearchByTagAction>(searchByTag),
+    TypedMiddleware<AppState, FetchShopDetailAction>(fetchShopDetail),
   ];
 }
 
 Middleware<AppState> _createVerifyEmail() {
   return (Store<AppState> store, action, NextDispatcher next) {
     if (action is VerifyEmailAction) {
+      store.dispatch(VerifyEmailLoadingAction());
       var email = action.email;
-      api('/user/login', {'email': email, 'password': ''}).then(
-        (data) {
-          var code = data['code'];
-          if (code == 401) {
+      Networking.request(LoginAPI(email: action.email, password: ''))
+          .then((data) {
+        store.dispatch(VerifyEmailFailedAction(data.toString()));
+      }).catchError((error) {
+        if (error is APIException) {
+          if (error.code == 401) {
             // 用户不存在
             store.dispatch(VerifyEmailSuccessAction(email));
             Keys.navigatorKey.currentState.pushReplacementNamed(Routes.signup);
-          } else if (code == 402) {
+          } else if (error.code == 402) {
             // 邮箱已注册
             store.dispatch(VerifyEmailSuccessAction(email));
             Keys.navigatorKey.currentState.pushReplacementNamed(Routes.login);
           } else {
-            print(data['msg'].toString());
+            store.dispatch(VerifyEmailFailedAction(error.message));
           }
-        },
-      ).catchError((error) => print(error.toString()));
+        } else {
+          store.dispatch(VerifyEmailFailedAction(error.toString()));
+        }
+      });
     }
     next(action);
   };
@@ -54,21 +68,19 @@ Middleware<AppState> _createVerifyEmail() {
 Middleware<AppState> _createLogin() {
   return (Store<AppState> store, action, NextDispatcher next) {
     if (action is LoginAction) {
-      api('/user/login', {'email': action.email, 'password': action.password})
+      store.dispatch(AuthLoadingAction());
+      Networking.request(
+              LoginAPI(email: action.email, password: action.password))
           .then(
         (data) {
-          if (data['code'] == 0) {
-            var user = User.fromJson(data['data']);
-            AuthStorage.setToken(user.token);
-            store.dispatch(LoginSuccessAction(user));
-            Keys.navigatorKey.currentState
-                .pushReplacementNamed(Routes.interests);
-          } else {
-            // store.dispatch(LoginFailureAction(data['msg'].toString()));
-            print(data['msg'].toString());
-          }
+          var user = User.fromMap(data['data']);
+          AuthStorage.setToken(user.token);
+          AuthStorage.setUser(user);
+          store.dispatch(LoginOrSignupSuccessAction(user));
+          Keys.navigatorKey.currentState.pushReplacementNamed(Routes.interests);
         },
-      ).catchError((err) => print(err.toString()));
+      ).catchError((err) =>
+              store.dispatch(LoginOrSignupFailureAction(err.toString())));
     }
     next(action);
   };
@@ -77,21 +89,19 @@ Middleware<AppState> _createLogin() {
 Middleware<AppState> _createSignup() {
   return (Store<AppState> store, action, NextDispatcher next) {
     if (action is SignupAction) {
-      api('/user/login', {'email': action.email, 'password': action.password})
+      store.dispatch(AuthLoadingAction());
+      Networking.request(
+              LoginAPI(email: action.email, password: action.password))
           .then(
         (data) {
-          if (data['code'] == 0) {
-            var user = User.fromJson(data['data']);
-            AuthStorage.setToken(user.token);
-            store.dispatch(SignupSuccessAction(user));
-            Keys.navigatorKey.currentState
-                .pushReplacementNamed(Routes.interests);
-          } else {
-            print(data['msg'].toString());
-            // store.dispatch(SignupFailureAction(data['msg'].toString()));
-          }
+          var user = User.fromMap(data['data']);
+          AuthStorage.setToken(user.token);
+          AuthStorage.setUser(user);
+          store.dispatch(LoginOrSignupSuccessAction(user));
+          Keys.navigatorKey.currentState.pushReplacementNamed(Routes.interests);
         },
-      ).catchError((err) => print(err.toString()));
+      ).catchError((err) =>
+              store.dispatch(LoginOrSignupFailureAction(err.toString())));
     }
     next(action);
   };
@@ -111,16 +121,11 @@ Middleware<AppState> _createFetchInterests() {
   return (Store<AppState> store, action, NextDispatcher next) {
     if (action is FetchInterestAction) {
       store.dispatch(FetchInterestStartLoadingAction());
-      api('/user/interest_list', {}).then(
+      Networking.request(InterestListAPI()).then(
         (data) {
-          if (data['code'] == 0) {
-            var list = (data['data'] as List)
-                .map((e) => Interest.fromJson(e))
-                .toList();
-            store.dispatch(FetchInterestSuccessAction(list));
-          } else {
-            store.dispatch(InterestsFailedAction(data['msg'].toString()));
-          }
+          var list =
+              (data['data'] as List).map((e) => Interest.fromJson(e)).toList();
+          store.dispatch(FetchInterestSuccessAction(list));
         },
       ).catchError(
           (err) => store.dispatch(InterestsFailedAction(err.toString())));
@@ -133,14 +138,11 @@ Middleware<AppState> _createUploadInterests() {
   return (Store<AppState> store, action, NextDispatcher next) {
     if (action is UploadInterestsAction) {
       store.dispatch(FetchInterestStartLoadingAction());
-      api('/user/interest_updata', {'interestIdList': action.idList}).then(
+      Networking.request(UploadInterestsAPI(action.idList)).then(
         (data) {
-          if (data['code'] == 0) {
-            store.dispatch(Keys.navigatorKey.currentState
-                .pushReplacementNamed(Routes.home));
-          } else {
-            store.dispatch(InterestsFailedAction(data['msg'].toString()));
-          }
+          store.dispatch(UploadInterestsSuccessAction());
+          store.dispatch(
+              Keys.navigatorKey.currentState.pushReplacementNamed(Routes.home));
         },
       ).catchError(
           (err) => store.dispatch(InterestsFailedAction(err.toString())));
@@ -152,25 +154,87 @@ Middleware<AppState> _createUploadInterests() {
 Middleware<AppState> _createFetchFeeds() {
   return (Store<AppState> store, action, NextDispatcher next) {
     if (action is FetchFeedsAction) {
-      api('/user/following', {'type': action.type, 'page': action.page}).then(
+      store.dispatch(FetchFeedsStartLoadingAction(action.type));
+      Networking.request(FeedsAPI(type: action.type, page: action.page)).then(
         (data) {
-          if (data['code'] == 0) {
-            var response = data['data'];
-            var totalPage = response['total_page'];
-            var currentPage = response['current_page'];
-            var feeds = (response['list'] as List)
-                .map((e) => Goods.fromJson(e))
-                .toList();
-            store.dispatch(FeedsResponseAction(
-                action.type, totalPage, currentPage, feeds));
-          } else {
-            print(data['msg'].toString());
-            store.dispatch(FeedsResponseFailedAction(data['msg'].toString()));
-          }
+          var response = data['data'];
+          var totalPage = response['total_page'];
+          var currentPage = response['current_page'];
+          var list = response['list'] as List;
+          List<Feed> feeds = list.map((e) => Feed.fromJson(e)).toList();
+
+          bool isNoMore = feeds.isEmpty || currentPage == totalPage;
+          action.completer.complete(isNoMore);
+          store.dispatch(
+              FeedsResponseAction(action.type, totalPage, currentPage, feeds));
+        },
+      ).catchError((err) {
+        action.completer.completeError(err);
+        store.dispatch(FeedsResponseFailedAction(action.type, err.toString()));
+      });
+    }
+    next(action);
+  };
+}
+
+Middleware<AppState> _createFetchRecommends() {
+  return (Store<AppState> store, action, NextDispatcher next) {
+    if (action is FetchRecommendSellersAction) {
+      Networking.request(RecommendSellerAPI()).then(
+        (data) {
+          var response = data['data'];
+          var list = response['list'] as List;
+          List<Seller> models = list.map((e) => Seller.fromMap(e)).toList();
+
+          store.dispatch(RecommendSellersResponseAction(models));
         },
       ).catchError((err) {
         print(err.toString());
-        store.dispatch(FeedsResponseFailedAction(err.toString()));
+      });
+    }
+    next(action);
+  };
+}
+
+Middleware<AppState> _createSearchByTag() {
+  return (Store<AppState> store, action, NextDispatcher next) {
+    if (action is SearchByTagAction) {
+      Networking.request(TagSearchAPI(
+              tag: action.tag,
+              userId: action.userId,
+              page: action.page,
+              limit: action.limit))
+          .then(
+        (data) {
+          var response = data['data'];
+          var totalPage = response['total_page'];
+          var currentPage = response['current_page'];
+          var list = response['list'] as List;
+          List<Goods> feeds = list.map((e) => Goods.fromJson(e)).toList();
+
+          bool isNoMore = feeds.isEmpty || currentPage == totalPage;
+          action.completer.complete(isNoMore);
+          store.dispatch(
+              SearchByTagResponseAction(totalPage, currentPage, feeds));
+        },
+      ).catchError((err) {
+        action.completer.completeError(err.toString());
+      });
+    }
+    next(action);
+  };
+}
+
+Middleware<AppState> _createShopDetail() {
+  return (Store<AppState> store, action, NextDispatcher next) {
+    if (action is FetchShopDetailAction) {
+      Networking.request(ShopDetailAPI(action.userId)).then(
+        (data) {
+          var seller = Seller.fromMap(data['data']);
+          store.dispatch(ShopDetailResponseAction(seller: seller));
+        },
+      ).catchError((err) {
+        store.dispatch(ShopDetailFailedAction(error: err.toString()));
       });
     }
     next(action);

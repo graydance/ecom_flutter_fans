@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
 
@@ -20,6 +21,13 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _ViewModel>(
       converter: _ViewModel.fromStore,
+      onDidChange: (viewModel) {
+        if (viewModel.isLoading) {
+          EasyLoading.show();
+        } else {
+          EasyLoading.dismiss();
+        }
+      },
       onInit: (store) => _controller =
           TextEditingController(text: store.state.verifyEmail.email),
       builder: (ctx, model) => Scaffold(
@@ -134,13 +142,13 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 }
 
 class _ViewModel {
-  final bool loading;
+  final bool isLoading;
   final String error;
   final String email;
   final Function(String) onSend;
   final Function(String) onClientCheckEmail;
 
-  _ViewModel(this.loading, this.error, this.email, this.onSend,
+  _ViewModel(this.isLoading, this.error, this.email, this.onSend,
       this.onClientCheckEmail);
   static _ViewModel fromStore(Store<AppState> store) {
     _onSend(String email) {
@@ -151,7 +159,7 @@ class _ViewModel {
       store.dispatch(LocalVerifyEmailAction(email));
     }
 
-    return _ViewModel(store.state.isLoading, store.state.error,
+    return _ViewModel(store.state.auth.isLoading, store.state.auth.error,
         store.state.verifyEmail.email, _onSend, _onCheck);
   }
 }

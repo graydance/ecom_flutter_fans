@@ -165,6 +165,39 @@ class _R_Image_AssetResource {
   final interest_unselected =
       const AssetResource("assets/images/interest_unselected.png", packageName: null);
 
+  /// asset: assets/images/kol/kol_album_bg.png
+  // ignore: non_constant_identifier_names
+  final kol_album_bg = const AssetResource("assets/images/kol/kol_album_bg.png", packageName: null);
+
+  /// asset: assets/images/kol/kol_cart.png
+  // ignore: non_constant_identifier_names
+  final kol_cart = const AssetResource("assets/images/kol/kol_cart.png", packageName: null);
+
+  /// asset: assets/images/kol/kol_detail_bg.png
+  // ignore: non_constant_identifier_names
+  final kol_detail_bg =
+      const AssetResource("assets/images/kol/kol_detail_bg.png", packageName: null);
+
+  /// asset: assets/images/kol/kol_tab_album.png
+  // ignore: non_constant_identifier_names
+  final kol_tab_album =
+      const AssetResource("assets/images/kol/kol_tab_album.png", packageName: null);
+
+  /// asset: assets/images/kol/kol_tab_album_unselected.png
+  // ignore: non_constant_identifier_names
+  final kol_tab_album_unselected =
+      const AssetResource("assets/images/kol/kol_tab_album_unselected.png", packageName: null);
+
+  /// asset: assets/images/kol/kol_tab_photos.png
+  // ignore: non_constant_identifier_names
+  final kol_tab_photos =
+      const AssetResource("assets/images/kol/kol_tab_photos.png", packageName: null);
+
+  /// asset: assets/images/kol/kol_tab_photos_unselected.png
+  // ignore: non_constant_identifier_names
+  final kol_tab_photos_unselected =
+      const AssetResource("assets/images/kol/kol_tab_photos_unselected.png", packageName: null);
+
   /// asset: assets/images/logo.png
   // ignore: non_constant_identifier_names
   final logo = const AssetResource("assets/images/logo.png", packageName: null);
@@ -321,6 +354,48 @@ class _R_Image {
   // ignore: non_constant_identifier_names
   AssetImage interest_unselected() {
     return AssetImage(asset.interest_unselected.keyName);
+  }
+
+  /// asset: assets/images/kol/kol_album_bg.png
+  // ignore: non_constant_identifier_names
+  AssetImage kol_album_bg() {
+    return AssetImage(asset.kol_album_bg.keyName);
+  }
+
+  /// asset: assets/images/kol/kol_cart.png
+  // ignore: non_constant_identifier_names
+  AssetImage kol_cart() {
+    return AssetImage(asset.kol_cart.keyName);
+  }
+
+  /// asset: assets/images/kol/kol_detail_bg.png
+  // ignore: non_constant_identifier_names
+  AssetImage kol_detail_bg() {
+    return AssetImage(asset.kol_detail_bg.keyName);
+  }
+
+  /// asset: assets/images/kol/kol_tab_album.png
+  // ignore: non_constant_identifier_names
+  AssetImage kol_tab_album() {
+    return AssetImage(asset.kol_tab_album.keyName);
+  }
+
+  /// asset: assets/images/kol/kol_tab_album_unselected.png
+  // ignore: non_constant_identifier_names
+  AssetImage kol_tab_album_unselected() {
+    return AssetImage(asset.kol_tab_album_unselected.keyName);
+  }
+
+  /// asset: assets/images/kol/kol_tab_photos.png
+  // ignore: non_constant_identifier_names
+  AssetImage kol_tab_photos() {
+    return AssetImage(asset.kol_tab_photos.keyName);
+  }
+
+  /// asset: assets/images/kol/kol_tab_photos_unselected.png
+  // ignore: non_constant_identifier_names
+  AssetImage kol_tab_photos_unselected() {
+    return AssetImage(asset.kol_tab_photos_unselected.keyName);
   }
 
   /// asset: assets/images/logo.png

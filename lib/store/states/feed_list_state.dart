@@ -4,47 +4,53 @@ import 'package:fans/models/models.dart';
 
 @immutable
 class HomeState {
+  final bool isLoading;
   final FeedsState followingFeeds;
   final FeedsState forYouFeeds;
 
   const HomeState({
+    this.isLoading = false,
     this.followingFeeds = const FeedsState(),
     this.forYouFeeds = const FeedsState(),
   });
 
-  @override
-  bool operator ==(Object o) {
-    if (identical(this, o)) return true;
-
-    return o is HomeState &&
-        o.followingFeeds == followingFeeds &&
-        o.forYouFeeds == forYouFeeds;
-  }
-
-  @override
-  int get hashCode => followingFeeds.hashCode ^ forYouFeeds.hashCode;
-
   HomeState copyWith({
+    bool isLoading,
     FeedsState followingFeeds,
     FeedsState forYouFeeds,
   }) {
     return HomeState(
+      isLoading: isLoading ?? this.isLoading,
       followingFeeds: followingFeeds ?? this.followingFeeds,
       forYouFeeds: forYouFeeds ?? this.forYouFeeds,
     );
   }
 
   @override
+  bool operator ==(Object o) {
+    if (identical(this, o)) return true;
+
+    return o is HomeState &&
+        o.isLoading == isLoading &&
+        o.followingFeeds == followingFeeds &&
+        o.forYouFeeds == forYouFeeds;
+  }
+
+  @override
+  int get hashCode =>
+      isLoading.hashCode ^ followingFeeds.hashCode ^ forYouFeeds.hashCode;
+
+  @override
   String toString() =>
-      'HomeState(followingFeeds: $followingFeeds, forYouFeeds: $forYouFeeds)';
+      'HomeState(isLoading: $isLoading, followingFeeds: $followingFeeds, forYouFeeds: $forYouFeeds)';
 }
 
 @immutable
 class FeedsState {
   final bool isLoading;
   final String error;
-  final List<Goods> list;
-  final List<User> recommendUsers;
+  final List<Feed> list;
+  final List<Seller> recommendUsers;
   final int currentPage;
   final int totalPage;
 
@@ -60,8 +66,8 @@ class FeedsState {
   FeedsState copyWith({
     bool isLoading,
     String error,
-    List<Goods> list,
-    List<User> recommendUsers,
+    List<Feed> list,
+    List<Seller> recommendUsers,
     int currentPage,
     int totalPage,
   }) {

@@ -53,8 +53,8 @@ class PhotoCarouselIndicator extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.only(left: 3.0, right: 3.0),
         child: Container(
-          height: isActive ? 7.5 : 6.0,
-          width: isActive ? 7.5 : 6.0,
+          height: isActive ? 4.5 : 4.0,
+          width: isActive ? 4.5 : 4.0,
           decoration: BoxDecoration(
             color: isActive ? Colors.white : Colors.white38,
             borderRadius: BorderRadius.circular(4.0),

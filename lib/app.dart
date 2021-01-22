@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
 
 import 'package:fans/models/appstate.dart';
 import 'package:fans/screen/interest_list_screen.dart';
 import 'package:fans/screen/screens.dart';
+import 'package:fans/screen/shop_screen.dart';
 import 'package:fans/store/actions.dart';
 
 class ReduxApp extends StatelessWidget {
@@ -37,7 +39,15 @@ class ReduxApp extends StatelessWidget {
             Routes.home: (context) => TabbarScreen(
                   onInit: () {},
                 ),
+            Routes.searchByTag: (context) => SearchByTagScreen(
+                  onInit: () {
+                    StoreProvider.of<AppState>(context)
+                        .dispatch(SearchByTagAction());
+                  },
+                ),
+            Routes.shop: (context) => ShopDetailScreen(),
           },
+          builder: EasyLoading.init(),
         ));
   }
 }
@@ -55,4 +65,6 @@ class Routes {
   static final forgotPassword = '/forgot_password';
   static final interests = 'interests';
   static final home = '/home';
+  static final searchByTag = '/search_by_tag';
+  static final shop = 'shop';
 }
