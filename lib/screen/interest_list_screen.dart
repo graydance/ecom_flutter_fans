@@ -1,3 +1,4 @@
+import 'package:fans/r.g.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -42,8 +43,9 @@ class _InterestListScreenState extends State<InterestListScreen> {
           height: double.infinity,
           decoration: BoxDecoration(
             image: DecorationImage(
-                image: AssetImage('assets/images/auth_background.png'),
-                fit: BoxFit.cover),
+              image: R.image.auth_background(),
+              fit: BoxFit.cover,
+            ),
           ),
           child: SafeArea(
             child: Padding(
@@ -199,10 +201,11 @@ class _InterestItemState extends State<InterestItem> {
                     height: 15,
                     child: Container(
                       alignment: Alignment.topRight,
-                      child: isSelected
-                          ? Image.asset('assets/images/interest_selected.png')
-                          : Image.asset(
-                              'assets/images/interest_unselected.png'),
+                      child: Image(
+                        image: isSelected
+                            ? R.image.interest_selected()
+                            : R.image.interest_unselected(),
+                      ),
                     ),
                   ),
                 ],

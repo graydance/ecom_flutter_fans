@@ -284,7 +284,7 @@ class RecommendItem extends StatelessWidget {
               SizedBox(
                 height: 12,
                 child: Image(
-                  image: R.image.interest_selected(),
+                  image: R.image.verified(),
                 ),
               ),
             ],
@@ -353,14 +353,14 @@ class _ProductItemState extends State<ProductItem> {
                   height: 12,
                   margin: const EdgeInsets.only(left: 4),
                   child: Image(
-                    image: R.image.interest_selected(),
+                    image: R.image.verified(),
                   ),
                 ),
               ],
             ),
             Spacer(),
             IconButton(
-              icon: Icon(Icons.more_vert),
+              icon: Image(image: R.image.more_vert()),
               alignment: Alignment.centerRight,
               onPressed: () {},
             ),
@@ -461,7 +461,7 @@ class _ProductItemState extends State<ProductItem> {
             textBaseline: TextBaseline.ideographic,
             children: [
               Text(
-                viewModel.model.currentPrice,
+                viewModel.model.currentPriceStr,
                 style: TextStyle(
                     color: Color(0xff0F1015),
                     fontSize: 18,
@@ -471,7 +471,7 @@ class _ProductItemState extends State<ProductItem> {
                 width: 8,
               ),
               Text(
-                viewModel.model.originalPrice,
+                viewModel.model.originalPriceStr,
                 style: TextStyle(
                     color: Color(0xff979AA9),
                     fontSize: 12,
@@ -562,7 +562,7 @@ class _ActivityItemState extends State<ActivityItem> {
                         height: 12,
                         margin: const EdgeInsets.only(left: 4),
                         child: Image(
-                          image: R.image.interest_selected(),
+                          image: R.image.verified(),
                         ),
                       ),
                     ],
@@ -804,12 +804,12 @@ class _FeedViewModel {
 }
 
 class _RecommendItemViewModel {
-  final Seller model;
+  final Feed model;
   final VoidCallback onTapAvatar;
 
   _RecommendItemViewModel({this.model, this.onTapAvatar});
 
-  static _RecommendItemViewModel fromStore(Store<AppState> store, Seller item) {
+  static _RecommendItemViewModel fromStore(Store<AppState> store, Feed item) {
     _onTapAvatar() {
       store.dispatch(ShowShopDetailAction(userId: item.id));
       Keys.navigatorKey.currentState.pushNamed(Routes.shop);

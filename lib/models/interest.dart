@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 
 @immutable
@@ -7,22 +9,6 @@ class Interest {
   final String interestName;
 
   const Interest({this.id, this.interestPortrait, this.interestName});
-
-  factory Interest.fromJson(Map<String, dynamic> json) {
-    return Interest(
-      id: json['id'] as String,
-      interestPortrait: json['interestPortrait'] as String,
-      interestName: json['interestName'] as String,
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'interestPortrait': interestPortrait,
-      'interestName': interestName,
-    };
-  }
 
   Interest copyWith({
     String id,
@@ -53,4 +39,27 @@ class Interest {
   @override
   int get hashCode =>
       id.hashCode ^ interestPortrait.hashCode ^ interestName.hashCode;
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'interestPortrait': interestPortrait,
+      'interestName': interestName,
+    };
+  }
+
+  factory Interest.fromMap(Map<String, dynamic> map) {
+    if (map == null) return null;
+
+    return Interest(
+      id: map['id'] ?? '',
+      interestPortrait: map['interestPortrait'] ?? '',
+      interestName: map['interestName'] ?? '',
+    );
+  }
+
+  String toJson() => json.encode(toMap());
+
+  factory Interest.fromJson(String source) =>
+      Interest.fromMap(json.decode(source));
 }

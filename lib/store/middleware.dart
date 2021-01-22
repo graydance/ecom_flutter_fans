@@ -1,4 +1,4 @@
-import 'package:fans/models/seller.dart';
+import 'package:fans/models/feed.dart';
 import 'package:fans/networking/api_exceptions.dart';
 import 'package:fans/networking/networking.dart';
 import 'package:fans/storage/auth_storage.dart';
@@ -124,7 +124,7 @@ Middleware<AppState> _createFetchInterests() {
       Networking.request(InterestListAPI()).then(
         (data) {
           var list =
-              (data['data'] as List).map((e) => Interest.fromJson(e)).toList();
+              (data['data'] as List).map((e) => Interest.fromMap(e)).toList();
           store.dispatch(FetchInterestSuccessAction(list));
         },
       ).catchError(
@@ -161,7 +161,7 @@ Middleware<AppState> _createFetchFeeds() {
           var totalPage = response['total_page'];
           var currentPage = response['current_page'];
           var list = response['list'] as List;
-          List<Feed> feeds = list.map((e) => Feed.fromJson(e)).toList();
+          List<Feed> feeds = list.map((e) => Feed.fromMap(e)).toList();
 
           bool isNoMore = feeds.isEmpty || currentPage == totalPage;
           action.completer.complete(isNoMore);
@@ -184,7 +184,7 @@ Middleware<AppState> _createFetchRecommends() {
         (data) {
           var response = data['data'];
           var list = response['list'] as List;
-          List<Seller> models = list.map((e) => Seller.fromMap(e)).toList();
+          List<Feed> models = list.map((e) => Feed.fromMap(e)).toList();
 
           store.dispatch(RecommendSellersResponseAction(models));
         },
@@ -210,7 +210,7 @@ Middleware<AppState> _createSearchByTag() {
           var totalPage = response['total_page'];
           var currentPage = response['current_page'];
           var list = response['list'] as List;
-          List<Goods> feeds = list.map((e) => Goods.fromJson(e)).toList();
+          List<Goods> feeds = list.map((e) => Goods.fromMap(e)).toList();
 
           bool isNoMore = feeds.isEmpty || currentPage == totalPage;
           action.completer.complete(isNoMore);
@@ -230,7 +230,7 @@ Middleware<AppState> _createShopDetail() {
     if (action is FetchShopDetailAction) {
       Networking.request(ShopDetailAPI(action.userId)).then(
         (data) {
-          var seller = Seller.fromMap(data['data']);
+          var seller = Feed.fromMap(data['data']);
           store.dispatch(ShopDetailResponseAction(seller: seller));
         },
       ).catchError((err) {

@@ -8,6 +8,8 @@ import 'package:fans/screen/components/default_button.dart';
 import 'package:fans/store/actions.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 
+import '../r.g.dart';
+
 class AuthEmailScreen extends StatefulWidget {
   AuthEmailScreen({Key key}) : super(key: key);
 
@@ -55,8 +57,9 @@ class _AuthEmailScreenState extends State<AuthEmailScreen> {
       height: double.infinity,
       decoration: BoxDecoration(
         image: DecorationImage(
-            image: AssetImage('assets/images/auth_background.png'),
-            fit: BoxFit.cover),
+          image: R.image.auth_background(),
+          fit: BoxFit.cover,
+        ),
       ),
       child: SafeArea(
         child: SingleChildScrollView(

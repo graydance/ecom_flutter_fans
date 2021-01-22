@@ -44,10 +44,10 @@ class Goods {
     if (map == null) return null;
 
     return Goods(
-      id: map['id'],
-      picture: map['picture'],
-      width: map['width'],
-      height: map['height'],
+      id: map['id'] ?? '',
+      picture: map['picture'] ?? '',
+      width: map['width'] ?? 1,
+      height: map['height'] ?? 1,
     );
   }
 

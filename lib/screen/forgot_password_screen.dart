@@ -7,6 +7,8 @@ import 'package:fans/models/appstate.dart';
 import 'package:fans/screen/components/default_button.dart';
 import 'package:fans/store/actions.dart';
 
+import '../r.g.dart';
+
 class ForgotPasswordScreen extends StatefulWidget {
   ForgotPasswordScreen({Key key}) : super(key: key);
 
@@ -62,8 +64,9 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       height: double.infinity,
       decoration: BoxDecoration(
         image: DecorationImage(
-            image: AssetImage('assets/images/auth_background.png'),
-            fit: BoxFit.cover),
+          image: R.image.auth_background(),
+          fit: BoxFit.cover,
+        ),
       ),
       child: SafeArea(
         child: SingleChildScrollView(

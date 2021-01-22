@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:fans/models/models.dart';
-import 'package:fans/models/seller.dart';
+import 'package:fans/models/feed.dart';
 
 class FetchFeedsStartLoadingAction {
   /// 类型选择( 0:following , 1:for you)
@@ -40,7 +40,7 @@ class FeedsResponseFailedAction {
 class FetchRecommendSellersAction {}
 
 class RecommendSellersResponseAction {
-  final List<Seller> sellers;
+  final List<Feed> sellers;
 
   RecommendSellersResponseAction(this.sellers);
 }
