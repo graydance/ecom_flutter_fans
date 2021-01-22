@@ -1,4 +1,8 @@
-import 'package:fans/models/models.dart';
+import 'dart:convert';
+
+import 'package:flutter/foundation.dart';
+
+import 'goods.dart';
 
 class Feed {
   final String id;
@@ -6,87 +10,46 @@ class Feed {
   final int responseType;
   final String portrait;
   final String nickName;
+  final String aboutMe;
+  final int followStatus;
   final String productName;
-  final String originalPrice;
-  final String currentPrice;
+  final int originalPrice;
+  final String originalPriceStr;
+  final int currentPrice;
+  final String currentPriceStr;
   final String goodsDescription;
+  final String discount;
   final String shoppingCar;
   final String collectNum;
-  final List<String> tagNormal;
-  final List<String> tagSelected;
-
-  /// 关注的人数
   final String followNum;
   final String bioLink;
+  final List<String> tagNormal;
+  final List<String> tagSelected;
   final List<Goods> goods;
 
   const Feed({
-    this.id = '',
-    this.userId = '',
-    this.responseType = 0,
-    this.portrait = '',
-    this.nickName = '',
-    this.productName = '',
-    this.originalPrice = '',
-    this.currentPrice = '',
-    this.goodsDescription = '',
-    this.shoppingCar = '',
-    this.collectNum = '',
-    this.tagNormal = const [],
-    this.tagSelected = const [],
-    this.followNum = '',
-    this.bioLink = '',
-    this.goods = const [],
+    this.id,
+    this.userId,
+    this.responseType,
+    this.portrait,
+    this.nickName,
+    this.aboutMe,
+    this.followStatus,
+    this.productName,
+    this.originalPrice,
+    this.originalPriceStr,
+    this.currentPrice,
+    this.currentPriceStr,
+    this.goodsDescription,
+    this.discount,
+    this.shoppingCar,
+    this.collectNum,
+    this.followNum,
+    this.bioLink,
+    this.tagNormal,
+    this.tagSelected,
+    this.goods,
   });
-
-  @override
-  String toString() {
-    return 'Feed(id: $id, userId: $userId, responseType: $responseType, portrait: $portrait, nickName: $nickName, productName: $productName, originalPrice: $originalPrice, currentPrice: $currentPrice, goodsDescription: $goodsDescription, shoppingCar: $shoppingCar, collectNum: $collectNum, tagNormal: $tagNormal, tagSelected: $tagSelected, followNum: $followNum, bioLink: $bioLink, goods: $goods)';
-  }
-
-  factory Feed.fromJson(Map<String, dynamic> json) {
-    return Feed(
-      id: json['id'] as String,
-      userId: json['userId'] as String,
-      responseType: json['responseType'] as int,
-      portrait: json['portrait'] as String,
-      nickName: json['nickName'] as String,
-      productName: json['productName'] as String,
-      originalPrice: json['originalPrice'] as String,
-      currentPrice: json['currentPrice'] as String,
-      goodsDescription: json['goodsDescription'] as String,
-      shoppingCar: json['shoppingCar'] as String,
-      collectNum: json['collectNum'] as String,
-      tagNormal: json['tagNormal'] as List<String>,
-      tagSelected: json['tagSelected'] as List<String>,
-      followNum: json['followNum'] as String,
-      bioLink: json['bioLink'] as String,
-      goods: (json['goods'] as List)?.map((e) {
-        return e == null ? null : Goods.fromMap(e);
-      })?.toList(),
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'userId': userId,
-      'responseType': responseType,
-      'portrait': portrait,
-      'nickName': nickName,
-      'productName': productName,
-      'originalPrice': originalPrice,
-      'currentPrice': currentPrice,
-      'goodsDescription': goodsDescription,
-      'shoppingCar': shoppingCar,
-      'collectNum': collectNum,
-      'tagNormal': tagNormal,
-      'tagSelected': tagSelected,
-      'followNum': followNum,
-      'bioLink': bioLink,
-      'goods': goods?.map((e) => e?.toJson())?.toList(),
-    };
-  }
 
   Feed copyWith({
     String id,
@@ -94,16 +57,21 @@ class Feed {
     int responseType,
     String portrait,
     String nickName,
+    String aboutMe,
+    int followStatus,
     String productName,
     int originalPrice,
+    String originalPriceStr,
     int currentPrice,
+    String currentPriceStr,
     String goodsDescription,
-    int shoppingCar,
-    int collectNum,
-    List<String> tagNormal,
-    List<String> tagSelected,
+    String discount,
+    String shoppingCar,
+    String collectNum,
     String followNum,
     String bioLink,
+    List<String> tagNormal,
+    List<String> tagSelected,
     List<Goods> goods,
   }) {
     return Feed(
@@ -112,17 +80,138 @@ class Feed {
       responseType: responseType ?? this.responseType,
       portrait: portrait ?? this.portrait,
       nickName: nickName ?? this.nickName,
+      aboutMe: aboutMe ?? this.aboutMe,
+      followStatus: followStatus ?? this.followStatus,
       productName: productName ?? this.productName,
       originalPrice: originalPrice ?? this.originalPrice,
+      originalPriceStr: originalPriceStr ?? this.originalPriceStr,
       currentPrice: currentPrice ?? this.currentPrice,
+      currentPriceStr: currentPriceStr ?? this.currentPriceStr,
       goodsDescription: goodsDescription ?? this.goodsDescription,
+      discount: discount ?? this.discount,
       shoppingCar: shoppingCar ?? this.shoppingCar,
       collectNum: collectNum ?? this.collectNum,
-      tagNormal: tagNormal ?? this.tagNormal,
-      tagSelected: tagSelected ?? this.tagSelected,
       followNum: followNum ?? this.followNum,
       bioLink: bioLink ?? this.bioLink,
+      tagNormal: tagNormal ?? this.tagNormal,
+      tagSelected: tagSelected ?? this.tagSelected,
       goods: goods ?? this.goods,
     );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'userId': userId,
+      'responseType': responseType,
+      'portrait': portrait,
+      'nickName': nickName,
+      'aboutMe': aboutMe,
+      'followStatus': followStatus,
+      'productName': productName,
+      'originalPrice': originalPrice,
+      'originalPriceStr': originalPriceStr,
+      'currentPrice': currentPrice,
+      'currentPriceStr': currentPriceStr,
+      'goodsDescription': goodsDescription,
+      'discount': discount,
+      'shoppingCar': shoppingCar,
+      'collectNum': collectNum,
+      'followNum': followNum,
+      'bioLink': bioLink,
+      'tagNormal': tagNormal,
+      'tagSelected': tagSelected,
+      'goods': goods?.map((x) => x?.toMap())?.toList(),
+    };
+  }
+
+  factory Feed.fromMap(Map<String, dynamic> map) {
+    if (map == null) return null;
+
+    return Feed(
+      id: map['id'] ?? '',
+      userId: map['userId'] ?? '',
+      responseType: map['responseType'] ?? 0,
+      portrait: map['portrait'] ?? '',
+      nickName: map['nickName'] ?? '',
+      aboutMe: map['aboutMe'] ?? '',
+      followStatus: map['followStatus'] ?? 0,
+      productName: map['productName'] ?? '',
+      originalPrice: map['originalPrice'] ?? 0,
+      originalPriceStr: map['originalPriceStr'] ?? '',
+      currentPrice: map['currentPrice'] ?? 0,
+      currentPriceStr: map['currentPriceStr'] ?? '',
+      goodsDescription: map['goodsDescription'] ?? '',
+      discount: map['discount'] ?? '',
+      shoppingCar: map['shoppingCar'] ?? '',
+      collectNum: map['collectNum'] ?? '',
+      followNum: map['followNum'] ?? '',
+      bioLink: map['bioLink'] ?? '',
+      tagNormal: map['tagNormal'] ?? [],
+      tagSelected: map['tagSelected'] ?? [],
+      goods: (map['goods'])?.map((x) => Goods.fromMap(x)) ?? [],
+    );
+  }
+
+  String toJson() => json.encode(toMap());
+
+  factory Feed.fromJson(String source) => Feed.fromMap(json.decode(source));
+
+  @override
+  String toString() {
+    return 'Feed(id: $id, userId: $userId, responseType: $responseType, portrait: $portrait, nickName: $nickName, aboutMe: $aboutMe, followStatus: $followStatus, productName: $productName, originalPrice: $originalPrice, originalPriceStr: $originalPriceStr, currentPrice: $currentPrice, currentPriceStr: $currentPriceStr, goodsDescription: $goodsDescription, discount: $discount, shoppingCar: $shoppingCar, collectNum: $collectNum, followNum: $followNum, bioLink: $bioLink, tagNormal: $tagNormal, tagSelected: $tagSelected, goods: $goods)';
+  }
+
+  @override
+  bool operator ==(Object o) {
+    if (identical(this, o)) return true;
+
+    return o is Feed &&
+        o.id == id &&
+        o.userId == userId &&
+        o.responseType == responseType &&
+        o.portrait == portrait &&
+        o.nickName == nickName &&
+        o.aboutMe == aboutMe &&
+        o.followStatus == followStatus &&
+        o.productName == productName &&
+        o.originalPrice == originalPrice &&
+        o.originalPriceStr == originalPriceStr &&
+        o.currentPrice == currentPrice &&
+        o.currentPriceStr == currentPriceStr &&
+        o.goodsDescription == goodsDescription &&
+        o.discount == discount &&
+        o.shoppingCar == shoppingCar &&
+        o.collectNum == collectNum &&
+        o.followNum == followNum &&
+        o.bioLink == bioLink &&
+        listEquals(o.tagNormal, tagNormal) &&
+        listEquals(o.tagSelected, tagSelected) &&
+        listEquals(o.goods, goods);
+  }
+
+  @override
+  int get hashCode {
+    return id.hashCode ^
+        userId.hashCode ^
+        responseType.hashCode ^
+        portrait.hashCode ^
+        nickName.hashCode ^
+        aboutMe.hashCode ^
+        followStatus.hashCode ^
+        productName.hashCode ^
+        originalPrice.hashCode ^
+        originalPriceStr.hashCode ^
+        currentPrice.hashCode ^
+        currentPriceStr.hashCode ^
+        goodsDescription.hashCode ^
+        discount.hashCode ^
+        shoppingCar.hashCode ^
+        collectNum.hashCode ^
+        followNum.hashCode ^
+        bioLink.hashCode ^
+        tagNormal.hashCode ^
+        tagSelected.hashCode ^
+        goods.hashCode;
   }
 }

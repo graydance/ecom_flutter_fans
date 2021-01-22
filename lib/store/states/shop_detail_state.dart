@@ -7,7 +7,7 @@ class ShopDetailState {
   final bool isLoading;
   final String error;
   final String userId;
-  final Seller seller;
+  final Feed seller;
   final List<Goods> photos;
   final List<Goods> albums;
 
@@ -15,7 +15,7 @@ class ShopDetailState {
     this.isLoading = false,
     this.error = '',
     this.userId = '',
-    this.seller = const Seller(),
+    this.seller = const Feed(),
     this.photos = const [],
     this.albums = const [],
   });
@@ -24,7 +24,7 @@ class ShopDetailState {
     bool isLoading,
     String error,
     String userId,
-    Seller user,
+    Feed user,
     List<Goods> photos,
     List<Goods> albums,
   }) {

@@ -50,7 +50,7 @@ class FeedsState {
   final bool isLoading;
   final String error;
   final List<Feed> list;
-  final List<Seller> recommendUsers;
+  final List<Feed> recommendUsers;
   final int currentPage;
   final int totalPage;
 
@@ -67,7 +67,7 @@ class FeedsState {
     bool isLoading,
     String error,
     List<Feed> list,
-    List<Seller> recommendUsers,
+    List<Feed> recommendUsers,
     int currentPage,
     int totalPage,
   }) {

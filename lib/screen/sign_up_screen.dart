@@ -59,8 +59,9 @@ class _SignupScreenState extends State<SignupScreen> {
       height: double.infinity,
       decoration: BoxDecoration(
         image: DecorationImage(
-            image: AssetImage('assets/images/auth_background.png'),
-            fit: BoxFit.cover),
+          image: R.image.auth_background(),
+          fit: BoxFit.cover,
+        ),
       ),
       child: SafeArea(
         child: SingleChildScrollView(

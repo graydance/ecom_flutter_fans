@@ -92,6 +92,11 @@ class AssetResource {
 class _R_Image_AssetResource {
   const _R_Image_AssetResource();
 
+  /// asset: assets/images/auth/auth_background.png
+  // ignore: non_constant_identifier_names
+  final auth_background =
+      const AssetResource("assets/images/auth/auth_background.png", packageName: null);
+
   /// asset: assets/images/auth/eyes_visibility.png
   // ignore: non_constant_identifier_names
   final eyes_visibility =
@@ -102,10 +107,15 @@ class _R_Image_AssetResource {
   final eyes_visibility_off =
       const AssetResource("assets/images/auth/eyes_visibility_off.png", packageName: null);
 
-  /// asset: assets/images/auth_background.png
+  /// asset: assets/images/auth/interest_selected.png
   // ignore: non_constant_identifier_names
-  final auth_background =
-      const AssetResource("assets/images/auth_background.png", packageName: null);
+  final interest_selected =
+      const AssetResource("assets/images/auth/interest_selected.png", packageName: null);
+
+  /// asset: assets/images/auth/interest_unselected.png
+  // ignore: non_constant_identifier_names
+  final interest_unselected =
+      const AssetResource("assets/images/auth/interest_unselected.png", packageName: null);
 
   /// asset: assets/images/feed/ad_avatar_placeholder.png
   // ignore: non_constant_identifier_names
@@ -129,6 +139,10 @@ class _R_Image_AssetResource {
   // ignore: non_constant_identifier_names
   final favorite = const AssetResource("assets/images/feed/favorite.png", packageName: null);
 
+  /// asset: assets/images/feed/more_vert.png
+  // ignore: non_constant_identifier_names
+  final more_vert = const AssetResource("assets/images/feed/more_vert.png", packageName: null);
+
   /// asset: assets/images/feed/new_msg_tip_bg.png
   // ignore: non_constant_identifier_names
   final new_msg_tip_bg =
@@ -142,9 +156,9 @@ class _R_Image_AssetResource {
   // ignore: non_constant_identifier_names
   final play = const AssetResource("assets/images/feed/play.png", packageName: null);
 
-  /// asset: assets/images/feed/vip.png
+  /// asset: assets/images/feed/verified.png
   // ignore: non_constant_identifier_names
-  final vip = const AssetResource("assets/images/feed/vip.png", packageName: null);
+  final verified = const AssetResource("assets/images/feed/verified.png", packageName: null);
 
   /// asset: assets/images/feed/voice_mute.png
   // ignore: non_constant_identifier_names
@@ -154,16 +168,6 @@ class _R_Image_AssetResource {
   // ignore: non_constant_identifier_names
   final voice_unmute =
       const AssetResource("assets/images/feed/voice_unmute.png", packageName: null);
-
-  /// asset: assets/images/interest_selected.png
-  // ignore: non_constant_identifier_names
-  final interest_selected =
-      const AssetResource("assets/images/interest_selected.png", packageName: null);
-
-  /// asset: assets/images/interest_unselected.png
-  // ignore: non_constant_identifier_names
-  final interest_unselected =
-      const AssetResource("assets/images/interest_unselected.png", packageName: null);
 
   /// asset: assets/images/kol/kol_album_bg.png
   // ignore: non_constant_identifier_names
@@ -260,6 +264,12 @@ class _R_Image {
 
   final asset = const _R_Image_AssetResource();
 
+  /// asset: assets/images/auth/auth_background.png
+  // ignore: non_constant_identifier_names
+  AssetImage auth_background() {
+    return AssetImage(asset.auth_background.keyName);
+  }
+
   /// asset: assets/images/auth/eyes_visibility.png
   // ignore: non_constant_identifier_names
   AssetImage eyes_visibility() {
@@ -272,10 +282,16 @@ class _R_Image {
     return AssetImage(asset.eyes_visibility_off.keyName);
   }
 
-  /// asset: assets/images/auth_background.png
+  /// asset: assets/images/auth/interest_selected.png
   // ignore: non_constant_identifier_names
-  AssetImage auth_background() {
-    return AssetImage(asset.auth_background.keyName);
+  AssetImage interest_selected() {
+    return AssetImage(asset.interest_selected.keyName);
+  }
+
+  /// asset: assets/images/auth/interest_unselected.png
+  // ignore: non_constant_identifier_names
+  AssetImage interest_unselected() {
+    return AssetImage(asset.interest_unselected.keyName);
   }
 
   /// asset: assets/images/feed/ad_avatar_placeholder.png
@@ -308,6 +324,12 @@ class _R_Image {
     return AssetImage(asset.favorite.keyName);
   }
 
+  /// asset: assets/images/feed/more_vert.png
+  // ignore: non_constant_identifier_names
+  AssetImage more_vert() {
+    return AssetImage(asset.more_vert.keyName);
+  }
+
   /// asset: assets/images/feed/new_msg_tip_bg.png
   // ignore: non_constant_identifier_names
   AssetImage new_msg_tip_bg() {
@@ -326,10 +348,10 @@ class _R_Image {
     return AssetImage(asset.play.keyName);
   }
 
-  /// asset: assets/images/feed/vip.png
+  /// asset: assets/images/feed/verified.png
   // ignore: non_constant_identifier_names
-  AssetImage vip() {
-    return AssetImage(asset.vip.keyName);
+  AssetImage verified() {
+    return AssetImage(asset.verified.keyName);
   }
 
   /// asset: assets/images/feed/voice_mute.png
@@ -342,18 +364,6 @@ class _R_Image {
   // ignore: non_constant_identifier_names
   AssetImage voice_unmute() {
     return AssetImage(asset.voice_unmute.keyName);
-  }
-
-  /// asset: assets/images/interest_selected.png
-  // ignore: non_constant_identifier_names
-  AssetImage interest_selected() {
-    return AssetImage(asset.interest_selected.keyName);
-  }
-
-  /// asset: assets/images/interest_unselected.png
-  // ignore: non_constant_identifier_names
-  AssetImage interest_unselected() {
-    return AssetImage(asset.interest_unselected.keyName);
   }
 
   /// asset: assets/images/kol/kol_album_bg.png
