@@ -26,29 +26,37 @@ class Feed {
   final List<String> tagNormal;
   final List<String> tagSelected;
   final List<Goods> goods;
+  final int products;
+  final int followers;
+  final int isOfficial;
+  final String userName;
 
   const Feed({
-    this.id,
-    this.userId,
-    this.responseType,
-    this.portrait,
-    this.nickName,
-    this.aboutMe,
-    this.followStatus,
-    this.productName,
-    this.originalPrice,
-    this.originalPriceStr,
-    this.currentPrice,
-    this.currentPriceStr,
-    this.goodsDescription,
-    this.discount,
-    this.shoppingCar,
-    this.collectNum,
-    this.followNum,
-    this.bioLink,
-    this.tagNormal,
-    this.tagSelected,
-    this.goods,
+    this.id = '',
+    this.userId = '',
+    this.responseType = 0,
+    this.portrait = '',
+    this.nickName = '',
+    this.aboutMe = '',
+    this.followStatus = 0,
+    this.productName = '',
+    this.originalPrice = 0,
+    this.originalPriceStr = '',
+    this.currentPrice = 0,
+    this.currentPriceStr = '',
+    this.goodsDescription = '',
+    this.discount = '',
+    this.shoppingCar = '',
+    this.collectNum = '',
+    this.followNum = '',
+    this.bioLink = '',
+    this.tagNormal = const [],
+    this.tagSelected = const [],
+    this.goods = const [],
+    this.products = 0,
+    this.followers = 0,
+    this.isOfficial = 0,
+    this.userName = '',
   });
 
   Feed copyWith({
@@ -73,30 +81,37 @@ class Feed {
     List<String> tagNormal,
     List<String> tagSelected,
     List<Goods> goods,
+    int products,
+    int followers,
+    int isOfficial,
+    String userName,
   }) {
     return Feed(
-      id: id ?? this.id,
-      userId: userId ?? this.userId,
-      responseType: responseType ?? this.responseType,
-      portrait: portrait ?? this.portrait,
-      nickName: nickName ?? this.nickName,
-      aboutMe: aboutMe ?? this.aboutMe,
-      followStatus: followStatus ?? this.followStatus,
-      productName: productName ?? this.productName,
-      originalPrice: originalPrice ?? this.originalPrice,
-      originalPriceStr: originalPriceStr ?? this.originalPriceStr,
-      currentPrice: currentPrice ?? this.currentPrice,
-      currentPriceStr: currentPriceStr ?? this.currentPriceStr,
-      goodsDescription: goodsDescription ?? this.goodsDescription,
-      discount: discount ?? this.discount,
-      shoppingCar: shoppingCar ?? this.shoppingCar,
-      collectNum: collectNum ?? this.collectNum,
-      followNum: followNum ?? this.followNum,
-      bioLink: bioLink ?? this.bioLink,
-      tagNormal: tagNormal ?? this.tagNormal,
-      tagSelected: tagSelected ?? this.tagSelected,
-      goods: goods ?? this.goods,
-    );
+        id: id ?? this.id,
+        userId: userId ?? this.userId,
+        responseType: responseType ?? this.responseType,
+        portrait: portrait ?? this.portrait,
+        nickName: nickName ?? this.nickName,
+        aboutMe: aboutMe ?? this.aboutMe,
+        followStatus: followStatus ?? this.followStatus,
+        productName: productName ?? this.productName,
+        originalPrice: originalPrice ?? this.originalPrice,
+        originalPriceStr: originalPriceStr ?? this.originalPriceStr,
+        currentPrice: currentPrice ?? this.currentPrice,
+        currentPriceStr: currentPriceStr ?? this.currentPriceStr,
+        goodsDescription: goodsDescription ?? this.goodsDescription,
+        discount: discount ?? this.discount,
+        shoppingCar: shoppingCar ?? this.shoppingCar,
+        collectNum: collectNum ?? this.collectNum,
+        followNum: followNum ?? this.followNum,
+        bioLink: bioLink ?? this.bioLink,
+        tagNormal: tagNormal ?? this.tagNormal,
+        tagSelected: tagSelected ?? this.tagSelected,
+        goods: goods ?? this.goods,
+        products: products ?? this.products,
+        followers: followers ?? this.followers,
+        isOfficial: isOfficial ?? this.isOfficial,
+        userName: userName ?? this.userName);
   }
 
   Map<String, dynamic> toMap() {
@@ -122,6 +137,10 @@ class Feed {
       'tagNormal': tagNormal,
       'tagSelected': tagSelected,
       'goods': goods?.map((x) => x?.toMap())?.toList(),
+      'products': products,
+      'followers': followers,
+      'isOfficial': isOfficial,
+      'userName': userName,
     };
   }
 
@@ -150,17 +169,16 @@ class Feed {
       tagNormal: map['tagNormal'] ?? [],
       tagSelected: map['tagSelected'] ?? [],
       goods: (map['goods'])?.map((x) => Goods.fromMap(x)) ?? [],
+      products: map['products'] ?? 0,
+      followers: map['followers'] ?? 0,
+      isOfficial: map['isOfficial'] ?? 0,
+      userName: map['userName'] ?? '',
     );
   }
 
   String toJson() => json.encode(toMap());
 
   factory Feed.fromJson(String source) => Feed.fromMap(json.decode(source));
-
-  @override
-  String toString() {
-    return 'Feed(id: $id, userId: $userId, responseType: $responseType, portrait: $portrait, nickName: $nickName, aboutMe: $aboutMe, followStatus: $followStatus, productName: $productName, originalPrice: $originalPrice, originalPriceStr: $originalPriceStr, currentPrice: $currentPrice, currentPriceStr: $currentPriceStr, goodsDescription: $goodsDescription, discount: $discount, shoppingCar: $shoppingCar, collectNum: $collectNum, followNum: $followNum, bioLink: $bioLink, tagNormal: $tagNormal, tagSelected: $tagSelected, goods: $goods)';
-  }
 
   @override
   bool operator ==(Object o) {
@@ -187,7 +205,11 @@ class Feed {
         o.bioLink == bioLink &&
         listEquals(o.tagNormal, tagNormal) &&
         listEquals(o.tagSelected, tagSelected) &&
-        listEquals(o.goods, goods);
+        listEquals(o.goods, goods) &&
+        o.products == products &&
+        o.followers == followers &&
+        o.isOfficial == isOfficial &&
+        o.userName == userName;
   }
 
   @override
@@ -212,6 +234,15 @@ class Feed {
         bioLink.hashCode ^
         tagNormal.hashCode ^
         tagSelected.hashCode ^
-        goods.hashCode;
+        goods.hashCode ^
+        products.hashCode ^
+        followers.hashCode ^
+        isOfficial.hashCode ^
+        userName.hashCode;
+  }
+
+  @override
+  String toString() {
+    return 'Feed(id: $id, userId: $userId, responseType: $responseType, portrait: $portrait, nickName: $nickName, aboutMe: $aboutMe, followStatus: $followStatus, productName: $productName, originalPrice: $originalPrice, originalPriceStr: $originalPriceStr, currentPrice: $currentPrice, currentPriceStr: $currentPriceStr, goodsDescription: $goodsDescription, discount: $discount, shoppingCar: $shoppingCar, collectNum: $collectNum, followNum: $followNum, bioLink: $bioLink, tagNormal: $tagNormal, tagSelected: $tagSelected, goods: $goods, products: $products, followers: $followers, isOfficial: $isOfficial, userName: $userName)';
   }
 }

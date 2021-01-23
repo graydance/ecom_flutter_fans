@@ -41,6 +41,8 @@ class _ShopDetailScreenState extends State<ShopDetailScreen>
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _ViewModel>(
       converter: _ViewModel.fromStore,
+      onInit: (store) => store.dispatch(
+          FetchShopDetailAction(userId: store.state.shopDetail.userId)),
       builder: (ctx, model) => Scaffold(
         body: NestedScrollView(
           physics: BouncingScrollPhysics(),
@@ -55,11 +57,12 @@ class _ShopDetailScreenState extends State<ShopDetailScreen>
                   sliver: SliverPersistentHeader(
                     pinned: true,
                     delegate: SliverCustomHeaderDelegate(
-                      title: '',
                       collapsedHeight: 40,
                       expandedHeight: 330,
                       paddingTop: MediaQuery.of(context).padding.top,
                       coverImage: R.image.kol_detail_bg(),
+                      userId: model.model.userId,
+                      model: model.model.seller,
                     ),
                   ),
                 ),
@@ -261,15 +264,17 @@ class SliverCustomHeaderDelegate extends SliverPersistentHeaderDelegate {
   final double expandedHeight;
   final double paddingTop;
   final AssetImage coverImage;
-  final String title;
-  String statusBarMode = 'dark';
+  final String userId;
+  final Feed model;
+  String statusBarMode = 'light';
 
   SliverCustomHeaderDelegate({
     this.collapsedHeight,
     this.expandedHeight,
     this.paddingTop,
     this.coverImage,
-    this.title,
+    this.userId,
+    this.model,
   });
 
   @override
@@ -376,7 +381,7 @@ class SliverCustomHeaderDelegate extends SliverPersistentHeaderDelegate {
                         onPressed: () => Navigator.pop(context),
                       ),
                       Text(
-                        this.title,
+                        '',
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.w500,
@@ -400,7 +405,10 @@ class SliverCustomHeaderDelegate extends SliverPersistentHeaderDelegate {
           ),
           Positioned(
             bottom: 10,
-            child: ProfileHeader(),
+            child: ProfileHeader(
+              userId: userId,
+              model: model,
+            ),
             // Opacity(
             //   opacity: makeHeaderAlpha(shrinkOffset),
             //   child: ProfileHeader(),
@@ -413,6 +421,11 @@ class SliverCustomHeaderDelegate extends SliverPersistentHeaderDelegate {
 }
 
 class ProfileHeader extends StatelessWidget {
+  final String userId;
+  final Feed model;
+
+  const ProfileHeader({Key key, this.userId, this.model}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -431,14 +444,14 @@ class ProfileHeader extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "Flutter",
+                    model.nickName,
                     style: TextStyle(
                         color: Colors.white,
                         fontSize: 16.0,
                         fontWeight: FontWeight.bold),
                   ),
                   Text(
-                    "@desiperkins",
+                    model.userName,
                     style: TextStyle(
                         color: Colors.white,
                         fontSize: 16.0,
@@ -455,7 +468,7 @@ class ProfileHeader extends StatelessWidget {
                 Column(
                   children: [
                     Text(
-                      '233',
+                      model.products.toString(),
                       style: TextStyle(
                           color: Colors.white,
                           fontSize: 16.0,
@@ -476,7 +489,7 @@ class ProfileHeader extends StatelessWidget {
                 Column(
                   children: [
                     Text(
-                      '1.2k',
+                      model.followers.toString(),
                       style: TextStyle(
                           color: Colors.white,
                           fontSize: 16.0,
@@ -496,8 +509,8 @@ class ProfileHeader extends StatelessWidget {
                   height: 26,
                   width: 90,
                   child: FollowButton(
-                    isFollowed: false,
-                    userId: '',
+                    isFollowed: model.followStatus == 1,
+                    userId: userId,
                   ),
                 ),
               ],
@@ -507,7 +520,7 @@ class ProfileHeader extends StatelessWidget {
             height: 10.0,
           ),
           Text(
-            "Google’s mobile app SDK for building beautiful native apps on iOS and Android in record time // For support visit http://stackoverflow.com/tags/flutter",
+            model.aboutMe,
             style: TextStyle(
               color: Colors.white,
               fontSize: 12.0,
