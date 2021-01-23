@@ -19,28 +19,84 @@ class FetchFeedsAction {
   FetchFeedsAction(this.type, this.page, this.completer);
 }
 
-class FeedsResponseAction {
+class FetchFeedsSuccessAction {
   /// 类型选择( 0:following , 1:for you)
   final int type;
   final int totalPage;
   final int currentPage;
   final List<Feed> feeds;
 
-  FeedsResponseAction(this.type, this.totalPage, this.currentPage, this.feeds);
+  FetchFeedsSuccessAction(
+      this.type, this.totalPage, this.currentPage, this.feeds);
 }
 
-class FeedsResponseFailedAction {
+class FetchFeedsFailedAction {
   /// 类型选择( 0:following , 1:for you)
   final int type;
   final String error;
 
-  FeedsResponseFailedAction(this.type, this.error);
+  FetchFeedsFailedAction(this.type, this.error);
 }
 
 class FetchRecommendSellersAction {}
 
-class RecommendSellersResponseAction {
+class FetchRecommendSellersSuccessAction {
   final List<Feed> sellers;
 
-  RecommendSellersResponseAction(this.sellers);
+  FetchRecommendSellersSuccessAction(this.sellers);
+}
+
+class ShowShopDetailAction {
+  final String userId;
+
+  ShowShopDetailAction({
+    this.userId,
+  });
+}
+
+class FetchShopDetailAction {
+  final String userId;
+
+  FetchShopDetailAction({
+    this.userId,
+  });
+}
+
+class FetchShopDetailSuccessAction {
+  final Feed seller;
+
+  FetchShopDetailSuccessAction({this.seller});
+}
+
+class FetchShopDetailFailedAction {
+  final String error;
+
+  FetchShopDetailFailedAction({this.error});
+}
+
+class FetchGoodsAction {
+  /// 0=商品分组(左)，1=标签分组(右)
+  final int type;
+  final String userId;
+  final int page;
+  final Completer completer;
+
+  FetchGoodsAction({this.type, this.userId, this.page, this.completer});
+}
+
+class FetchGoodsSuccessAction {
+  final int type;
+  final int totalPage;
+  final int currentPage;
+  final List<Goods> list;
+
+  FetchGoodsSuccessAction(
+      {this.type, this.totalPage, this.currentPage, this.list});
+}
+
+class FetchGoodsFailedAction {
+  final int type;
+  final String error;
+
+  FetchGoodsFailedAction({this.type, this.error});
 }

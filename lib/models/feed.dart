@@ -2,8 +2,6 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 
-import 'goods.dart';
-
 class Feed {
   final String id;
   final String userId;
@@ -19,13 +17,13 @@ class Feed {
   final String currentPriceStr;
   final String goodsDescription;
   final String discount;
-  final String shoppingCar;
-  final String collectNum;
-  final String followNum;
+  final int shoppingCar;
+  final int collectNum;
+  final int followNum;
   final String bioLink;
   final List<String> tagNormal;
   final List<String> tagSelected;
-  final List<Goods> goods;
+  final List<String> goods;
   final int products;
   final int followers;
   final int isOfficial;
@@ -46,9 +44,9 @@ class Feed {
     this.currentPriceStr = '',
     this.goodsDescription = '',
     this.discount = '',
-    this.shoppingCar = '',
-    this.collectNum = '',
-    this.followNum = '',
+    this.shoppingCar = 0,
+    this.collectNum = 0,
+    this.followNum = 0,
     this.bioLink = '',
     this.tagNormal = const [],
     this.tagSelected = const [],
@@ -74,13 +72,13 @@ class Feed {
     String currentPriceStr,
     String goodsDescription,
     String discount,
-    String shoppingCar,
-    String collectNum,
-    String followNum,
+    int shoppingCar,
+    int collectNum,
+    int followNum,
     String bioLink,
     List<String> tagNormal,
     List<String> tagSelected,
-    List<Goods> goods,
+    List<String> goods,
     int products,
     int followers,
     int isOfficial,
@@ -136,7 +134,7 @@ class Feed {
       'bioLink': bioLink,
       'tagNormal': tagNormal,
       'tagSelected': tagSelected,
-      'goods': goods?.map((x) => x?.toMap())?.toList(),
+      'goods': goods,
       'products': products,
       'followers': followers,
       'isOfficial': isOfficial,
@@ -162,13 +160,13 @@ class Feed {
       currentPriceStr: map['currentPriceStr'] ?? '',
       goodsDescription: map['goodsDescription'] ?? '',
       discount: map['discount'] ?? '',
-      shoppingCar: map['shoppingCar'] ?? '',
-      collectNum: map['collectNum'] ?? '',
-      followNum: map['followNum'] ?? '',
+      shoppingCar: map['shoppingCar'] ?? 0,
+      collectNum: map['collectNum'] ?? 0,
+      followNum: map['followNum'] ?? 0,
       bioLink: map['bioLink'] ?? '',
-      tagNormal: map['tagNormal'] ?? [],
-      tagSelected: map['tagSelected'] ?? [],
-      goods: (map['goods'])?.map((x) => Goods.fromMap(x)) ?? [],
+      tagNormal: List<String>.from(map['tagNormal'] ?? []),
+      tagSelected: List<String>.from(map['tagSelected'] ?? []),
+      goods: List<String>.from(map['goods'] ?? []),
       products: map['products'] ?? 0,
       followers: map['followers'] ?? 0,
       isOfficial: map['isOfficial'] ?? 0,

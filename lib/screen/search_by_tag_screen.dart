@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:intl/intl.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:redux/redux.dart';
 
@@ -21,7 +22,8 @@ class SearchByTagScreen extends StatefulWidget {
   _SearchByTagScreenState createState() => _SearchByTagScreenState();
 }
 
-class _SearchByTagScreenState extends State<SearchByTagScreen> {
+class _SearchByTagScreenState extends State<SearchByTagScreen>
+    with AutomaticKeepAliveClientMixin {
   final _refreshController = RefreshController(initialRefresh: false);
 
   @override
@@ -32,8 +34,18 @@ class _SearchByTagScreenState extends State<SearchByTagScreen> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return StoreConnector<AppState, _ViewModel>(
       converter: _ViewModel.fromStore,
+      onInit: (store) {
+        var state = store.state.tagSearch;
+        store.dispatch(SearchByTagAction(
+            userId: state.userId,
+            tag: state.tag,
+            page: 1,
+            limit: 10,
+            completer: Completer()));
+      },
       builder: (ctx, model) => Scaffold(
         appBar: AppBar(
           title: Row(
@@ -73,8 +85,11 @@ class _SearchByTagScreenState extends State<SearchByTagScreen> {
                 );
                 StoreProvider.of<AppState>(context).dispatch(action);
                 try {
-                  await action.completer.future;
+                  bool isNoMore = await action.completer.future;
                   _refreshController.refreshCompleted();
+                  if (isNoMore) {
+                    _refreshController.loadNoData();
+                  }
                 } catch (e) {
                   _refreshController.refreshFailed();
                 }
@@ -106,11 +121,14 @@ class _SearchByTagScreenState extends State<SearchByTagScreen> {
                     padding: const EdgeInsets.only(top: 10),
                     child: Container(
                       color: Colors.white,
-                      child: TagProductItem(),
+                      child: TagProductItem(
+                        key: ValueKey(model.list[i].id),
+                        model: model.list[i],
+                      ),
                     ),
                   );
                 },
-                itemCount: 10,
+                itemCount: model.list.length,
               ),
             ),
           ),
@@ -118,10 +136,14 @@ class _SearchByTagScreenState extends State<SearchByTagScreen> {
       ),
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }
 
 class TagProductItem extends StatelessWidget {
-  const TagProductItem({Key key}) : super(key: key);
+  final Feed model;
+  const TagProductItem({Key key, this.model}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -142,19 +164,21 @@ class TagProductItem extends StatelessWidget {
                   Row(
                     children: [
                       Text(
-                        'User.name',
+                        model.nickName,
                         style: TextStyle(
                           color: Color(0xffED8514),
                           fontSize: 14,
                         ),
                       ),
-                      Container(
-                        height: 12,
-                        margin: const EdgeInsets.only(left: 4),
-                        child: Image(
-                          image: R.image.verified(),
-                        ),
-                      ),
+                      model.isOfficial == 0
+                          ? Container()
+                          : Container(
+                              height: 12,
+                              margin: const EdgeInsets.only(left: 4),
+                              child: Image(
+                                image: R.image.verified(),
+                              ),
+                            ),
                     ],
                   ),
                   Padding(
@@ -200,7 +224,9 @@ class TagProductItem extends StatelessWidget {
               ),
               Spacer(),
               IconButton(
-                icon: Icon(Icons.more_vert),
+                icon: Image(
+                  image: R.image.more_vert(),
+                ),
                 alignment: Alignment.centerRight,
                 onPressed: () {},
               ),
@@ -211,7 +237,7 @@ class TagProductItem extends StatelessWidget {
             child: Align(
               alignment: Alignment.centerLeft,
               child: Text(
-                'Product Name',
+                model.productName,
                 style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 14,
@@ -228,14 +254,12 @@ class TagProductItem extends StatelessWidget {
                 child: Stack(
                   children: [
                     MediaCarouselWidget(
-                      items: [
-                        ..._testLinks.map((url) {
-                          return Image(
-                            fit: BoxFit.cover,
-                            image: NetworkImage(url),
-                          );
-                        }).toList()
-                      ],
+                      items: model.goods.map((url) {
+                        return Image(
+                          fit: BoxFit.cover,
+                          image: NetworkImage(url),
+                        );
+                      }).toList(),
                     ),
                     Positioned(
                       top: 0,
@@ -251,7 +275,7 @@ class TagProductItem extends StatelessWidget {
                         ),
                         child: Center(
                           child: Text(
-                            '10% off',
+                            '${model.discount} off',
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 12,
@@ -269,7 +293,8 @@ class TagProductItem extends StatelessWidget {
                             children: [
                               Image(image: R.image.add_cart()),
                               Text(
-                                '233',
+                                NumberFormat.compact()
+                                    .format(model.shoppingCar),
                                 style: TextStyle(
                                     color: Colors.white, fontSize: 12),
                               ),
@@ -282,7 +307,7 @@ class TagProductItem extends StatelessWidget {
                             children: [
                               Image(image: R.image.favorite()),
                               Text(
-                                '1.4k',
+                                NumberFormat.compact().format(model.collectNum),
                                 style: TextStyle(
                                     color: Colors.white, fontSize: 12),
                               ),
@@ -303,7 +328,7 @@ class TagProductItem extends StatelessWidget {
               textBaseline: TextBaseline.ideographic,
               children: [
                 Text(
-                  '\$21',
+                  model.currentPriceStr,
                   style: TextStyle(
                       color: Color(0xff0F1015),
                       fontSize: 18,
@@ -313,7 +338,7 @@ class TagProductItem extends StatelessWidget {
                   width: 8,
                 ),
                 Text(
-                  '\$30',
+                  model.originalPriceStr,
                   style: TextStyle(
                       color: Color(0xff979AA9),
                       fontSize: 12,
@@ -342,7 +367,7 @@ class TagProductItem extends StatelessWidget {
           Align(
             alignment: Alignment.centerLeft,
             child: Text(
-              'Product description product description product description product description xxxxxx',
+              model.goodsDescription,
               style: TextStyle(
                 color: Color(0xff555764),
                 fontSize: 12,
@@ -355,21 +380,12 @@ class TagProductItem extends StatelessWidget {
   }
 }
 
-final _testLinks = [
-  'https://www.nio.cn/ecs/prod/s3fs-public/mynio-2021/images/et7/et7-hero-desktop.jpg',
-  'https://www.nio.cn/ecs/prod/s3fs-public/ec6/hero-background-mobile.jpg',
-  'https://www.nio.cn/ecs/prod/s3fs-public/mynio-2021/images/et7/design/et7-hero-design-aquila-desktop.jpg',
-  'https://www.nio.cn/ecs/prod/s3fs-public/inline-images/es8-202004/es8-hero-pc.jpg',
-  'https://tesla-cdn.thron.cn/delivery/public/image/tesla/3304be3b-dd0a-4128-9c26-eb61c0b98d61/bvlatuR/std/800x2100/Mobile-ModelY',
-  'https://tesla-cdn.thron.cn/delivery/public/image/tesla/011f6961-d539-48e9-b714-c154bfbaaf8b/bvlatuR/std/800x2100/homepage-model-3-hero-mobile-cn'
-];
-
 class _ViewModel {
   final String userId;
   final String tag;
   final int currentPage;
   final int totalPage;
-  final List<Goods> list;
+  final List<Feed> list;
 
   _ViewModel(
       this.userId, this.tag, this.currentPage, this.totalPage, this.list);

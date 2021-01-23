@@ -6,6 +6,7 @@ import 'package:fans/store/actions.dart';
 import 'package:fans/store/states.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:intl/intl.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:redux/redux.dart';
 
@@ -143,8 +144,12 @@ class _FeedListScreenState extends State<FeedListScreen> {
                 StoreProvider.of<AppState>(context)
                     .dispatch(FetchRecommendSellersAction());
                 try {
-                  await action.completer.future;
-                  _refreshController.refreshCompleted();
+                  var isNoMore = await action.completer.future;
+                  if (isNoMore) {
+                    _refreshController.loadNoData();
+                  } else {
+                    _refreshController.refreshCompleted();
+                  }
                 } catch (e) {
                   _refreshController.refreshFailed();
                 }
@@ -207,7 +212,9 @@ class _FeedListScreenState extends State<FeedListScreen> {
                   if (item.model.responseType == 0) {
                     childWidget = ProductItem(viewModel: item);
                   } else {
-                    childWidget = ActivityItem();
+                    childWidget = ActivityItem(
+                      viewModel: item,
+                    );
                   }
                   return Padding(
                     padding: const EdgeInsets.only(top: 10.0),
@@ -391,7 +398,7 @@ class _ProductItemState extends State<ProductItem> {
                     items: viewModel.model.goods.map((goods) {
                       return Image(
                         fit: BoxFit.cover,
-                        image: NetworkImage(goods.picture),
+                        image: NetworkImage(goods),
                       );
                     }).toList(),
                   ),
@@ -427,7 +434,8 @@ class _ProductItemState extends State<ProductItem> {
                           children: [
                             Image(image: R.image.add_cart()),
                             Text(
-                              viewModel.model.shoppingCar,
+                              NumberFormat.compact()
+                                  .format(viewModel.model.shoppingCar),
                               style:
                                   TextStyle(color: Colors.white, fontSize: 12),
                             ),
@@ -440,7 +448,8 @@ class _ProductItemState extends State<ProductItem> {
                           children: [
                             Image(image: R.image.favorite()),
                             Text(
-                              viewModel.model.collectNum,
+                              NumberFormat.compact()
+                                  .format(viewModel.model.collectNum),
                               style:
                                   TextStyle(color: Colors.white, fontSize: 12),
                             ),
@@ -506,7 +515,8 @@ class _ProductItemState extends State<ProductItem> {
             ),
           ),
         ),
-        Padding(
+        Container(
+          height: 20,
           padding: const EdgeInsets.only(top: 4.0),
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
@@ -514,7 +524,7 @@ class _ProductItemState extends State<ProductItem> {
             itemBuilder: (ctx, i) {
               return TagButton(
                 onPressed: () {
-                  Keys.navigatorKey.currentState.pushNamed(Routes.searchByTag);
+                  viewModel.onTapTag(viewModel.model.tagSelected[i]);
                 },
                 text: viewModel.model.tagSelected[i],
               );
@@ -526,14 +536,10 @@ class _ProductItemState extends State<ProductItem> {
   }
 }
 
-class ActivityItem extends StatefulWidget {
-  ActivityItem({Key key}) : super(key: key);
+class ActivityItem extends StatelessWidget {
+  final _FeedItemViewModel viewModel;
+  ActivityItem({Key key, this.viewModel}) : super(key: key);
 
-  @override
-  _ActivityItemState createState() => _ActivityItemState();
-}
-
-class _ActivityItemState extends State<ActivityItem> {
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -542,7 +548,10 @@ class _ActivityItemState extends State<ActivityItem> {
           // User Details
           Row(
             children: [
-              AvatarWidget(),
+              AvatarWidget(
+                image: viewModel.model.portrait,
+                onTap: viewModel.onTapAvatar,
+              ),
               SizedBox(
                 width: 8,
               ),
@@ -552,25 +561,27 @@ class _ActivityItemState extends State<ActivityItem> {
                   Row(
                     children: [
                       Text(
-                        'user.name',
+                        viewModel.model.nickName,
                         style: TextStyle(
                           color: Color(0xffED8514),
                           fontSize: 14,
                         ),
                       ),
-                      Container(
-                        height: 12,
-                        margin: const EdgeInsets.only(left: 4),
-                        child: Image(
-                          image: R.image.verified(),
-                        ),
-                      ),
+                      viewModel.model.isOfficial == 0
+                          ? Container()
+                          : Container(
+                              height: 12,
+                              margin: const EdgeInsets.only(left: 4),
+                              child: Image(
+                                image: R.image.verified(),
+                              ),
+                            ),
                     ],
                   ),
                   Padding(
                     padding: const EdgeInsets.only(top: 4.0),
                     child: Text(
-                      '12K Fllowers',
+                      '${NumberFormat.compact().format(viewModel.model.followers)} Fllowers',
                       style: TextStyle(color: Color(0xff979AA9), fontSize: 12),
                     ),
                   )
@@ -578,7 +589,7 @@ class _ActivityItemState extends State<ActivityItem> {
               ),
               Spacer(),
               FollowButton(
-                userId: 'eLRGN8Bw',
+                userId: viewModel.model.id,
               ),
             ],
           ),
@@ -590,14 +601,22 @@ class _ActivityItemState extends State<ActivityItem> {
               mainAxisSpacing: 8,
               crossAxisSpacing: 8,
               crossAxisCount: 3,
-              children: _buildGridItems(),
+              children: viewModel.model.goods.map((url) {
+                return ClipRRect(
+                  borderRadius: BorderRadius.circular(4),
+                  child: Image(
+                    fit: BoxFit.cover,
+                    image: NetworkImage(url),
+                  ),
+                );
+              }).toList(),
             ),
           ),
           RichText(
             text: TextSpan(
               children: [
                 TextSpan(
-                  text: 'username ',
+                  text: viewModel.model.userName,
                   style: TextStyle(
                     color: Color(0xff0F1015),
                     fontSize: 12,
@@ -605,8 +624,7 @@ class _ActivityItemState extends State<ActivityItem> {
                   ),
                 ),
                 TextSpan(
-                  text:
-                      'Bio description product description product description product description xxxxxx',
+                  text: viewModel.model.goodsDescription,
                   style: TextStyle(
                     color: Color(0xff555764),
                     fontSize: 12,
@@ -618,19 +636,6 @@ class _ActivityItemState extends State<ActivityItem> {
         ],
       ),
     );
-  }
-
-  _buildGridItems() {
-    var list = _testLinks..shuffle();
-    return list
-        .map((url) => ClipRRect(
-              borderRadius: BorderRadius.circular(4),
-              child: Image(
-                fit: BoxFit.cover,
-                image: NetworkImage(url),
-              ),
-            ))
-        .toList();
   }
 }
 
@@ -687,7 +692,7 @@ class _AdItemState extends State<AdItem> {
             child: Container(
                 height: 200,
                 child: MediaCarouselWidget(
-                    items: _testLinks.map((url) {
+                    items: [].map((url) {
                   return Image(
                     fit: BoxFit.cover,
                     image: NetworkImage(url),
@@ -700,14 +705,14 @@ class _AdItemState extends State<AdItem> {
   }
 }
 
-final _testLinks = [
-  'https://www.nio.cn/ecs/prod/s3fs-public/ec6/hero-background-mobile.jpg',
-  'https://www.nio.cn/ecs/prod/s3fs-public/mynio-2021/images/et7/design/et7-hero-design-aquila-desktop.jpg',
-  'https://www.nio.cn/ecs/prod/s3fs-public/inline-images/es8-202004/es8-hero-pc.jpg',
-  'https://tesla-cdn.thron.cn/delivery/public/image/tesla/3304be3b-dd0a-4128-9c26-eb61c0b98d61/bvlatuR/std/800x2100/Mobile-ModelY',
-  'https://tesla-cdn.thron.cn/delivery/public/image/tesla/011f6961-d539-48e9-b714-c154bfbaaf8b/bvlatuR/std/800x2100/homepage-model-3-hero-mobile-cn',
-  'https://www.nio.cn/ecs/prod/s3fs-public/mynio-2021/images/et7/et7-hero-desktop.jpg',
-];
+// final _testLinks = [
+//   'https://www.nio.cn/ecs/prod/s3fs-public/ec6/hero-background-mobile.jpg',
+//   'https://www.nio.cn/ecs/prod/s3fs-public/mynio-2021/images/et7/design/et7-hero-design-aquila-desktop.jpg',
+//   'https://www.nio.cn/ecs/prod/s3fs-public/inline-images/es8-202004/es8-hero-pc.jpg',
+//   'https://tesla-cdn.thron.cn/delivery/public/image/tesla/3304be3b-dd0a-4128-9c26-eb61c0b98d61/bvlatuR/std/800x2100/Mobile-ModelY',
+//   'https://tesla-cdn.thron.cn/delivery/public/image/tesla/011f6961-d539-48e9-b714-c154bfbaaf8b/bvlatuR/std/800x2100/homepage-model-3-hero-mobile-cn',
+//   'https://www.nio.cn/ecs/prod/s3fs-public/mynio-2021/images/et7/et7-hero-desktop.jpg',
+// ];
 
 // final _videoLinks = [
 //   'https://www.runoob.com/try/demo_source/mov_bbb.mp4',
@@ -822,15 +827,22 @@ class _RecommendItemViewModel {
 class _FeedItemViewModel {
   final Feed model;
   final VoidCallback onTapAvatar;
+  final Function(String) onTapTag;
 
-  _FeedItemViewModel({this.model, this.onTapAvatar});
+  _FeedItemViewModel({this.model, this.onTapAvatar, this.onTapTag});
 
   static _FeedItemViewModel fromStore(Store<AppState> store, Feed item) {
     _onTapAvatar() {
-      store.dispatch(ShowShopDetailAction(userId: item.userId));
+      store.dispatch(ShowShopDetailAction(userId: item.id));
       Keys.navigatorKey.currentState.pushNamed(Routes.shop);
     }
 
-    return _FeedItemViewModel(model: item, onTapAvatar: _onTapAvatar);
+    _onTapTag(String tag) {
+      store.dispatch(ShowSearchByTagAction(userId: item.id, tag: tag));
+      Keys.navigatorKey.currentState.pushNamed(Routes.searchByTag);
+    }
+
+    return _FeedItemViewModel(
+        model: item, onTapAvatar: _onTapAvatar, onTapTag: _onTapTag);
   }
 }

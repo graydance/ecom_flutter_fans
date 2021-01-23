@@ -5,6 +5,13 @@ import 'dart:async';
 
 import 'package:fans/models/models.dart';
 
+class ShowSearchByTagAction {
+  final String userId;
+  final String tag;
+
+  ShowSearchByTagAction({this.userId, this.tag});
+}
+
 class SearchByTagAction {
   final String userId;
   final int page;
@@ -16,38 +23,10 @@ class SearchByTagAction {
       {this.userId, this.page, this.tag, this.limit, this.completer});
 }
 
-class SearchByTagResponseAction {
+class SearchByTagSuccessAction {
   final int totalPage;
   final int currentPage;
-  final List<Goods> feeds;
+  final List<Feed> feeds;
 
-  SearchByTagResponseAction(this.totalPage, this.currentPage, this.feeds);
-}
-
-class ShowShopDetailAction {
-  final String userId;
-
-  ShowShopDetailAction({
-    this.userId,
-  });
-}
-
-class FetchShopDetailAction {
-  final String userId;
-
-  FetchShopDetailAction({
-    this.userId,
-  });
-}
-
-class ShopDetailResponseAction {
-  final Feed seller;
-
-  ShopDetailResponseAction({this.seller});
-}
-
-class ShopDetailFailedAction {
-  final String error;
-
-  ShopDetailFailedAction({this.error});
+  SearchByTagSuccessAction(this.totalPage, this.currentPage, this.feeds);
 }

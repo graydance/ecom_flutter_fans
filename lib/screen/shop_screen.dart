@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:fans/store/actions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -41,8 +43,20 @@ class _ShopDetailScreenState extends State<ShopDetailScreen>
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _ViewModel>(
       converter: _ViewModel.fromStore,
-      onInit: (store) => store.dispatch(
-          FetchShopDetailAction(userId: store.state.shopDetail.userId)),
+      onInit: (store) {
+        store.dispatch(
+            FetchShopDetailAction(userId: store.state.shopDetail.userId));
+        store.dispatch(FetchGoodsAction(
+            userId: store.state.shopDetail.userId,
+            type: 0,
+            page: 1,
+            completer: Completer()));
+        store.dispatch(FetchGoodsAction(
+            userId: store.state.shopDetail.userId,
+            type: 1,
+            page: 1,
+            completer: Completer()));
+      },
       builder: (ctx, model) => Scaffold(
         body: NestedScrollView(
           physics: BouncingScrollPhysics(),
@@ -99,8 +113,12 @@ class _ShopDetailScreenState extends State<ShopDetailScreen>
                     child: TabBarView(
                       controller: _controller,
                       children: [
-                        PhotoListView(),
-                        AlbumListView(),
+                        PhotoListView(
+                          list: model.model.photos,
+                        ),
+                        AlbumListView(
+                          list: model.model.albums,
+                        ),
                       ],
                     ),
                   ),
@@ -114,45 +132,19 @@ class _ShopDetailScreenState extends State<ShopDetailScreen>
   }
 }
 
-final _testLinks = [
-  'https://images.pexels.com/photos/4409307/pexels-photo-4409307.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
-  'https://images.pexels.com/photos/2351274/pexels-photo-2351274.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
-  'https://images.pexels.com/photos/3607084/pexels-photo-3607084.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
-  'https://images.pexels.com/photos/4409307/pexels-photo-4409307.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
-  'https://images.pexels.com/photos/2351274/pexels-photo-2351274.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
-  'https://images.pexels.com/photos/3607084/pexels-photo-3607084.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
-  'https://images.pexels.com/photos/4409307/pexels-photo-4409307.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
-  'https://images.pexels.com/photos/2351274/pexels-photo-2351274.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
-  'https://images.pexels.com/photos/3607084/pexels-photo-3607084.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
-  'https://images.pexels.com/photos/4409307/pexels-photo-4409307.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
-  'https://images.pexels.com/photos/2351274/pexels-photo-2351274.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
-  'https://images.pexels.com/photos/3607084/pexels-photo-3607084.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
-  'https://images.pexels.com/photos/4409307/pexels-photo-4409307.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
-  'https://images.pexels.com/photos/2351274/pexels-photo-2351274.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
-  'https://images.pexels.com/photos/3607084/pexels-photo-3607084.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
-  'https://images.pexels.com/photos/4409307/pexels-photo-4409307.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
-  'https://images.pexels.com/photos/2351274/pexels-photo-2351274.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
-  'https://images.pexels.com/photos/3607084/pexels-photo-3607084.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
-  'https://images.pexels.com/photos/4409307/pexels-photo-4409307.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
-  'https://images.pexels.com/photos/2351274/pexels-photo-2351274.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
-  'https://images.pexels.com/photos/3607084/pexels-photo-3607084.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
-  'https://images.pexels.com/photos/4409307/pexels-photo-4409307.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
-  'https://images.pexels.com/photos/2351274/pexels-photo-2351274.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
-  'https://images.pexels.com/photos/3607084/pexels-photo-3607084.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
-  'https://images.pexels.com/photos/4409307/pexels-photo-4409307.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
-  'https://images.pexels.com/photos/2351274/pexels-photo-2351274.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
-];
-
 class PhotoListView extends StatefulWidget {
-  PhotoListView({Key key}) : super(key: key);
+  final List<Goods> list;
+  PhotoListView({Key key, this.list}) : super(key: key);
 
   @override
   _PhotoListViewState createState() => _PhotoListViewState();
 }
 
-class _PhotoListViewState extends State<PhotoListView> {
+class _PhotoListViewState extends State<PhotoListView>
+    with AutomaticKeepAliveClientMixin {
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return SafeArea(
       top: false,
       child: Container(
@@ -162,36 +154,51 @@ class _PhotoListViewState extends State<PhotoListView> {
           crossAxisSpacing: 8,
           crossAxisCount: 3,
           padding: const EdgeInsets.only(top: 20),
-          children: _buildList(),
+          children: widget.list
+              .map((e) => PhotoItem(
+                    key: ValueKey(e.id),
+                    url: e.picture,
+                  ))
+              .toList(),
         ),
       ),
     );
   }
 
-  _buildList() {
-    return _testLinks.map((url) {
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(4.0),
-        child: FadeInImage(
-          placeholder: R.image.kol_album_bg(),
-          image: NetworkImage(url),
-          fit: BoxFit.cover,
-        ),
-      );
-    }).toList();
+  @override
+  bool get wantKeepAlive => true;
+}
+
+class PhotoItem extends StatelessWidget {
+  final String url;
+  const PhotoItem({Key key, this.url}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(4.0),
+      child: FadeInImage(
+        placeholder: R.image.kol_album_bg(),
+        image: NetworkImage(url),
+        fit: BoxFit.cover,
+      ),
+    );
   }
 }
 
 class AlbumListView extends StatefulWidget {
-  AlbumListView({Key key}) : super(key: key);
+  final List<Goods> list;
+  AlbumListView({Key key, this.list}) : super(key: key);
 
   @override
   _AlbumListViewState createState() => _AlbumListViewState();
 }
 
-class _AlbumListViewState extends State<AlbumListView> {
+class _AlbumListViewState extends State<AlbumListView>
+    with AutomaticKeepAliveClientMixin {
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return SafeArea(
       top: false,
       child: Container(
@@ -201,61 +208,75 @@ class _AlbumListViewState extends State<AlbumListView> {
           mainAxisSpacing: 20,
           crossAxisSpacing: 8,
           crossAxisCount: 2,
-          children: _buildList(),
+          children: widget.list
+              .map((e) => AlbumItem(
+                    key: ValueKey(e.id),
+                    url: e.picture,
+                    tag: e.interestName,
+                  ))
+              .toList(),
         ),
       ),
     );
   }
 
-  _buildList() {
-    return _testLinks.map((url) {
-      return Column(
-        children: [
-          Center(
-            child: SizedBox(
-              height: 152,
-              width: 152,
-              child: Stack(
-                children: [
-                  Positioned(
-                    top: 0,
-                    right: 0,
-                    height: 144,
-                    width: 144,
-                    child: Image(
-                      image: R.image.kol_album_bg(),
+  @override
+  bool get wantKeepAlive => true;
+}
+
+class AlbumItem extends StatelessWidget {
+  final String url;
+  final String tag;
+  const AlbumItem({Key key, this.url, this.tag}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Center(
+          child: SizedBox(
+            height: 152,
+            width: 152,
+            child: Stack(
+              children: [
+                Positioned(
+                  top: 0,
+                  right: 0,
+                  height: 144,
+                  width: 144,
+                  child: Image(
+                    image: R.image.kol_album_bg(),
+                  ),
+                ),
+                Positioned(
+                  left: 0,
+                  bottom: 0,
+                  height: 144,
+                  width: 144,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(4.0),
+                    child: Image.network(
+                      url,
+                      fit: BoxFit.cover,
                     ),
                   ),
-                  Positioned(
-                    left: 0,
-                    bottom: 0,
-                    height: 144,
-                    width: 144,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(4.0),
-                      child: Image.network(
-                        url,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
-          SizedBox(
-            height: 8,
+        ),
+        SizedBox(
+          height: 8,
+        ),
+        Text(
+          tag,
+          style: TextStyle(
+            fontSize: 14,
+            color: Color(0xff0F1015),
           ),
-          Text(
-            '#tag',
-            style: TextStyle(
-              fontSize: 14,
-              color: Color(0xff0F1015),
-            ),
-          ),
-        ],
-      );
-    }).toList();
+        ),
+      ],
+    );
   }
 }
 

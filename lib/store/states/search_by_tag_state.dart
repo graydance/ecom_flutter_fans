@@ -8,14 +8,14 @@ class SearchByTagState {
   final String tag;
   final int currentPage;
   final int totalPage;
-  final List<Goods> list;
+  final List<Feed> list;
 
   const SearchByTagState({
-    this.userId,
-    this.tag,
-    this.currentPage,
-    this.totalPage,
-    this.list,
+    this.userId = '',
+    this.tag = '',
+    this.currentPage = 1,
+    this.totalPage = 0,
+    this.list = const [],
   });
 
   SearchByTagState copyWith({
@@ -23,7 +23,7 @@ class SearchByTagState {
     String tag,
     int currentPage,
     int totalPage,
-    List<Goods> list,
+    List<Feed> list,
   }) {
     return SearchByTagState(
       userId: userId ?? this.userId,

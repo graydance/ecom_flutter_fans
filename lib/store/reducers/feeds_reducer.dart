@@ -1,4 +1,3 @@
-import 'package:fans/models/models.dart';
 import 'package:redux/redux.dart';
 
 import 'package:fans/store/actions.dart';
@@ -6,9 +5,10 @@ import 'package:fans/store/states.dart';
 
 final feedsReducer = combineReducers<HomeState>([
   TypedReducer<HomeState, FetchFeedsStartLoadingAction>(_setLoading),
-  TypedReducer<HomeState, FeedsResponseAction>(_setFeedsList),
-  TypedReducer<HomeState, FeedsResponseFailedAction>(_setFeedsListError),
-  TypedReducer<HomeState, RecommendSellersResponseAction>(_setRecommendList),
+  TypedReducer<HomeState, FetchFeedsSuccessAction>(_setFeedsList),
+  TypedReducer<HomeState, FetchFeedsFailedAction>(_setFeedsListError),
+  TypedReducer<HomeState, FetchRecommendSellersSuccessAction>(
+      _setRecommendList),
 ]);
 
 HomeState _setLoading(HomeState state, FetchFeedsStartLoadingAction action) {
@@ -26,7 +26,7 @@ HomeState _setLoading(HomeState state, FetchFeedsStartLoadingAction action) {
   ));
 }
 
-HomeState _setFeedsList(HomeState state, FeedsResponseAction action) {
+HomeState _setFeedsList(HomeState state, FetchFeedsSuccessAction action) {
   if (action.type == 0) {
     var list = action.currentPage == 1
         ? action.feeds
@@ -52,8 +52,7 @@ HomeState _setFeedsList(HomeState state, FeedsResponseAction action) {
   return state;
 }
 
-HomeState _setFeedsListError(
-    HomeState state, FeedsResponseFailedAction action) {
+HomeState _setFeedsListError(HomeState state, FetchFeedsFailedAction action) {
   if (action.type == 0) {
     return state.copyWith(
         followingFeeds: state.followingFeeds.copyWith(
@@ -69,7 +68,7 @@ HomeState _setFeedsListError(
 }
 
 HomeState _setRecommendList(
-    HomeState state, RecommendSellersResponseAction action) {
+    HomeState state, FetchRecommendSellersSuccessAction action) {
   return state.copyWith(
       followingFeeds: state.followingFeeds.copyWith(
     recommendUsers: action.sellers,
