@@ -1,8 +1,10 @@
 import 'dart:async';
 
+import 'package:fans/screen/components/emtpy_view.dart';
 import 'package:fans/store/actions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
 
@@ -113,10 +115,12 @@ class _ShopDetailScreenState extends State<ShopDetailScreen>
                       controller: _controller,
                       children: [
                         PhotoListView(
-                          list: model.model.photos,
+                          userId: model.model.userId,
+                          model: model.model.photos,
                         ),
                         AlbumListView(
-                          list: model.model.albums,
+                          userId: model.model.userId,
+                          model: model.model.albums,
                         ),
                       ],
                     ),
@@ -132,8 +136,10 @@ class _ShopDetailScreenState extends State<ShopDetailScreen>
 }
 
 class PhotoListView extends StatefulWidget {
-  final List<Goods> list;
-  PhotoListView({Key key, this.list}) : super(key: key);
+  final String userId;
+  final ShopDetailListState model;
+  PhotoListView({Key key, @required this.userId, @required this.model})
+      : super(key: key);
 
   @override
   _PhotoListViewState createState() => _PhotoListViewState();
@@ -141,24 +147,83 @@ class PhotoListView extends StatefulWidget {
 
 class _PhotoListViewState extends State<PhotoListView>
     with AutomaticKeepAliveClientMixin {
+  final _refreshController = EasyRefreshController();
+
+  @override
+  void dispose() {
+    _refreshController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    const pageSize = 3 * 5;
     return SafeArea(
       top: false,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: GridView.count(
-          mainAxisSpacing: 8,
-          crossAxisSpacing: 8,
-          crossAxisCount: 3,
-          padding: const EdgeInsets.only(top: 20),
-          children: widget.list
-              .map((e) => PhotoItem(
-                    key: ValueKey(e.id),
-                    url: e.picture,
-                  ))
-              .toList(),
+        child: EasyRefresh(
+          controller: _refreshController,
+          enableControlFinishRefresh: true,
+          enableControlFinishLoad: true,
+          onRefresh: () async {
+            var action = FetchGoodsAction(
+              type: 0,
+              page: 1,
+              limit: pageSize,
+              userId: widget.userId,
+              completer: Completer(),
+            );
+            StoreProvider.of<AppState>(context).dispatch(action);
+            try {
+              await action.completer.future;
+              _refreshController.finishRefresh();
+              _refreshController.resetLoadState();
+            } catch (e) {
+              _refreshController.finishRefresh(success: false);
+            }
+          },
+          onLoad: widget.model.currentPage == widget.model.totalPage
+              ? null
+              : () async {
+                  if (widget.model.currentPage == widget.model.totalPage) {
+                    _refreshController.finishLoad(noMore: true);
+                    return;
+                  }
+                  var action = FetchGoodsAction(
+                    type: 0,
+                    page: widget.model.currentPage + 1,
+                    limit: pageSize,
+                    userId: widget.userId,
+                    completer: Completer(),
+                  );
+                  StoreProvider.of<AppState>(context).dispatch(action);
+                  try {
+                    bool isNoMore = await action.completer.future;
+                    _refreshController.finishLoad(
+                        success: true, noMore: isNoMore);
+                  } catch (e) {
+                    _refreshController.finishLoad(success: false);
+                  }
+                },
+          firstRefresh: widget.model.list.isEmpty ? true : false,
+          firstRefreshWidget: Center(
+            child: CircularProgressIndicator(),
+          ),
+          emptyWidget: widget.model.list.isEmpty ? EmptyView() : null,
+          child: GridView.count(
+            mainAxisSpacing: 8,
+            crossAxisSpacing: 8,
+            crossAxisCount: 3,
+            padding: const EdgeInsets.only(top: 20),
+            children: widget.model.list
+                .map((e) => PhotoItem(
+                      key: ValueKey(e.id),
+                      url: e.picture,
+                    ))
+                .toList(),
+          ),
         ),
       ),
     );
@@ -186,8 +251,10 @@ class PhotoItem extends StatelessWidget {
 }
 
 class AlbumListView extends StatefulWidget {
-  final List<Goods> list;
-  AlbumListView({Key key, this.list}) : super(key: key);
+  final String userId;
+  final ShopDetailListState model;
+  AlbumListView({Key key, @required this.userId, @required this.model})
+      : super(key: key);
 
   @override
   _AlbumListViewState createState() => _AlbumListViewState();
@@ -195,25 +262,85 @@ class AlbumListView extends StatefulWidget {
 
 class _AlbumListViewState extends State<AlbumListView>
     with AutomaticKeepAliveClientMixin {
+  final _refreshController = EasyRefreshController();
+
+  @override
+  void dispose() {
+    _refreshController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
+
+    const pageSize = 10;
     return SafeArea(
       top: false,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: GridView.count(
-          padding: const EdgeInsets.only(top: 20),
-          mainAxisSpacing: 20,
-          crossAxisSpacing: 8,
-          crossAxisCount: 2,
-          children: widget.list
-              .map((e) => AlbumItem(
-                    key: ValueKey(e.id),
-                    url: e.picture,
-                    tag: e.interestName,
-                  ))
-              .toList(),
+        child: EasyRefresh(
+          controller: _refreshController,
+          enableControlFinishRefresh: true,
+          enableControlFinishLoad: true,
+          onRefresh: () async {
+            var action = FetchGoodsAction(
+              type: 1,
+              page: 1,
+              limit: pageSize,
+              userId: widget.userId,
+              completer: Completer(),
+            );
+            StoreProvider.of<AppState>(context).dispatch(action);
+            try {
+              await action.completer.future;
+              _refreshController.finishRefresh();
+              _refreshController.resetLoadState();
+            } catch (e) {
+              _refreshController.finishRefresh(success: false);
+            }
+          },
+          onLoad: widget.model.currentPage == widget.model.totalPage
+              ? null
+              : () async {
+                  if (widget.model.currentPage == widget.model.totalPage) {
+                    _refreshController.finishLoad(noMore: true);
+                    return;
+                  }
+                  var action = FetchGoodsAction(
+                    type: 1,
+                    page: widget.model.currentPage + 1,
+                    limit: pageSize,
+                    userId: widget.userId,
+                    completer: Completer(),
+                  );
+                  StoreProvider.of<AppState>(context).dispatch(action);
+                  try {
+                    bool isNoMore = await action.completer.future;
+                    _refreshController.finishLoad(
+                        success: true, noMore: isNoMore);
+                  } catch (e) {
+                    _refreshController.finishLoad(success: false);
+                  }
+                },
+          firstRefresh: widget.model.list.isEmpty ? true : false,
+          firstRefreshWidget: Center(
+            child: CircularProgressIndicator(),
+          ),
+          emptyWidget: widget.model.list.isEmpty ? EmptyView() : null,
+          child: GridView.count(
+            padding: const EdgeInsets.only(top: 20),
+            mainAxisSpacing: 20,
+            crossAxisSpacing: 8,
+            crossAxisCount: 2,
+            children: widget.model.list
+                .map((e) => AlbumItem(
+                      key: ValueKey(e.id),
+                      url: e.picture,
+                      tag: e.interestName,
+                    ))
+                .toList(),
+          ),
         ),
       ),
     );

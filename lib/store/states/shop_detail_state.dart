@@ -8,31 +8,31 @@ class ShopDetailState {
   final String error;
   final String userId;
   final Feed seller;
-  final List<Goods> photos;
-  final List<Goods> albums;
+  final ShopDetailListState photos;
+  final ShopDetailListState albums;
 
   const ShopDetailState({
     this.isLoading = false,
     this.error = '',
     this.userId = '',
     this.seller = const Feed(),
-    this.photos = const [],
-    this.albums = const [],
+    this.photos = const ShopDetailListState(type: 0),
+    this.albums = const ShopDetailListState(type: 1),
   });
 
   ShopDetailState copyWith({
     bool isLoading,
     String error,
     String userId,
-    Feed user,
-    List<Goods> photos,
-    List<Goods> albums,
+    Feed seller,
+    ShopDetailListState photos,
+    ShopDetailListState albums,
   }) {
     return ShopDetailState(
       isLoading: isLoading ?? this.isLoading,
       error: error ?? this.error,
       userId: userId ?? this.userId,
-      seller: user ?? this.seller,
+      seller: seller ?? this.seller,
       photos: photos ?? this.photos,
       albums: albums ?? this.albums,
     );
@@ -47,8 +47,8 @@ class ShopDetailState {
         o.error == error &&
         o.userId == userId &&
         o.seller == seller &&
-        listEquals(o.photos, photos) &&
-        listEquals(o.albums, albums);
+        o.photos == photos &&
+        o.albums == albums;
   }
 
   @override
@@ -59,5 +59,63 @@ class ShopDetailState {
         seller.hashCode ^
         photos.hashCode ^
         albums.hashCode;
+  }
+
+  @override
+  String toString() {
+    return 'ShopDetailState(isLoading: $isLoading, error: $error, userId: $userId, seller: $seller, photos: $photos, albums: $albums)';
+  }
+}
+
+@immutable
+class ShopDetailListState {
+  final int type;
+  final int currentPage;
+  final int totalPage;
+  final List<Goods> list;
+
+  const ShopDetailListState({
+    this.type = 0,
+    this.currentPage = 1,
+    this.totalPage = 0,
+    this.list = const [],
+  });
+
+  ShopDetailListState copyWith({
+    int type,
+    int currentPage,
+    int totalPage,
+    List<Goods> list,
+  }) {
+    return ShopDetailListState(
+      type: type ?? this.type,
+      currentPage: currentPage ?? this.currentPage,
+      totalPage: totalPage ?? this.totalPage,
+      list: list ?? this.list,
+    );
+  }
+
+  @override
+  bool operator ==(Object o) {
+    if (identical(this, o)) return true;
+
+    return o is ShopDetailListState &&
+        o.type == type &&
+        o.currentPage == currentPage &&
+        o.totalPage == totalPage &&
+        listEquals(o.list, list);
+  }
+
+  @override
+  int get hashCode {
+    return type.hashCode ^
+        currentPage.hashCode ^
+        totalPage.hashCode ^
+        list.hashCode;
+  }
+
+  @override
+  String toString() {
+    return 'ShopDetailListState(type: $type, currentPage: $currentPage, totalPage: $totalPage, list: $list)';
   }
 }

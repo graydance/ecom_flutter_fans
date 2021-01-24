@@ -250,7 +250,7 @@ Middleware<AppState> _createFetchGoods() {
               userId: action.userId,
               type: action.type,
               page: action.page,
-              limit: 10))
+              limit: action.limit))
           .then(
         (data) {
           var response = data['data'];

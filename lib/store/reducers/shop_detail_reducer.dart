@@ -10,7 +10,7 @@ final shopDetailReducer = combineReducers<ShopDetailState>([
 ]);
 
 ShopDetailState _setUserId(ShopDetailState state, ShowShopDetailAction action) {
-  return state.copyWith(
+  return ShopDetailState(
     userId: action.userId,
   );
 }
@@ -20,7 +20,7 @@ ShopDetailState _setDetail(
   return state.copyWith(
     isLoading: false,
     error: '',
-    user: action.seller,
+    seller: action.seller,
   );
 }
 
@@ -29,9 +29,13 @@ ShopDetailState _setGoods(
   if (action.type == 0) {
     var list = action.currentPage == 1
         ? action.list
-        : [...state.photos, ...action.list];
+        : [...state.photos.list, ...action.list];
     return state.copyWith(
-      photos: list,
+      photos: state.photos.copyWith(
+        currentPage: action.currentPage,
+        totalPage: action.totalPage,
+        list: list,
+      ),
       isLoading: false,
       error: '',
     );
@@ -39,9 +43,13 @@ ShopDetailState _setGoods(
   if (action.type == 1) {
     var list = action.currentPage == 1
         ? action.list
-        : [...state.albums, ...action.list];
+        : [...state.albums.list, ...action.list];
     return state.copyWith(
-      albums: list,
+      albums: state.photos.copyWith(
+        currentPage: action.currentPage,
+        totalPage: action.totalPage,
+        list: list,
+      ),
       isLoading: false,
       error: '',
     );
