@@ -6,10 +6,10 @@ import 'dart:async';
 import 'package:fans/models/models.dart';
 
 class ShowSearchByTagAction {
-  final String userId;
+  final Feed feed;
   final String tag;
 
-  ShowSearchByTagAction({this.userId, this.tag});
+  ShowSearchByTagAction({this.feed, this.tag});
 }
 
 class SearchByTagAction {

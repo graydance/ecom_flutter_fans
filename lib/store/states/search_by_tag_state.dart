@@ -4,14 +4,14 @@ import 'package:fans/models/models.dart';
 
 @immutable
 class SearchByTagState {
-  final String userId;
+  final Feed feed;
   final String tag;
   final int currentPage;
   final int totalPage;
   final List<Feed> list;
 
   const SearchByTagState({
-    this.userId = '',
+    this.feed = const Feed(),
     this.tag = '',
     this.currentPage = 1,
     this.totalPage = 0,
@@ -19,14 +19,14 @@ class SearchByTagState {
   });
 
   SearchByTagState copyWith({
-    String userId,
+    Feed feed,
     String tag,
     int currentPage,
     int totalPage,
     List<Feed> list,
   }) {
     return SearchByTagState(
-      userId: userId ?? this.userId,
+      feed: feed ?? this.feed,
       tag: tag ?? this.tag,
       currentPage: currentPage ?? this.currentPage,
       totalPage: totalPage ?? this.totalPage,
@@ -39,7 +39,7 @@ class SearchByTagState {
     if (identical(this, o)) return true;
 
     return o is SearchByTagState &&
-        o.userId == userId &&
+        o.feed == feed &&
         o.tag == tag &&
         o.currentPage == currentPage &&
         o.totalPage == totalPage &&
@@ -48,7 +48,7 @@ class SearchByTagState {
 
   @override
   int get hashCode {
-    return userId.hashCode ^
+    return feed.hashCode ^
         tag.hashCode ^
         currentPage.hashCode ^
         totalPage.hashCode ^
@@ -57,6 +57,6 @@ class SearchByTagState {
 
   @override
   String toString() {
-    return 'SearchByTagState(userId: $userId, tag: $tag, currentPage: $currentPage, totalPage: $totalPage, list: $list)';
+    return 'SearchByTagState(feed: $feed, tag: $tag, currentPage: $currentPage, totalPage: $totalPage, list: $list)';
   }
 }

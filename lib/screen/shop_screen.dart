@@ -4,7 +4,6 @@ import 'package:fans/store/actions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:redux/redux.dart';
 
 import 'package:fans/models/models.dart';

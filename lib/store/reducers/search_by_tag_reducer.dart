@@ -11,8 +11,8 @@ final searchByTagReducer = combineReducers<SearchByTagState>([
 
 SearchByTagState _setShowSearch(
     SearchByTagState state, ShowSearchByTagAction action) {
-  return state.copyWith(
-    userId: action.userId,
+  return SearchByTagState(
+    feed: action.feed,
     tag: action.tag,
   );
 }
