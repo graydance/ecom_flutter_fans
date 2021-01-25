@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:fans/r.g.dart';
-import 'package:fans/screen/home_screen.dart';
+import 'package:fans/screen/home/home_screen.dart';
 import 'package:fans/screen/screens.dart';
 
 class TabbarScreen extends StatefulWidget {

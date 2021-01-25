@@ -3,6 +3,7 @@ import 'package:fans/r.g.dart';
 import 'package:fans/screen/components/product_feed_item.dart';
 import 'package:fans/screen/components/tag_button.dart';
 import 'package:fans/screen/components/verified_username_view.dart';
+import 'package:fans/theme.dart';
 import 'package:flutter/material.dart';
 
 class ProductDetailScreen extends StatefulWidget {
@@ -132,7 +133,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 child: FlatButton(
                   height: 40,
                   onPressed: () {},
-                  color: Color(0xFFED8514),
+                  color: AppTheme.colorED8514,
                   child: Text(
                     'Buy now'.toUpperCase(),
                     style: TextStyle(color: Colors.white),

@@ -12,7 +12,7 @@ import 'package:fans/models/models.dart';
 import 'package:fans/r.g.dart';
 import 'package:fans/screen/components/avatar_widget.dart';
 import 'package:fans/screen/components/follow_button.dart';
-import 'package:fans/store/states/shop_detail_state.dart';
+import 'package:fans/store/product/shop_detail_state.dart';
 
 class ShopDetailScreen extends StatefulWidget {
   ShopDetailScreen({Key key}) : super(key: key);

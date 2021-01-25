@@ -1,6 +1,6 @@
 import 'package:fans/models/appstate.dart';
 import 'package:fans/store/actions.dart';
-import 'package:fans/store/reducers/appreducers.dart';
+import 'package:fans/store/appreducers.dart';
 // import 'package:fans/store/states/verify_email_state.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:redux/redux.dart';

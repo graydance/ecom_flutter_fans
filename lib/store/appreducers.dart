@@ -1,8 +1,8 @@
 import 'package:fans/models/models.dart';
-import 'package:fans/store/reducers/auth_reducer.dart';
-import 'package:fans/store/reducers/feeds_reducer.dart';
-import 'package:fans/store/reducers/search_by_tag_reducer.dart';
-import 'package:fans/store/reducers/shop_detail_reducer.dart';
+import 'package:fans/store/auth/auth_reducer.dart';
+import 'package:fans/store/product/feeds_reducer.dart';
+import 'package:fans/store/product/search_by_tag_reducer.dart';
+import 'package:fans/store/product/shop_detail_reducer.dart';
 
 AppState appReducer(AppState state, action) {
   return AppState(

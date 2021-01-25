@@ -4,9 +4,9 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
 
 import 'package:fans/models/appstate.dart';
-import 'package:fans/screen/interest_list_screen.dart';
+import 'package:fans/screen/login/interest_list_screen.dart';
 import 'package:fans/screen/screens.dart';
-import 'package:fans/screen/shop_screen.dart';
+import 'package:fans/screen/home/shop_screen.dart';
 import 'package:fans/store/actions.dart';
 
 class ReduxApp extends StatelessWidget {

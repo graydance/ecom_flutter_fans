@@ -7,6 +7,7 @@ import 'package:fans/screen/components/tag_button.dart';
 import 'package:fans/screen/components/verified_username_view.dart';
 import 'package:fans/store/actions.dart';
 import 'package:fans/store/states.dart';
+import 'package:fans/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -282,7 +283,7 @@ class RecommendItem extends StatelessWidget {
                 viewModel.model.nickName.isNotEmpty
                     ? viewModel.model.nickName
                     : 'Nick name',
-                style: TextStyle(color: Color(0xffED8514), fontSize: 14),
+                style: TextStyle(color: AppTheme.colorED8514, fontSize: 14),
               ),
               SizedBox(
                 width: 2,

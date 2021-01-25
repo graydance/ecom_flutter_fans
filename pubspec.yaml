@@ -42,6 +42,7 @@ flutter:
   - assets/images/feed/pause.png
   - assets/images/feed/play.png
   - assets/images/feed/product_mask_bg.png
+  - assets/images/feed/shopping_cart.png
   - assets/images/feed/verified.png
   - assets/images/feed/voice_mute.png
   - assets/images/feed/voice_unmute.png
