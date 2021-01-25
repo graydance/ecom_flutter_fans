@@ -1,8 +1,9 @@
+import 'dart:async';
+
 import 'package:fans/store/actions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_redux/flutter_redux.dart';
-import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:redux/redux.dart';
 
 import 'package:fans/models/models.dart';
@@ -41,6 +42,20 @@ class _ShopDetailScreenState extends State<ShopDetailScreen>
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _ViewModel>(
       converter: _ViewModel.fromStore,
+      onInit: (store) {
+        store.dispatch(
+            FetchShopDetailAction(userId: store.state.shopDetail.userId));
+        store.dispatch(FetchGoodsAction(
+            userId: store.state.shopDetail.userId,
+            type: 0,
+            page: 1,
+            completer: Completer()));
+        store.dispatch(FetchGoodsAction(
+            userId: store.state.shopDetail.userId,
+            type: 1,
+            page: 1,
+            completer: Completer()));
+      },
       builder: (ctx, model) => Scaffold(
         body: NestedScrollView(
           physics: BouncingScrollPhysics(),
@@ -55,11 +70,12 @@ class _ShopDetailScreenState extends State<ShopDetailScreen>
                   sliver: SliverPersistentHeader(
                     pinned: true,
                     delegate: SliverCustomHeaderDelegate(
-                      title: '',
                       collapsedHeight: 40,
                       expandedHeight: 330,
                       paddingTop: MediaQuery.of(context).padding.top,
                       coverImage: R.image.kol_detail_bg(),
+                      userId: model.model.userId,
+                      model: model.model.seller,
                     ),
                   ),
                 ),
@@ -96,8 +112,12 @@ class _ShopDetailScreenState extends State<ShopDetailScreen>
                     child: TabBarView(
                       controller: _controller,
                       children: [
-                        PhotoListView(),
-                        AlbumListView(),
+                        PhotoListView(
+                          list: model.model.photos,
+                        ),
+                        AlbumListView(
+                          list: model.model.albums,
+                        ),
                       ],
                     ),
                   ),
@@ -111,45 +131,19 @@ class _ShopDetailScreenState extends State<ShopDetailScreen>
   }
 }
 
-final _testLinks = [
-  'https://images.pexels.com/photos/4409307/pexels-photo-4409307.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
-  'https://images.pexels.com/photos/2351274/pexels-photo-2351274.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
-  'https://images.pexels.com/photos/3607084/pexels-photo-3607084.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
-  'https://images.pexels.com/photos/4409307/pexels-photo-4409307.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
-  'https://images.pexels.com/photos/2351274/pexels-photo-2351274.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
-  'https://images.pexels.com/photos/3607084/pexels-photo-3607084.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
-  'https://images.pexels.com/photos/4409307/pexels-photo-4409307.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
-  'https://images.pexels.com/photos/2351274/pexels-photo-2351274.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
-  'https://images.pexels.com/photos/3607084/pexels-photo-3607084.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
-  'https://images.pexels.com/photos/4409307/pexels-photo-4409307.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
-  'https://images.pexels.com/photos/2351274/pexels-photo-2351274.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
-  'https://images.pexels.com/photos/3607084/pexels-photo-3607084.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
-  'https://images.pexels.com/photos/4409307/pexels-photo-4409307.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
-  'https://images.pexels.com/photos/2351274/pexels-photo-2351274.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
-  'https://images.pexels.com/photos/3607084/pexels-photo-3607084.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
-  'https://images.pexels.com/photos/4409307/pexels-photo-4409307.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
-  'https://images.pexels.com/photos/2351274/pexels-photo-2351274.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
-  'https://images.pexels.com/photos/3607084/pexels-photo-3607084.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
-  'https://images.pexels.com/photos/4409307/pexels-photo-4409307.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
-  'https://images.pexels.com/photos/2351274/pexels-photo-2351274.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
-  'https://images.pexels.com/photos/3607084/pexels-photo-3607084.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
-  'https://images.pexels.com/photos/4409307/pexels-photo-4409307.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
-  'https://images.pexels.com/photos/2351274/pexels-photo-2351274.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
-  'https://images.pexels.com/photos/3607084/pexels-photo-3607084.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
-  'https://images.pexels.com/photos/4409307/pexels-photo-4409307.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
-  'https://images.pexels.com/photos/2351274/pexels-photo-2351274.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940',
-];
-
 class PhotoListView extends StatefulWidget {
-  PhotoListView({Key key}) : super(key: key);
+  final List<Goods> list;
+  PhotoListView({Key key, this.list}) : super(key: key);
 
   @override
   _PhotoListViewState createState() => _PhotoListViewState();
 }
 
-class _PhotoListViewState extends State<PhotoListView> {
+class _PhotoListViewState extends State<PhotoListView>
+    with AutomaticKeepAliveClientMixin {
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return SafeArea(
       top: false,
       child: Container(
@@ -159,36 +153,51 @@ class _PhotoListViewState extends State<PhotoListView> {
           crossAxisSpacing: 8,
           crossAxisCount: 3,
           padding: const EdgeInsets.only(top: 20),
-          children: _buildList(),
+          children: widget.list
+              .map((e) => PhotoItem(
+                    key: ValueKey(e.id),
+                    url: e.picture,
+                  ))
+              .toList(),
         ),
       ),
     );
   }
 
-  _buildList() {
-    return _testLinks.map((url) {
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(4.0),
-        child: FadeInImage(
-          placeholder: R.image.kol_album_bg(),
-          image: NetworkImage(url),
-          fit: BoxFit.cover,
-        ),
-      );
-    }).toList();
+  @override
+  bool get wantKeepAlive => true;
+}
+
+class PhotoItem extends StatelessWidget {
+  final String url;
+  const PhotoItem({Key key, this.url}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(4.0),
+      child: FadeInImage(
+        placeholder: R.image.kol_album_bg(),
+        image: NetworkImage(url),
+        fit: BoxFit.cover,
+      ),
+    );
   }
 }
 
 class AlbumListView extends StatefulWidget {
-  AlbumListView({Key key}) : super(key: key);
+  final List<Goods> list;
+  AlbumListView({Key key, this.list}) : super(key: key);
 
   @override
   _AlbumListViewState createState() => _AlbumListViewState();
 }
 
-class _AlbumListViewState extends State<AlbumListView> {
+class _AlbumListViewState extends State<AlbumListView>
+    with AutomaticKeepAliveClientMixin {
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return SafeArea(
       top: false,
       child: Container(
@@ -198,61 +207,75 @@ class _AlbumListViewState extends State<AlbumListView> {
           mainAxisSpacing: 20,
           crossAxisSpacing: 8,
           crossAxisCount: 2,
-          children: _buildList(),
+          children: widget.list
+              .map((e) => AlbumItem(
+                    key: ValueKey(e.id),
+                    url: e.picture,
+                    tag: e.interestName,
+                  ))
+              .toList(),
         ),
       ),
     );
   }
 
-  _buildList() {
-    return _testLinks.map((url) {
-      return Column(
-        children: [
-          Center(
-            child: SizedBox(
-              height: 152,
-              width: 152,
-              child: Stack(
-                children: [
-                  Positioned(
-                    top: 0,
-                    right: 0,
-                    height: 144,
-                    width: 144,
-                    child: Image(
-                      image: R.image.kol_album_bg(),
+  @override
+  bool get wantKeepAlive => true;
+}
+
+class AlbumItem extends StatelessWidget {
+  final String url;
+  final String tag;
+  const AlbumItem({Key key, this.url, this.tag}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Center(
+          child: SizedBox(
+            height: 152,
+            width: 152,
+            child: Stack(
+              children: [
+                Positioned(
+                  top: 0,
+                  right: 0,
+                  height: 144,
+                  width: 144,
+                  child: Image(
+                    image: R.image.kol_album_bg(),
+                  ),
+                ),
+                Positioned(
+                  left: 0,
+                  bottom: 0,
+                  height: 144,
+                  width: 144,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(4.0),
+                    child: Image.network(
+                      url,
+                      fit: BoxFit.cover,
                     ),
                   ),
-                  Positioned(
-                    left: 0,
-                    bottom: 0,
-                    height: 144,
-                    width: 144,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(4.0),
-                      child: Image.network(
-                        url,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
-          SizedBox(
-            height: 8,
+        ),
+        SizedBox(
+          height: 8,
+        ),
+        Text(
+          tag,
+          style: TextStyle(
+            fontSize: 14,
+            color: Color(0xff0F1015),
           ),
-          Text(
-            '#tag',
-            style: TextStyle(
-              fontSize: 14,
-              color: Color(0xff0F1015),
-            ),
-          ),
-        ],
-      );
-    }).toList();
+        ),
+      ],
+    );
   }
 }
 
@@ -261,15 +284,17 @@ class SliverCustomHeaderDelegate extends SliverPersistentHeaderDelegate {
   final double expandedHeight;
   final double paddingTop;
   final AssetImage coverImage;
-  final String title;
-  String statusBarMode = 'dark';
+  final String userId;
+  final Feed model;
+  String statusBarMode = 'light';
 
   SliverCustomHeaderDelegate({
     this.collapsedHeight,
     this.expandedHeight,
     this.paddingTop,
     this.coverImage,
-    this.title,
+    this.userId,
+    this.model,
   });
 
   @override
@@ -376,7 +401,7 @@ class SliverCustomHeaderDelegate extends SliverPersistentHeaderDelegate {
                         onPressed: () => Navigator.pop(context),
                       ),
                       Text(
-                        this.title,
+                        '',
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.w500,
@@ -400,7 +425,10 @@ class SliverCustomHeaderDelegate extends SliverPersistentHeaderDelegate {
           ),
           Positioned(
             bottom: 10,
-            child: ProfileHeader(),
+            child: ProfileHeader(
+              userId: userId,
+              model: model,
+            ),
             // Opacity(
             //   opacity: makeHeaderAlpha(shrinkOffset),
             //   child: ProfileHeader(),
@@ -413,6 +441,11 @@ class SliverCustomHeaderDelegate extends SliverPersistentHeaderDelegate {
 }
 
 class ProfileHeader extends StatelessWidget {
+  final String userId;
+  final Feed model;
+
+  const ProfileHeader({Key key, this.userId, this.model}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -431,14 +464,14 @@ class ProfileHeader extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    "Flutter",
+                    model.nickName,
                     style: TextStyle(
                         color: Colors.white,
                         fontSize: 16.0,
                         fontWeight: FontWeight.bold),
                   ),
                   Text(
-                    "@desiperkins",
+                    model.userName,
                     style: TextStyle(
                         color: Colors.white,
                         fontSize: 16.0,
@@ -455,7 +488,7 @@ class ProfileHeader extends StatelessWidget {
                 Column(
                   children: [
                     Text(
-                      '233',
+                      model.products.toString(),
                       style: TextStyle(
                           color: Colors.white,
                           fontSize: 16.0,
@@ -476,7 +509,7 @@ class ProfileHeader extends StatelessWidget {
                 Column(
                   children: [
                     Text(
-                      '1.2k',
+                      model.followers.toString(),
                       style: TextStyle(
                           color: Colors.white,
                           fontSize: 16.0,
@@ -496,8 +529,8 @@ class ProfileHeader extends StatelessWidget {
                   height: 26,
                   width: 90,
                   child: FollowButton(
-                    isFollowed: false,
-                    userId: '',
+                    isFollowed: model.followStatus == 1,
+                    userId: userId,
                   ),
                 ),
               ],
@@ -507,7 +540,7 @@ class ProfileHeader extends StatelessWidget {
             height: 10.0,
           ),
           Text(
-            "Google’s mobile app SDK for building beautiful native apps on iOS and Android in record time // For support visit http://stackoverflow.com/tags/flutter",
+            model.aboutMe,
             style: TextStyle(
               color: Colors.white,
               fontSize: 12.0,

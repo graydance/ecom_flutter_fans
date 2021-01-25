@@ -15,8 +15,9 @@ dependencies:
   flutter_svg: ^0.20.0-nullsafety.3
   r_dart_library: ^0.2.1
   shared_preferences: ^0.5.12+4
-  pull_to_refresh: ^1.6.3
+  flutter_easyrefresh: ^2.1.8
   flutter_easyloading: ^2.2.2
+  intl: ^0.16.1
 dev_dependencies:
   flutter_test:
     sdk: flutter

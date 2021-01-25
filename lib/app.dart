@@ -39,12 +39,7 @@ class ReduxApp extends StatelessWidget {
             Routes.home: (context) => TabbarScreen(
                   onInit: () {},
                 ),
-            Routes.searchByTag: (context) => SearchByTagScreen(
-                  onInit: () {
-                    StoreProvider.of<AppState>(context)
-                        .dispatch(SearchByTagAction());
-                  },
-                ),
+            Routes.searchByTag: (context) => SearchByTagScreen(),
             Routes.shop: (context) => ShopDetailScreen(),
           },
           builder: EasyLoading.init(),

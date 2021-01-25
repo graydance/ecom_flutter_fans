@@ -140,6 +140,22 @@ class FollowAPI extends API {
   String get path => '/user/follow_me';
 }
 
+class GoodsAPI extends API {
+  final int type;
+  final String userId;
+  final int page;
+  final int limit;
+
+  GoodsAPI({this.type, this.userId, this.page, this.limit});
+
+  @override
+  Map<String, dynamic> get parameters =>
+      {'userId': userId, 'type': type, 'page': page, 'limit': limit};
+
+  @override
+  String get path => '/user/pub/good_list';
+}
+
 // var version = '';
 
 // var dio = Dio(
