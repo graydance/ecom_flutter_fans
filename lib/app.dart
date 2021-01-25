@@ -41,6 +41,7 @@ class ReduxApp extends StatelessWidget {
                 ),
             Routes.searchByTag: (context) => SearchByTagScreen(),
             Routes.shop: (context) => ShopDetailScreen(),
+            Routes.productDetail: (context) => ProductDetailScreen(),
           },
           builder: EasyLoading.init(),
         ));
@@ -62,4 +63,5 @@ class Routes {
   static final home = '/home';
   static final searchByTag = '/search_by_tag';
   static final shop = 'shop';
+  static final productDetail = 'product_detail';
 }

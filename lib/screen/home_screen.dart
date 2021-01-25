@@ -60,11 +60,6 @@ class _HomeScreenState extends State<HomeScreen>
     return StoreConnector<AppState, _ViewModel>(
       converter: _ViewModel.fromStore,
       distinct: true,
-      onInit: (store) {
-        store.dispatch(FetchRecommendSellersAction());
-        store.dispatch(FetchFeedsAction(0, 1, Completer()));
-        store.dispatch(FetchFeedsAction(1, 1, Completer()));
-      },
       builder: (ctx, model) => Column(
         children: [
           Padding(
@@ -138,6 +133,9 @@ class _FeedListScreenState extends State<FeedListScreen> {
         enableControlFinishRefresh: true,
         enableControlFinishLoad: true,
         onRefresh: () async {
+          StoreProvider.of<AppState>(context)
+              .dispatch(FetchRecommendSellersAction());
+
           var action = FetchFeedsAction(widget.viewModel.type, 1, Completer());
           StoreProvider.of<AppState>(context).dispatch(action);
           try {

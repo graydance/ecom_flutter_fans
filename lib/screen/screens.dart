@@ -7,3 +7,5 @@ export './forgot_password_screen.dart';
 export './tabbar_screen.dart';
 export './home_screen.dart';
 export './search_by_tag_screen.dart';
+export './shop_screen.dart';
+export './product_detail_screen.dart';
