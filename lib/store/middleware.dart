@@ -1,4 +1,4 @@
-import 'package:fans/models/seller.dart';
+import 'package:fans/models/feed.dart';
 import 'package:fans/networking/api_exceptions.dart';
 import 'package:fans/networking/networking.dart';
 import 'package:fans/storage/auth_storage.dart';
@@ -20,6 +20,7 @@ List<Middleware<AppState>> createStoreMiddleware() {
   final searchByTag = _createSearchByTag();
   final fetchShopDetail = _createShopDetail();
   final fetchRecommends = _createFetchRecommends();
+  final fetchGoods = _createFetchGoods();
 
   return [
     TypedMiddleware<AppState, VerifyEmailAction>(verifyEmail),
@@ -32,6 +33,7 @@ List<Middleware<AppState>> createStoreMiddleware() {
     TypedMiddleware<AppState, FetchRecommendSellersAction>(fetchRecommends),
     TypedMiddleware<AppState, SearchByTagAction>(searchByTag),
     TypedMiddleware<AppState, FetchShopDetailAction>(fetchShopDetail),
+    TypedMiddleware<AppState, FetchGoodsAction>(fetchGoods),
   ];
 }
 
@@ -124,7 +126,7 @@ Middleware<AppState> _createFetchInterests() {
       Networking.request(InterestListAPI()).then(
         (data) {
           var list =
-              (data['data'] as List).map((e) => Interest.fromJson(e)).toList();
+              (data['data'] as List).map((e) => Interest.fromMap(e)).toList();
           store.dispatch(FetchInterestSuccessAction(list));
         },
       ).catchError(
@@ -158,19 +160,19 @@ Middleware<AppState> _createFetchFeeds() {
       Networking.request(FeedsAPI(type: action.type, page: action.page)).then(
         (data) {
           var response = data['data'];
-          var totalPage = response['total_page'];
-          var currentPage = response['current_page'];
+          var totalPage = response['totalPage'];
+          var currentPage = response['currentPage'];
           var list = response['list'] as List;
-          List<Feed> feeds = list.map((e) => Feed.fromJson(e)).toList();
+          List<Feed> feeds = list.map((e) => Feed.fromMap(e)).toList();
 
           bool isNoMore = feeds.isEmpty || currentPage == totalPage;
           action.completer.complete(isNoMore);
-          store.dispatch(
-              FeedsResponseAction(action.type, totalPage, currentPage, feeds));
+          store.dispatch(FetchFeedsSuccessAction(
+              action.type, totalPage, currentPage, feeds));
         },
       ).catchError((err) {
         action.completer.completeError(err);
-        store.dispatch(FeedsResponseFailedAction(action.type, err.toString()));
+        store.dispatch(FetchFeedsFailedAction(action.type, err.toString()));
       });
     }
     next(action);
@@ -184,9 +186,9 @@ Middleware<AppState> _createFetchRecommends() {
         (data) {
           var response = data['data'];
           var list = response['list'] as List;
-          List<Seller> models = list.map((e) => Seller.fromMap(e)).toList();
+          List<Feed> models = list.map((e) => Feed.fromMap(e)).toList();
 
-          store.dispatch(RecommendSellersResponseAction(models));
+          store.dispatch(FetchRecommendSellersSuccessAction(models));
         },
       ).catchError((err) {
         print(err.toString());
@@ -207,18 +209,18 @@ Middleware<AppState> _createSearchByTag() {
           .then(
         (data) {
           var response = data['data'];
-          var totalPage = response['total_page'];
-          var currentPage = response['current_page'];
+          var totalPage = response['totalPage'];
+          var currentPage = response['currentPage'];
           var list = response['list'] as List;
-          List<Goods> feeds = list.map((e) => Goods.fromJson(e)).toList();
+          List<Feed> feeds = list.map((e) => Feed.fromMap(e)).toList();
 
           bool isNoMore = feeds.isEmpty || currentPage == totalPage;
-          action.completer.complete(isNoMore);
+          action.completer?.complete(isNoMore);
           store.dispatch(
-              SearchByTagResponseAction(totalPage, currentPage, feeds));
+              SearchByTagSuccessAction(totalPage, currentPage, feeds));
         },
       ).catchError((err) {
-        action.completer.completeError(err.toString());
+        action.completer?.completeError(err?.toString() ?? '');
       });
     }
     next(action);
@@ -230,11 +232,43 @@ Middleware<AppState> _createShopDetail() {
     if (action is FetchShopDetailAction) {
       Networking.request(ShopDetailAPI(action.userId)).then(
         (data) {
-          var seller = Seller.fromMap(data['data']);
-          store.dispatch(ShopDetailResponseAction(seller: seller));
+          var seller = Feed.fromMap(data['data']);
+          store.dispatch(FetchShopDetailSuccessAction(seller: seller));
         },
       ).catchError((err) {
-        store.dispatch(ShopDetailFailedAction(error: err.toString()));
+        store.dispatch(FetchShopDetailFailedAction(error: err.toString()));
+      });
+    }
+    next(action);
+  };
+}
+
+Middleware<AppState> _createFetchGoods() {
+  return (Store<AppState> store, action, NextDispatcher next) {
+    if (action is FetchGoodsAction) {
+      Networking.request(GoodsAPI(
+              userId: action.userId,
+              type: action.type,
+              page: action.page,
+              limit: action.limit))
+          .then(
+        (data) {
+          var response = data['data'];
+          var totalPage = response['totalPage'];
+          var currentPage = response['currentPage'];
+          var list = response['list'] as List;
+          List<Goods> models = list.map((e) => Goods.fromMap(e)).toList();
+
+          var isNoMore = currentPage == totalPage;
+          action.completer.complete(isNoMore);
+          store.dispatch(FetchGoodsSuccessAction(
+              currentPage: currentPage,
+              totalPage: totalPage,
+              type: action.type,
+              list: models));
+        },
+      ).catchError((err) {
+        action.completer.completeError(err.toString());
       });
     }
     next(action);

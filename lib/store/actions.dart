@@ -1,9 +1,16 @@
-export './actions/auth_action.dart';
-export './actions/product_action.dart';
+export 'auth/auth_action.dart';
+export 'product/product_action.dart';
 
 import 'dart:async';
 
 import 'package:fans/models/models.dart';
+
+class ShowSearchByTagAction {
+  final Feed feed;
+  final String tag;
+
+  ShowSearchByTagAction({this.feed, this.tag});
+}
 
 class SearchByTagAction {
   final String userId;
@@ -16,38 +23,10 @@ class SearchByTagAction {
       {this.userId, this.page, this.tag, this.limit, this.completer});
 }
 
-class SearchByTagResponseAction {
+class SearchByTagSuccessAction {
   final int totalPage;
   final int currentPage;
-  final List<Goods> feeds;
+  final List<Feed> feeds;
 
-  SearchByTagResponseAction(this.totalPage, this.currentPage, this.feeds);
-}
-
-class ShowShopDetailAction {
-  final String userId;
-
-  ShowShopDetailAction({
-    this.userId,
-  });
-}
-
-class FetchShopDetailAction {
-  final String userId;
-
-  FetchShopDetailAction({
-    this.userId,
-  });
-}
-
-class ShopDetailResponseAction {
-  final Seller seller;
-
-  ShopDetailResponseAction({this.seller});
-}
-
-class ShopDetailFailedAction {
-  final String error;
-
-  ShopDetailFailedAction({this.error});
+  SearchByTagSuccessAction(this.totalPage, this.currentPage, this.feeds);
 }

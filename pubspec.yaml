@@ -11,12 +11,13 @@ dependencies:
   dio: ^3.0.7
   redux_logging: ^0.4.0
   logging: ^0.11.4
-  video_player: ^1.0.1
-  flutter_svg: ^0.19.2+1
+  video_player: ^2.0.0-nullsafety.7
+  flutter_svg: ^0.20.0-nullsafety.3
   r_dart_library: ^0.2.1
   shared_preferences: ^0.5.12+4
-  pull_to_refresh: ^1.6.3
+  flutter_easyrefresh: ^2.1.8
   flutter_easyloading: ^2.2.2
+  intl: ^0.16.1
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -26,22 +27,25 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
+  - assets/images/auth/auth_background.png
   - assets/images/auth/eyes_visibility.png
   - assets/images/auth/eyes_visibility_off.png
-  - assets/images/auth_background.png
+  - assets/images/auth/interest_selected.png
+  - assets/images/auth/interest_unselected.png
   - assets/images/feed/ad_avatar_placeholder.png
   - assets/images/feed/add_cart.png
   - assets/images/feed/avatar_placeholder.png
   - assets/images/feed/cart.png
   - assets/images/feed/favorite.png
+  - assets/images/feed/more_vert.png
   - assets/images/feed/new_msg_tip_bg.png
   - assets/images/feed/pause.png
   - assets/images/feed/play.png
-  - assets/images/feed/vip.png
+  - assets/images/feed/product_mask_bg.png
+  - assets/images/feed/shopping_cart.png
+  - assets/images/feed/verified.png
   - assets/images/feed/voice_mute.png
   - assets/images/feed/voice_unmute.png
-  - assets/images/interest_selected.png
-  - assets/images/interest_unselected.png
   - assets/images/kol/kol_album_bg.png
   - assets/images/kol/kol_cart.png
   - assets/images/kol/kol_detail_bg.png

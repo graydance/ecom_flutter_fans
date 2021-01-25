@@ -1,5 +1,6 @@
 import 'package:fans/networking/api.dart';
 import 'package:fans/networking/networking.dart';
+import 'package:fans/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 
@@ -30,8 +31,8 @@ class _FollowButtonState extends State<FollowButton>
     super.build(context);
     return Container(
       child: FlatButton(
-        color: _isFollowed ? Color(0xffC4C5CD) : Color(0xffED8514),
-        disabledColor: Color(0xffED8514).withAlpha(87),
+        color: _isFollowed ? Color(0xffC4C5CD) : AppTheme.colorED8514,
+        disabledColor: AppTheme.colorED8514.withAlpha(87),
         onPressed: _isLoading ? null : _onPressed,
         child: _isLoading
             ? SizedBox(

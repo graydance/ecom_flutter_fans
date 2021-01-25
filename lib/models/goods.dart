@@ -9,12 +9,14 @@ class Goods {
   final String picture;
   final int width;
   final int height;
+  final String interestName;
 
   const Goods({
     this.id = '',
     this.picture = '',
     this.width = 1,
     this.height = 1,
+    this.interestName = '',
   });
 
   Goods copyWith({
@@ -22,12 +24,14 @@ class Goods {
     String picture,
     int width,
     int height,
+    String interestName,
   }) {
     return Goods(
       id: id ?? this.id,
       picture: picture ?? this.picture,
       width: width ?? this.width,
       height: height ?? this.height,
+      interestName: interestName ?? this.interestName,
     );
   }
 
@@ -37,6 +41,7 @@ class Goods {
       'picture': picture,
       'width': width,
       'height': height,
+      'interestName': interestName,
     };
   }
 
@@ -44,10 +49,11 @@ class Goods {
     if (map == null) return null;
 
     return Goods(
-      id: map['id'],
-      picture: map['picture'],
-      width: map['width'],
-      height: map['height'],
+      id: map['id'] ?? '',
+      picture: map['picture'] ?? '',
+      width: map['width'] ?? 1,
+      height: map['height'] ?? 1,
+      interestName: map['interestName'] ?? '',
     );
   }
 
@@ -57,7 +63,7 @@ class Goods {
 
   @override
   String toString() {
-    return 'Goods(id: $id, picture: $picture, width: $width, height: $height)';
+    return 'Goods(id: $id, picture: $picture, width: $width, height: $height, interestName: $interestName)';
   }
 
   @override
@@ -68,11 +74,16 @@ class Goods {
         o.id == id &&
         o.picture == picture &&
         o.width == width &&
-        o.height == height;
+        o.height == height &&
+        o.interestName == interestName;
   }
 
   @override
   int get hashCode {
-    return id.hashCode ^ picture.hashCode ^ width.hashCode ^ height.hashCode;
+    return id.hashCode ^
+        picture.hashCode ^
+        width.hashCode ^
+        height.hashCode ^
+        interestName.hashCode;
   }
 }
