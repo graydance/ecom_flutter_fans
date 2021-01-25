@@ -49,14 +49,6 @@ class _HomeScreenState extends State<HomeScreen>
 
   @override
   Widget build(BuildContext context) {
-    TextStyle selectedStyle = new TextStyle(
-      color: Color(0xff0F1015),
-      fontSize: 16.0,
-    );
-    TextStyle normalStyle = new TextStyle(
-      color: Color(0xff979AA9),
-      fontSize: 16.0,
-    );
     return StoreConnector<AppState, _ViewModel>(
       converter: _ViewModel.fromStore,
       distinct: true,
@@ -77,8 +69,10 @@ class _HomeScreenState extends State<HomeScreen>
                 controller: _tabController,
                 indicatorColor: Color(0xffFEAC1B),
                 indicatorSize: TabBarIndicatorSize.label,
-                labelStyle: selectedStyle,
-                unselectedLabelStyle: normalStyle,
+                labelStyle: TextStyle(
+                  fontSize: 16.0,
+                ),
+                unselectedLabelColor: Color(0xff979aa9),
               ),
             ),
           ),
@@ -311,6 +305,9 @@ class RecommendItem extends StatelessWidget {
             textAlign: TextAlign.center,
             maxLines: 2,
             textScaleFactor: 0.9,
+            style: TextStyle(
+              color: Color(0xff979AA9),
+            ),
           ),
           SizedBox(
             height: 8,
