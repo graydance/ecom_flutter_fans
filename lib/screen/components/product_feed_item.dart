@@ -9,10 +9,12 @@ import 'package:fans/storage/auth_storage.dart';
 
 class ProductFeedItem extends StatelessWidget {
   final Feed model;
+  final VoidCallback onTap;
 
   const ProductFeedItem({
     Key key,
     this.model,
+    this.onTap,
   }) : super(key: key);
 
   @override
@@ -40,13 +42,16 @@ class ProductFeedItem extends StatelessWidget {
               color: Color(0xfff8f8f8),
               child: Stack(
                 children: [
-                  MediaCarouselWidget(
-                    items: model.goods.map((url) {
-                      return Image(
-                        fit: BoxFit.cover,
-                        image: NetworkImage(url),
-                      );
-                    }).toList(),
+                  GestureDetector(
+                    onTap: () => onTap,
+                    child: MediaCarouselWidget(
+                      items: model.goods.map((url) {
+                        return Image(
+                          fit: BoxFit.cover,
+                          image: NetworkImage(url),
+                        );
+                      }).toList(),
+                    ),
                   ),
                   Positioned(
                     top: 0,

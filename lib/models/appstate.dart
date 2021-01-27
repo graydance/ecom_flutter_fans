@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:meta/meta.dart';
 
 import 'package:fans/store/states.dart';
@@ -10,6 +11,7 @@ class AppState {
   final HomeState feeds;
   final SearchByTagStateList tagSearch;
   final ShopDetailState shopDetail;
+  final ProductDetailsOnScreen productDetails;
 
   AppState({
     this.verifyEmail = const VerifyEmailState(),
@@ -18,6 +20,7 @@ class AppState {
     this.feeds = const HomeState(),
     this.tagSearch = const SearchByTagStateList(),
     this.shopDetail = const ShopDetailState(),
+    this.productDetails = const ProductDetailsOnScreen(),
   });
 
   factory AppState.init() => AppState();
@@ -27,10 +30,9 @@ class AppState {
     LoginOrSignupState auth,
     InterestListState interests,
     HomeState feeds,
-    Map<String, SearchByTagState> tagSearch,
+    SearchByTagStateList tagSearch,
     ShopDetailState shopDetail,
-    bool isLoading,
-    String error,
+    ProductDetailsOnScreen productDetails,
   }) {
     return AppState(
       verifyEmail: verifyEmail ?? this.verifyEmail,
@@ -39,12 +41,8 @@ class AppState {
       feeds: feeds ?? this.feeds,
       tagSearch: tagSearch ?? this.tagSearch,
       shopDetail: shopDetail ?? this.shopDetail,
+      productDetails: productDetails ?? this.productDetails,
     );
-  }
-
-  @override
-  String toString() {
-    return 'AppState(verifyEmail: $verifyEmail, auth: $auth, interests: $interests, feeds: $feeds, tagSearchs: $tagSearch, shopDetail: $shopDetail)';
   }
 
   @override
@@ -57,7 +55,8 @@ class AppState {
         o.interests == interests &&
         o.feeds == feeds &&
         o.tagSearch == tagSearch &&
-        o.shopDetail == shopDetail;
+        o.shopDetail == shopDetail &&
+        o.productDetails == productDetails;
   }
 
   @override
@@ -67,6 +66,12 @@ class AppState {
         interests.hashCode ^
         feeds.hashCode ^
         tagSearch.hashCode ^
-        shopDetail.hashCode;
+        shopDetail.hashCode ^
+        productDetails.hashCode;
+  }
+
+  @override
+  String toString() {
+    return 'AppState(verifyEmail: $verifyEmail, auth: $auth, interests: $interests, feeds: $feeds, tagSearch: $tagSearch, shopDetail: $shopDetail, productDetails: $productDetails)';
   }
 }

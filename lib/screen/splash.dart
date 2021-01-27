@@ -16,7 +16,7 @@ class SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     var token = AuthStorage.getToken() ?? '';
-    var root = token.isEmpty ? Routes.welcome : Routes.home;
+    var root = token.isEmpty ? Routes.welcome : Routes.productDetail;
 
     Timer(Duration(seconds: 1),
         () => Keys.navigatorKey.currentState.pushReplacementNamed(root));

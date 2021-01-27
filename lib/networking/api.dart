@@ -156,6 +156,18 @@ class GoodsAPI extends API {
   String get path => '/user/pub/good_list';
 }
 
+class ProductDetailAPI extends API {
+  final String goodsId;
+
+  ProductDetailAPI({this.goodsId});
+
+  @override
+  Map<String, dynamic> get parameters => {'goodsId': goodsId};
+
+  @override
+  String get path => '/user/good/detail';
+}
+
 // var version = '';
 
 // var dio = Dio(

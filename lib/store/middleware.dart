@@ -1,4 +1,5 @@
 import 'package:fans/models/feed.dart';
+import 'package:fans/models/product.dart';
 import 'package:fans/networking/api_exceptions.dart';
 import 'package:fans/networking/networking.dart';
 import 'package:fans/storage/auth_storage.dart';
@@ -21,6 +22,7 @@ List<Middleware<AppState>> createStoreMiddleware() {
   final fetchShopDetail = _createShopDetail();
   final fetchRecommends = _createFetchRecommends();
   final fetchGoods = _createFetchGoods();
+  final fetchProductDetail = _createProductDetail();
 
   return [
     TypedMiddleware<AppState, VerifyEmailAction>(verifyEmail),
@@ -34,6 +36,7 @@ List<Middleware<AppState>> createStoreMiddleware() {
     TypedMiddleware<AppState, SearchByTagAction>(searchByTag),
     TypedMiddleware<AppState, FetchShopDetailAction>(fetchShopDetail),
     TypedMiddleware<AppState, FetchGoodsAction>(fetchGoods),
+    TypedMiddleware<AppState, FetchProductDetailAction>(fetchProductDetail),
   ];
 }
 
@@ -270,6 +273,24 @@ Middleware<AppState> _createFetchGoods() {
       ).catchError((err) {
         action.completer.completeError(err.toString());
       });
+    }
+    next(action);
+  };
+}
+
+Middleware<AppState> _createProductDetail() {
+  return (Store<AppState> store, action, NextDispatcher next) {
+    if (action is FetchProductDetailAction) {
+      Networking.request(ProductDetailAPI(
+        goodsId: action.goodsId,
+      )).then(
+        (data) {
+          var response = data['data'];
+          var model = Product.fromMap(response);
+
+          store.dispatch(FetchProductDetailSuccessAction(model));
+        },
+      ).catchError((err) {});
     }
     next(action);
   };

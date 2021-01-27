@@ -362,7 +362,10 @@ class _ProductItemState extends State<ProductItem> {
             ),
           ],
         ),
-        ProductFeedItem(model: viewModel.model),
+        ProductFeedItem(
+          model: viewModel.model,
+          onTap: () => viewModel.onTapProduct(viewModel.model.id),
+        ),
         Container(
           height: 20,
           padding: const EdgeInsets.only(top: 4.0),
@@ -636,8 +639,10 @@ class _FeedItemViewModel {
   final Feed model;
   final VoidCallback onTapAvatar;
   final Function(String) onTapTag;
+  final Function(String) onTapProduct;
 
-  _FeedItemViewModel({this.model, this.onTapAvatar, this.onTapTag});
+  _FeedItemViewModel(
+      {this.model, this.onTapAvatar, this.onTapTag, this.onTapProduct});
 
   static _FeedItemViewModel fromStore(Store<AppState> store, Feed item) {
     _onTapAvatar() {
@@ -650,7 +655,15 @@ class _FeedItemViewModel {
       Keys.navigatorKey.currentState.pushNamed(Routes.searchByTag);
     }
 
+    _onTapProduct(String goodsId) {
+      store.dispatch(ShowProductDetailAction(goodsId));
+      Keys.navigatorKey.currentState.pushNamed(Routes.productDetail);
+    }
+
     return _FeedItemViewModel(
-        model: item, onTapAvatar: _onTapAvatar, onTapTag: _onTapTag);
+        model: item,
+        onTapAvatar: _onTapAvatar,
+        onTapTag: _onTapTag,
+        onTapProduct: _onTapProduct);
   }
 }

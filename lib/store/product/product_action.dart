@@ -102,3 +102,21 @@ class FetchGoodsFailedAction {
 
   FetchGoodsFailedAction({this.type, this.error});
 }
+
+class ShowProductDetailAction {
+  final String goodsId;
+
+  ShowProductDetailAction(this.goodsId);
+}
+
+class FetchProductDetailAction {
+  final String goodsId;
+
+  FetchProductDetailAction(this.goodsId);
+}
+
+class FetchProductDetailSuccessAction {
+  final Product product;
+
+  FetchProductDetailSuccessAction(this.product);
+}
