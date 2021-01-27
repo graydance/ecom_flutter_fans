@@ -156,6 +156,16 @@ class _R_Image_AssetResource {
   // ignore: non_constant_identifier_names
   final play = const AssetResource("assets/images/feed/play.png", packageName: null);
 
+  /// asset: assets/images/feed/product_mask_bg.png
+  // ignore: non_constant_identifier_names
+  final product_mask_bg =
+      const AssetResource("assets/images/feed/product_mask_bg.png", packageName: null);
+
+  /// asset: assets/images/feed/shopping_cart.png
+  // ignore: non_constant_identifier_names
+  final shopping_cart =
+      const AssetResource("assets/images/feed/shopping_cart.png", packageName: null);
+
   /// asset: assets/images/feed/verified.png
   // ignore: non_constant_identifier_names
   final verified = const AssetResource("assets/images/feed/verified.png", packageName: null);
@@ -346,6 +356,18 @@ class _R_Image {
   // ignore: non_constant_identifier_names
   AssetImage play() {
     return AssetImage(asset.play.keyName);
+  }
+
+  /// asset: assets/images/feed/product_mask_bg.png
+  // ignore: non_constant_identifier_names
+  AssetImage product_mask_bg() {
+    return AssetImage(asset.product_mask_bg.keyName);
+  }
+
+  /// asset: assets/images/feed/shopping_cart.png
+  // ignore: non_constant_identifier_names
+  AssetImage shopping_cart() {
+    return AssetImage(asset.shopping_cart.keyName);
   }
 
   /// asset: assets/images/feed/verified.png

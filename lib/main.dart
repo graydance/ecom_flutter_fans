@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:fans/app.dart';
 import 'package:fans/models/appstate.dart';
 import 'package:fans/store/middleware.dart';
-import 'package:fans/store/reducers/appreducers.dart';
+import 'package:fans/store/appreducers.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:logging/logging.dart';
 import 'package:redux/redux.dart';

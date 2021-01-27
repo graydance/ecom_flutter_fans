@@ -7,6 +7,7 @@ import 'package:fans/screen/components/tag_button.dart';
 import 'package:fans/screen/components/verified_username_view.dart';
 import 'package:fans/store/actions.dart';
 import 'package:fans/store/states.dart';
+import 'package:fans/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -49,22 +50,9 @@ class _HomeScreenState extends State<HomeScreen>
 
   @override
   Widget build(BuildContext context) {
-    TextStyle selectedStyle = new TextStyle(
-      color: Color(0xff0F1015),
-      fontSize: 16.0,
-    );
-    TextStyle normalStyle = new TextStyle(
-      color: Color(0xff979AA9),
-      fontSize: 16.0,
-    );
     return StoreConnector<AppState, _ViewModel>(
       converter: _ViewModel.fromStore,
       distinct: true,
-      onInit: (store) {
-        store.dispatch(FetchRecommendSellersAction());
-        store.dispatch(FetchFeedsAction(0, 1, Completer()));
-        store.dispatch(FetchFeedsAction(1, 1, Completer()));
-      },
       builder: (ctx, model) => Column(
         children: [
           Padding(
@@ -82,8 +70,10 @@ class _HomeScreenState extends State<HomeScreen>
                 controller: _tabController,
                 indicatorColor: Color(0xffFEAC1B),
                 indicatorSize: TabBarIndicatorSize.label,
-                labelStyle: selectedStyle,
-                unselectedLabelStyle: normalStyle,
+                labelStyle: TextStyle(
+                  fontSize: 16.0,
+                ),
+                unselectedLabelColor: Color(0xff979aa9),
               ),
             ),
           ),
@@ -138,6 +128,9 @@ class _FeedListScreenState extends State<FeedListScreen> {
         enableControlFinishRefresh: true,
         enableControlFinishLoad: true,
         onRefresh: () async {
+          StoreProvider.of<AppState>(context)
+              .dispatch(FetchRecommendSellersAction());
+
           var action = FetchFeedsAction(widget.viewModel.type, 1, Completer());
           StoreProvider.of<AppState>(context).dispatch(action);
           try {
@@ -290,7 +283,7 @@ class RecommendItem extends StatelessWidget {
                 viewModel.model.nickName.isNotEmpty
                     ? viewModel.model.nickName
                     : 'Nick name',
-                style: TextStyle(color: Color(0xffED8514), fontSize: 14),
+                style: TextStyle(color: AppTheme.colorED8514, fontSize: 14),
               ),
               SizedBox(
                 width: 2,
@@ -313,6 +306,9 @@ class RecommendItem extends StatelessWidget {
             textAlign: TextAlign.center,
             maxLines: 2,
             textScaleFactor: 0.9,
+            style: TextStyle(
+              color: Color(0xff979AA9),
+            ),
           ),
           SizedBox(
             height: 8,

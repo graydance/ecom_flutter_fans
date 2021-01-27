@@ -7,7 +7,7 @@ import 'package:redux/redux.dart';
 
 import 'package:fans/models/models.dart';
 import 'package:fans/screen/screens.dart';
-import 'package:fans/store/reducers/appreducers.dart';
+import 'package:fans/store/appreducers.dart';
 import 'package:fans/store/states.dart';
 
 class MockDio extends Mock implements Dio {}

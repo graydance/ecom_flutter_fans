@@ -72,6 +72,17 @@ class ProductFeedItem extends StatelessWidget {
                     ),
                   ),
                   Positioned(
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    height: 100,
+                    child: Image(
+                      image: R.image.product_mask_bg(),
+                      fit: BoxFit.fill,
+                    ),
+                  ),
+                  // 购物车和收藏
+                  Positioned(
                     bottom: 8,
                     right: 8,
                     child: Column(

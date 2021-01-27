@@ -79,9 +79,11 @@ class FetchGoodsAction {
   final int type;
   final String userId;
   final int page;
+  final int limit;
   final Completer completer;
 
-  FetchGoodsAction({this.type, this.userId, this.page, this.completer});
+  FetchGoodsAction(
+      {this.type, this.userId, this.page, this.limit, this.completer});
 }
 
 class FetchGoodsSuccessAction {
