@@ -8,7 +8,7 @@ class AppState {
   final LoginOrSignupState auth;
   final InterestListState interests;
   final HomeState feeds;
-  final SearchByTagState tagSearch;
+  final SearchByTagStateList tagSearch;
   final ShopDetailState shopDetail;
 
   AppState({
@@ -16,7 +16,7 @@ class AppState {
     this.auth = const LoginOrSignupState(),
     this.interests = const InterestListState(),
     this.feeds = const HomeState(),
-    this.tagSearch = const SearchByTagState(),
+    this.tagSearch = const SearchByTagStateList(),
     this.shopDetail = const ShopDetailState(),
   });
 
@@ -27,7 +27,7 @@ class AppState {
     LoginOrSignupState auth,
     InterestListState interests,
     HomeState feeds,
-    SearchByTagState tagSearch,
+    Map<String, SearchByTagState> tagSearch,
     ShopDetailState shopDetail,
     bool isLoading,
     String error,
@@ -44,7 +44,7 @@ class AppState {
 
   @override
   String toString() {
-    return 'AppState(verifyEmail: $verifyEmail, auth: $auth, interests: $interests, feeds: $feeds, tagSearch: $tagSearch, shopDetail: $shopDetail)';
+    return 'AppState(verifyEmail: $verifyEmail, auth: $auth, interests: $interests, feeds: $feeds, tagSearchs: $tagSearch, shopDetail: $shopDetail)';
   }
 
   @override

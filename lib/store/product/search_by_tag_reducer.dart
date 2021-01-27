@@ -3,31 +3,50 @@ import 'package:redux/redux.dart';
 import 'package:fans/store/actions.dart';
 import 'package:fans/store/states.dart';
 
-final searchByTagReducer = combineReducers<SearchByTagState>([
-  TypedReducer<SearchByTagState, ShowSearchByTagAction>(_setShowSearch),
-  TypedReducer<SearchByTagState, SearchByTagAction>(_setSearch),
-  TypedReducer<SearchByTagState, SearchByTagSuccessAction>(_setSearchFeedList),
+final searchByTagReducer = combineReducers<SearchByTagStateList>([
+  TypedReducer<SearchByTagStateList, ShowSearchByTagAction>(_setShowSearch),
+  TypedReducer<SearchByTagStateList, SearchByTagAction>(_setSearch),
+  TypedReducer<SearchByTagStateList, SearchByTagSuccessAction>(
+      _setSearchFeedList),
 ]);
 
-SearchByTagState _setShowSearch(
-    SearchByTagState state, ShowSearchByTagAction action) {
-  return SearchByTagState(
-    feed: action.feed,
-    tag: action.tag,
-  );
+String _pageId(String userId, String tag) {
+  return '${userId}_$tag';
 }
 
-SearchByTagState _setSearch(SearchByTagState state, SearchByTagAction action) {
-  return state.copyWith(
+SearchByTagStateList _setShowSearch(
+    SearchByTagStateList state, ShowSearchByTagAction action) {
+  final pageId = _pageId(action.feed.id, action.tag);
+  final allSearch = Map.of(state.allSearch);
+  allSearch[pageId] = SearchByTagState(feed: action.feed, tag: action.tag);
+  return state.copyWith(current: pageId, allSearch: allSearch);
+}
+
+SearchByTagStateList _setSearch(
+    SearchByTagStateList state, SearchByTagAction action) {
+  final pageId = _pageId(action.userId, action.tag);
+  final allSearch = Map.of(state.allSearch);
+  allSearch[pageId].copyWith(
     currentPage: action.page,
   );
+  return state.copyWith(allSearch: allSearch);
 }
 
-SearchByTagState _setSearchFeedList(
-    SearchByTagState state, SearchByTagSuccessAction action) {
-  return state.copyWith(
-    list: action.feeds,
+SearchByTagStateList _setSearchFeedList(
+    SearchByTagStateList state, SearchByTagSuccessAction action) {
+  final pageId = _pageId(action.userId, action.tag);
+
+  final allSearch = Map.of(state.allSearch);
+  final currentState = allSearch[pageId];
+  final list = action.currentPage == 1
+      ? action.feeds
+      : [...currentState.list, ...action.feeds];
+
+  allSearch[pageId] = currentState.copyWith(
+    list: list,
     currentPage: action.currentPage,
     totalPage: action.totalPage,
   );
+
+  return state.copyWith(allSearch: allSearch);
 }

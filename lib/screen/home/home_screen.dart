@@ -167,7 +167,7 @@ class _FeedListScreenState extends State<FeedListScreen> {
         firstRefreshWidget: Center(
           child: CircularProgressIndicator(),
         ),
-        emptyWidget: widget.viewModel.state.list.isEmpty ? EmptyView() : null,
+        emptyWidget: widget.viewModel.isEmpty ? EmptyView() : null,
         child: ListView.builder(
           addAutomaticKeepAlives: true,
           itemCount: widget.viewModel.items.length + widget.viewModel.offset,

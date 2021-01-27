@@ -216,8 +216,8 @@ Middleware<AppState> _createSearchByTag() {
 
           bool isNoMore = feeds.isEmpty || currentPage == totalPage;
           action.completer?.complete(isNoMore);
-          store.dispatch(
-              SearchByTagSuccessAction(totalPage, currentPage, feeds));
+          store.dispatch(SearchByTagSuccessAction(
+              action.userId, action.tag, totalPage, currentPage, feeds));
         },
       ).catchError((err) {
         action.completer?.completeError(err?.toString() ?? '');
