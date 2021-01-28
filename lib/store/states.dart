@@ -4,3 +4,4 @@ export 'product/interest_list_state.dart';
 export 'product/feed_list_state.dart';
 export 'product/search_by_tag_state.dart';
 export 'product/shop_detail_state.dart';
+export 'product/product_detail_state.dart';

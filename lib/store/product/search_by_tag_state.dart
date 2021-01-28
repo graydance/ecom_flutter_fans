@@ -3,6 +3,40 @@ import 'package:flutter/foundation.dart';
 import 'package:fans/models/models.dart';
 
 @immutable
+class SearchByTagStateList {
+  final String current;
+  final Map<String, SearchByTagState> allSearch;
+
+  const SearchByTagStateList({this.current = '', this.allSearch = const {}});
+
+  SearchByTagStateList copyWith({
+    String current,
+    Map<String, SearchByTagState> allSearch,
+  }) {
+    return SearchByTagStateList(
+      current: current ?? this.current,
+      allSearch: allSearch ?? this.allSearch,
+    );
+  }
+
+  @override
+  bool operator ==(Object o) {
+    if (identical(this, o)) return true;
+
+    return o is SearchByTagStateList &&
+        o.current == current &&
+        mapEquals(o.allSearch, allSearch);
+  }
+
+  @override
+  int get hashCode => current.hashCode ^ allSearch.hashCode;
+
+  @override
+  String toString() =>
+      'SearchByTagStateList(current: $current, allSearch: $allSearch)';
+}
+
+@immutable
 class SearchByTagState {
   final Feed feed;
   final String tag;
@@ -14,7 +48,7 @@ class SearchByTagState {
     this.feed = const Feed(),
     this.tag = '',
     this.currentPage = 1,
-    this.totalPage = 0,
+    this.totalPage = 1,
     this.list = const [],
   });
 

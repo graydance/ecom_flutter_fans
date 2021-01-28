@@ -14,19 +14,22 @@ class ShowSearchByTagAction {
 
 class SearchByTagAction {
   final String userId;
-  final int page;
   final String tag;
+  final int page;
   final int limit;
   final Completer completer;
 
   SearchByTagAction(
-      {this.userId, this.page, this.tag, this.limit, this.completer});
+      {this.userId, this.tag, this.page, this.limit, this.completer});
 }
 
 class SearchByTagSuccessAction {
+  final String userId;
+  final String tag;
   final int totalPage;
   final int currentPage;
   final List<Feed> feeds;
 
-  SearchByTagSuccessAction(this.totalPage, this.currentPage, this.feeds);
+  SearchByTagSuccessAction(
+      this.userId, this.tag, this.totalPage, this.currentPage, this.feeds);
 }

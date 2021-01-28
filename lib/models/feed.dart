@@ -3,7 +3,10 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 
 class Feed {
+  /// 商品id
   final String id;
+
+  /// 用户id
   final String userId;
   final int responseType;
   final String portrait;
