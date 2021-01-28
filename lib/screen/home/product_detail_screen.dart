@@ -1,4 +1,4 @@
-import 'package:fans/store/actions.dart';
+import 'package:fans/screen/components/product_attributes_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
@@ -7,8 +7,8 @@ import 'package:fans/models/feed.dart';
 import 'package:fans/models/models.dart';
 import 'package:fans/r.g.dart';
 import 'package:fans/screen/components/product_feed_item.dart';
-import 'package:fans/screen/components/tag_button.dart';
 import 'package:fans/screen/components/verified_username_view.dart';
+import 'package:fans/store/actions.dart';
 import 'package:fans/theme.dart';
 
 class ProductDetailScreen extends StatefulWidget {
@@ -72,7 +72,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
-                    color: Color(0xffFF0F1015),
+                    color: Color(0xFF0F1015),
                   ),
                 ),
               ),
@@ -104,11 +104,13 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               children: [
                 Expanded(
                   flex: 1,
-                  child: FlatButton(
-                    shape: RoundedRectangleBorder(),
-                    height: 44,
+                  child: TextButton(
+                    style: TextButton.styleFrom(
+                      primary: Color(0xffED3544),
+                      backgroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(),
+                    ),
                     onPressed: () {},
-                    color: Colors.white,
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
@@ -130,11 +132,15 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 ),
                 Expanded(
                   flex: 2,
-                  child: FlatButton(
-                    shape: RoundedRectangleBorder(),
-                    height: 44,
-                    onPressed: () {},
-                    color: Color(0xffEC3644),
+                  child: TextButton(
+                    onPressed: () async {
+                      await showProductAttributesBottomSheet(context);
+                    },
+                    style: TextButton.styleFrom(
+                      primary: Colors.white,
+                      backgroundColor: Color(0xffEC3644),
+                      shape: RoundedRectangleBorder(),
+                    ),
                     child: Text(
                       'Add to cart'.toUpperCase(),
                       style: TextStyle(color: Colors.white),
@@ -143,14 +149,15 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 ),
                 Expanded(
                   flex: 2,
-                  child: FlatButton(
-                    shape: RoundedRectangleBorder(),
-                    height: 44,
+                  child: TextButton(
                     onPressed: () {},
-                    color: AppTheme.colorED8514,
+                    style: TextButton.styleFrom(
+                      primary: Colors.white,
+                      backgroundColor: AppTheme.colorED8514,
+                      shape: RoundedRectangleBorder(),
+                    ),
                     child: Text(
                       'Buy now'.toUpperCase(),
-                      style: TextStyle(color: Colors.white),
                     ),
                   ),
                 )

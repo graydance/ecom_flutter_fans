@@ -18,6 +18,7 @@ dependencies:
   flutter_easyrefresh: ^2.1.8
   flutter_easyloading: ^2.2.2
   intl: ^0.16.1
+  modal_bottom_sheet: ^1.0.0+1
 dev_dependencies:
   flutter_test:
     sdk: flutter
