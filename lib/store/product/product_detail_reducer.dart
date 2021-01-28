@@ -10,6 +10,6 @@ final productDetailReducer = combineReducers<ProductDetailsOnScreen>([
 ProductDetailsOnScreen _setGoodsId(
     ProductDetailsOnScreen state, ShowProductDetailAction action) {
   final allStates = Map.of(state.allStates);
-  allStates[action.goodsId] = ProductDetailState(goodsId: action.goodsId);
+  allStates[action.goodsId] = ProductDetailState(idolGoodsId: action.goodsId);
   return state.copyWith(currentId: action.goodsId, allStates: allStates);
 }

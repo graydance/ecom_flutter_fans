@@ -282,7 +282,7 @@ Middleware<AppState> _createProductDetail() {
   return (Store<AppState> store, action, NextDispatcher next) {
     if (action is FetchProductDetailAction) {
       Networking.request(ProductDetailAPI(
-        goodsId: action.goodsId,
+        idolGoodsId: action.idolGoodsId,
       )).then(
         (data) {
           var response = data['data'];

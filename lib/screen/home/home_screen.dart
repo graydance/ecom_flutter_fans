@@ -364,7 +364,7 @@ class _ProductItemState extends State<ProductItem> {
         ),
         ProductFeedItem(
           model: viewModel.model,
-          onTap: () => viewModel.onTapProduct(viewModel.model.id),
+          onTap: viewModel.onTapProduct,
         ),
         Container(
           height: 20,

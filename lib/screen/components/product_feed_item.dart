@@ -1,3 +1,4 @@
+import 'package:fans/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
@@ -9,7 +10,7 @@ import 'package:fans/storage/auth_storage.dart';
 
 class ProductFeedItem extends StatelessWidget {
   final Feed model;
-  final VoidCallback onTap;
+  final Function(String) onTap;
 
   const ProductFeedItem({
     Key key,
@@ -43,7 +44,10 @@ class ProductFeedItem extends StatelessWidget {
               child: Stack(
                 children: [
                   GestureDetector(
-                    onTap: () => onTap,
+                    onTap: () {
+                      debugPrint('GestureDetector ${model.idolGoodsId}');
+                      onTap(model.id);
+                    },
                     child: MediaCarouselWidget(
                       items: model.goods.map((url) {
                         return Image(
@@ -142,7 +146,7 @@ class ProductFeedItem extends StatelessWidget {
               Text(
                 '${AuthStorage.getUser().monetaryUnit}${model.originalPriceStr}',
                 style: TextStyle(
-                    color: Color(0xff979AA9),
+                    color: AppTheme.color979AA9,
                     fontSize: 12,
                     decoration: TextDecoration.lineThrough),
               ),
