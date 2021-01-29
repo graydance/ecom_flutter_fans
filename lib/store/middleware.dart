@@ -287,10 +287,12 @@ Middleware<AppState> _createProductDetail() {
         (data) {
           var response = data['data'];
           var model = Product.fromMap(response);
-
+          action.completer.complete();
           store.dispatch(FetchProductDetailSuccessAction(model));
         },
-      ).catchError((err) {});
+      ).catchError((err) {
+        action.completer.completeError(err);
+      });
     }
     next(action);
   };

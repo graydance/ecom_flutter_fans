@@ -1,11 +1,14 @@
-import 'package:fans/screen/components/product_attributes_bottom_sheet.dart';
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
 
 import 'package:fans/models/feed.dart';
 import 'package:fans/models/models.dart';
 import 'package:fans/r.g.dart';
+import 'package:fans/screen/components/product_attributes_bottom_sheet.dart';
 import 'package:fans/screen/components/product_feed_item.dart';
 import 'package:fans/screen/components/verified_username_view.dart';
 import 'package:fans/store/actions.dart';
@@ -20,7 +23,6 @@ class ProductDetailScreen extends StatefulWidget {
 
 class _ProductDetailScreenState extends State<ProductDetailScreen> {
   String _productId;
-
   int _quantity = 1;
 
   @override
@@ -28,7 +30,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     return StoreConnector<AppState, _ViewModel>(
       onInit: (store) {
         _productId = store.state.productDetails.currentId;
-        store.dispatch(FetchProductDetailAction(_productId));
       },
       converter: (store) => _ViewModel.fromStore(store, _productId),
       distinct: true,
@@ -43,101 +44,121 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         ),
         body: Container(
           padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: ListView(
-            children: [
-              ProductFeedItem(
-                model: Feed(
-                    productName: model.model.productName,
-                    currentPriceStr: '${model.model.currentPrice}',
-                    originalPriceStr: '${model.model.originalPrice}',
-                    tagNormal: [],
-                    goodsDescription: model.model.description,
-                    goods: model.model.goodsPictures
-                        .map((e) => e.picture)
-                        .toList()),
-              ),
-              model.model.recommend != null && model.model.recommend.isNotEmpty
-                  ? SimilarProducts(recommends: model.model.recommend)
-                  : Container(),
-            ],
+          child: EasyRefresh(
+            onRefresh: () async {
+              final action = FetchProductDetailAction(_productId, Completer());
+              StoreProvider.of<AppState>(context).dispatch(action);
+              await action.completer.future;
+            },
+            firstRefresh: true,
+            firstRefreshWidget: Center(
+              child: CircularProgressIndicator(),
+            ),
+            child: model.model.idolGoodsId.isEmpty
+                ? Container()
+                : ListView(
+                    children: [
+                      ProductFeedItem(
+                        model: Feed(
+                            productName: model.model.productName,
+                            currentPriceStr: '${model.model.currentPrice}',
+                            originalPriceStr: '${model.model.originalPrice}',
+                            tagNormal: [],
+                            goodsDescription: model.model.description,
+                            goods: model.model.goodsPictures
+                                .map((e) => e.picture)
+                                .toList()),
+                      ),
+                      model.model.recommend != null &&
+                              model.model.recommend.isNotEmpty
+                          ? SimilarProducts(recommends: model.model.recommend)
+                          : Container(),
+                    ],
+                  ),
           ),
         ),
-        bottomNavigationBar: Container(
-            padding:
-                EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
-            child: Row(
-              children: [
-                Expanded(
-                  flex: 1,
-                  child: FavoriteButton(
-                    isSaved: false,
-                  ),
-                ),
-                Expanded(
-                  flex: 2,
-                  child: TextButton(
-                    onPressed: model.model == null
-                        ? null
-                        : () async {
-                            await showProductAttributesBottomSheet(
-                                context,
-                                ProductAttributesViewModel(
-                                  model: model.model,
-                                  quantity: _quantity,
-                                  actionType:
-                                      ProductAttributesActionType.addToCart,
-                                  onQuantityChange: (newValue) {
-                                    _quantity = newValue;
-                                  },
-                                  onTapAction: () {},
-                                ));
-                          },
-                    style: TextButton.styleFrom(
-                      minimumSize: Size(44, 44),
-                      primary: Colors.white,
-                      backgroundColor: Color(0xffEC3644),
-                      shape: RoundedRectangleBorder(),
+        bottomNavigationBar: model.model.idolGoodsId.isEmpty
+            ? null
+            : Container(
+                padding: EdgeInsets.only(
+                    bottom: MediaQuery.of(context).padding.bottom),
+                child: Row(
+                  children: [
+                    Expanded(
+                      flex: 1,
+                      child: FavoriteButton(
+                        isSaved: false,
+                      ),
                     ),
-                    child: Text(
-                      'Add to cart'.toUpperCase(),
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ),
-                ),
-                Expanded(
-                  flex: 2,
-                  child: TextButton(
-                    onPressed: model.model == null
-                        ? null
-                        : () async {
-                            await showProductAttributesBottomSheet(
-                                context,
-                                ProductAttributesViewModel(
-                                  model: model.model,
-                                  quantity: _quantity,
-                                  actionType:
-                                      ProductAttributesActionType.buyNow,
-                                  onQuantityChange: (newValue) {
-                                    setState(() {
+                    Expanded(
+                      flex: 2,
+                      child: TextButton(
+                        onPressed: model.model == null
+                            ? null
+                            : () async {
+                                await showProductAttributesBottomSheet(
+                                  context,
+                                  ProductAttributesViewModel(
+                                    model: model.model,
+                                    quantity: _quantity,
+                                    actionType:
+                                        ProductAttributesActionType.addToCart,
+                                    onQuantityChange: (newValue) {
                                       _quantity = newValue;
-                                    });
-                                  },
-                                  onTapAction: () {},
-                                ));
-                          },
-                    style: TextButton.styleFrom(
-                      minimumSize: Size(44, 44),
-                      primary: Colors.white,
-                      backgroundColor: AppTheme.colorED8514,
-                      shape: RoundedRectangleBorder(),
+                                    },
+                                    onTapAction: () {
+                                      model.onTapAddToCart(_quantity);
+                                    },
+                                  ),
+                                );
+                              },
+                        style: TextButton.styleFrom(
+                          minimumSize: Size(44, 44),
+                          primary: Colors.white,
+                          backgroundColor: Color(0xffEC3644),
+                          shape: RoundedRectangleBorder(),
+                        ),
+                        child: Text(
+                          'Add to cart'.toUpperCase(),
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
                     ),
-                    child: Text(
-                      'Buy now'.toUpperCase(),
-                    ),
-                  ),
-                )
-              ],
-            )),
+                    Expanded(
+                      flex: 2,
+                      child: TextButton(
+                        onPressed: model.model == null
+                            ? null
+                            : () async {
+                                await showProductAttributesBottomSheet(
+                                  context,
+                                  ProductAttributesViewModel(
+                                    model: model.model,
+                                    quantity: _quantity,
+                                    actionType:
+                                        ProductAttributesActionType.buyNow,
+                                    onQuantityChange: (newValue) {
+                                      _quantity = newValue;
+                                    },
+                                    onTapAction: () {
+                                      model.onTapAddToCart(_quantity);
+                                    },
+                                  ),
+                                );
+                              },
+                        style: TextButton.styleFrom(
+                          minimumSize: Size(44, 44),
+                          primary: Colors.white,
+                          backgroundColor: AppTheme.colorED8514,
+                          shape: RoundedRectangleBorder(),
+                        ),
+                        child: Text(
+                          'Buy now'.toUpperCase(),
+                        ),
+                      ),
+                    )
+                  ],
+                )),
       ),
     );
   }
@@ -252,11 +273,22 @@ class _FavoriteButtonState extends State<FavoriteButton> {
 
 class _ViewModel {
   final Product model;
+  final Function(int) onTapAddToCart;
+  final Function(int) onTapBuyNow;
 
-  _ViewModel({this.model = const Product()});
+  _ViewModel({
+    this.model,
+    this.onTapAddToCart,
+    this.onTapBuyNow,
+  });
 
   static _ViewModel fromStore(Store<AppState> store, String id) {
+    _onTapAddToCart(int quantity) {}
+    _onTapBuyNow(int quantity) {}
     final state = store.state.productDetails.allStates[id];
-    return _ViewModel(model: state.model);
+    return _ViewModel(
+        model: state.model,
+        onTapAddToCart: _onTapAddToCart,
+        onTapBuyNow: _onTapBuyNow);
   }
 }

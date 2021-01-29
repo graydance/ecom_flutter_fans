@@ -7,6 +7,7 @@ class AppTheme {
   static final colorEDEEF0 = Color(0xffEDEEF0);
   static final colorC4C5CD = Color(0xffC4C5CD);
   static final colorED3544 = Color(0xFFED3544);
+  static final colorF6F6F6 = Color(0xFFF6F6F6);
 }
 
 class HexColor extends Color {

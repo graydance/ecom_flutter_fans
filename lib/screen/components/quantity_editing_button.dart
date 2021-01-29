@@ -56,7 +56,9 @@ class _QuantityEditingButtonState extends State<QuantityEditingButton> {
                 : null,
             style: TextButton.styleFrom(
               primary: AppTheme.color979AA9,
-              backgroundColor: AppTheme.colorEDEEF0,
+              backgroundColor: _quantity > widget.min
+                  ? AppTheme.colorEDEEF0
+                  : AppTheme.colorF6F6F6,
             ),
             child: Icon(
               Icons.remove,
@@ -93,8 +95,9 @@ class _QuantityEditingButtonState extends State<QuantityEditingButton> {
                 : null,
             style: TextButton.styleFrom(
               primary: AppTheme.color979AA9,
-              backgroundColor: AppTheme.colorEDEEF0,
-              padding: EdgeInsets.all(1),
+              backgroundColor: _quantity < widget.max
+                  ? AppTheme.colorEDEEF0
+                  : AppTheme.colorF6F6F6,
             ),
             child: Icon(
               Icons.add,

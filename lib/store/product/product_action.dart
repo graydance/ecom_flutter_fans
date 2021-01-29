@@ -111,8 +111,9 @@ class ShowProductDetailAction {
 
 class FetchProductDetailAction {
   final String idolGoodsId;
+  final Completer completer;
 
-  FetchProductDetailAction(this.idolGoodsId);
+  FetchProductDetailAction(this.idolGoodsId, this.completer);
 }
 
 class FetchProductDetailSuccessAction {
