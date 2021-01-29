@@ -55,6 +55,7 @@ flutter:
   - assets/images/kol/kol_tab_photos.png
   - assets/images/kol/kol_tab_photos_unselected.png
   - assets/images/logo.png
+  - assets/images/product/product_search.png
   - assets/images/tabbar/tabbar_home_highlight.png
   - assets/images/tabbar/tabbar_home_normal.png
   - assets/images/tabbar/tabbar_inbox_hightlight.png

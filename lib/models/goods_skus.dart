@@ -12,6 +12,8 @@ class GoodsSkus {
   final String skuImage;
   final String skuSpecIds;
   final String goodId;
+  final String originalPriceStr;
+  final String currentPriceStr;
 
   const GoodsSkus({
     this.id = '',
@@ -25,12 +27,9 @@ class GoodsSkus {
     this.skuImage = '',
     this.skuSpecIds = '',
     this.goodId = '',
+    this.originalPriceStr = '',
+    this.currentPriceStr = '',
   });
-
-  @override
-  String toString() {
-    return 'GoodsSkus(id: $id, originalPrice: $originalPrice, currentPrice: $currentPrice, earningPrice: $earningPrice, barcode: $barcode, stock: $stock, sales: $sales, weight: $weight, skuImage: $skuImage, skuSpecIds: $skuSpecIds, goodId: $goodId)';
-  }
 
   GoodsSkus copyWith({
     String id,
@@ -44,6 +43,8 @@ class GoodsSkus {
     String skuImage,
     String skuSpecIds,
     String goodId,
+    String originalPriceStr,
+    String currentPriceStr,
   }) {
     return GoodsSkus(
       id: id ?? this.id,
@@ -57,6 +58,8 @@ class GoodsSkus {
       skuImage: skuImage ?? this.skuImage,
       skuSpecIds: skuSpecIds ?? this.skuSpecIds,
       goodId: goodId ?? this.goodId,
+      originalPriceStr: originalPriceStr ?? this.originalPriceStr,
+      currentPriceStr: currentPriceStr ?? this.currentPriceStr,
     );
   }
 
@@ -73,6 +76,8 @@ class GoodsSkus {
       'skuImage': skuImage,
       'skuSpecIds': skuSpecIds,
       'goodId': goodId,
+      'originalPriceStr': originalPriceStr,
+      'currentPriceStr': currentPriceStr,
     };
   }
 
@@ -91,6 +96,8 @@ class GoodsSkus {
       skuImage: map['skuImage'],
       skuSpecIds: map['skuSpecIds'],
       goodId: map['goodId'],
+      originalPriceStr: map['originalPriceStr'],
+      currentPriceStr: map['currentPriceStr'],
     );
   }
 
@@ -114,7 +121,9 @@ class GoodsSkus {
         o.weight == weight &&
         o.skuImage == skuImage &&
         o.skuSpecIds == skuSpecIds &&
-        o.goodId == goodId;
+        o.goodId == goodId &&
+        o.originalPriceStr == originalPriceStr &&
+        o.currentPriceStr == currentPriceStr;
   }
 
   @override
@@ -129,6 +138,13 @@ class GoodsSkus {
         weight.hashCode ^
         skuImage.hashCode ^
         skuSpecIds.hashCode ^
-        goodId.hashCode;
+        goodId.hashCode ^
+        originalPriceStr.hashCode ^
+        currentPriceStr.hashCode;
+  }
+
+  @override
+  String toString() {
+    return 'GoodsSkus(id: $id, originalPrice: $originalPrice, currentPrice: $currentPrice, earningPrice: $earningPrice, barcode: $barcode, stock: $stock, sales: $sales, weight: $weight, skuImage: $skuImage, skuSpecIds: $skuSpecIds, goodId: $goodId, originalPriceStr: $originalPriceStr, currentPriceStr: $currentPriceStr)';
   }
 }

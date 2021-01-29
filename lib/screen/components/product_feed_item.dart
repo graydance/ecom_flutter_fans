@@ -35,20 +35,20 @@ class ProductFeedItem extends StatelessWidget {
             ),
           ),
         ),
-        SizedBox(
-          height: 300,
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(4.0),
-            child: Container(
-              color: Color(0xfff8f8f8),
-              child: Stack(
-                children: [
-                  GestureDetector(
-                    onTap: () {
-                      debugPrint('GestureDetector ${model.idolGoodsId}');
-                      onTap(model.id);
-                    },
-                    child: MediaCarouselWidget(
+        GestureDetector(
+          onTap: () {
+            debugPrint('GestureDetector ${model.idolGoodsId}');
+            if (onTap != null) onTap(model.id);
+          },
+          child: SizedBox(
+            height: 300,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(4.0),
+              child: Container(
+                color: Color(0xfff8f8f8),
+                child: Stack(
+                  children: [
+                    MediaCarouselWidget(
                       items: model.goods.map((url) {
                         return Image(
                           fit: BoxFit.cover,
@@ -56,73 +56,74 @@ class ProductFeedItem extends StatelessWidget {
                         );
                       }).toList(),
                     ),
-                  ),
-                  Positioned(
-                    top: 0,
-                    left: 0,
-                    child: Container(
-                      height: 20,
-                      width: 70,
-                      decoration: BoxDecoration(
-                        color: Color(0xffFEAC1B),
-                        borderRadius: BorderRadius.only(
-                          bottomRight: Radius.circular(50),
+                    Positioned(
+                      top: 0,
+                      left: 0,
+                      child: Container(
+                        height: 20,
+                        width: 70,
+                        decoration: BoxDecoration(
+                          color: Color(0xffFEAC1B),
+                          borderRadius: BorderRadius.only(
+                            bottomRight: Radius.circular(50),
+                          ),
                         ),
-                      ),
-                      child: Center(
-                        child: Text(
-                          '${model.discount} off',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
+                        child: Center(
+                          child: Text(
+                            '${model.discount} off',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                  Positioned(
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    height: 100,
-                    child: Image(
-                      image: R.image.product_mask_bg(),
-                      fit: BoxFit.fill,
+                    Positioned(
+                      bottom: 0,
+                      left: 0,
+                      right: 0,
+                      height: 100,
+                      child: Image(
+                        image: R.image.product_mask_bg(),
+                        fit: BoxFit.fill,
+                      ),
                     ),
-                  ),
-                  // 购物车和收藏
-                  Positioned(
-                    bottom: 8,
-                    right: 8,
-                    child: Column(
-                      children: [
-                        Column(
-                          children: [
-                            Image(image: R.image.add_cart()),
-                            Text(
-                              NumberFormat.compact().format(model.shoppingCar),
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 12),
-                            ),
-                          ],
-                        ),
-                        SizedBox(
-                          height: 12,
-                        ),
-                        Column(
-                          children: [
-                            Image(image: R.image.favorite()),
-                            Text(
-                              NumberFormat.compact().format(model.collectNum),
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 12),
-                            ),
-                          ],
-                        ),
-                      ],
+                    // 购物车和收藏
+                    Positioned(
+                      bottom: 8,
+                      right: 8,
+                      child: Column(
+                        children: [
+                          Column(
+                            children: [
+                              Image(image: R.image.add_cart()),
+                              Text(
+                                NumberFormat.compact()
+                                    .format(model.shoppingCar),
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 12),
+                              ),
+                            ],
+                          ),
+                          SizedBox(
+                            height: 12,
+                          ),
+                          Column(
+                            children: [
+                              Image(image: R.image.favorite()),
+                              Text(
+                                NumberFormat.compact().format(model.collectNum),
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 12),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),

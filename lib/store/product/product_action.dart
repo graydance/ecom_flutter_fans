@@ -104,9 +104,9 @@ class FetchGoodsFailedAction {
 }
 
 class ShowProductDetailAction {
-  final String goodsId;
+  final String idolGoodsId;
 
-  ShowProductDetailAction(this.goodsId);
+  ShowProductDetailAction(this.idolGoodsId);
 }
 
 class FetchProductDetailAction {

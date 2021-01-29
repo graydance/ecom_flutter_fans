@@ -1,15 +1,14 @@
-import 'package:fans/screen/components/default_button.dart';
-import 'package:fans/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
+import 'package:fans/models/product.dart';
 import 'package:fans/r.g.dart';
 import 'package:fans/screen/components/quantity_editing_button.dart';
+import 'package:fans/theme.dart';
 
 class ProductAttributesBottomSheet extends StatefulWidget {
-  final Widget child;
-  final Animation<double> animation;
-  ProductAttributesBottomSheet({Key key, this.child, this.animation})
+  final ProductAttributesViewModel viewModel;
+  ProductAttributesBottomSheet({Key key, @required this.viewModel})
       : super(key: key);
 
   @override
@@ -27,14 +26,18 @@ class _ProductAttributesBottomSheetState
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            _titleBar(context),
+            _titleBar(context, widget.viewModel.model),
             SizedBox(
-              height: 20,
+              height: 30,
             ),
             ListView(
               shrinkWrap: true,
               children: [
-                QuantityEditingButton(),
+                QuantityEditingButton(
+                  min: 1,
+                  quantity: widget.viewModel.quantity,
+                  onChanged: widget.viewModel.onQuantityChange,
+                ),
               ],
             ),
             SizedBox(
@@ -45,7 +48,7 @@ class _ProductAttributesBottomSheetState
               height: 50,
               child: TextButton(
                 onPressed: () {},
-                child: Text('Add to cart'),
+                child: Text(widget.viewModel.actionType.displayTitle),
                 style: TextButton.styleFrom(
                   primary: Colors.white,
                   backgroundColor: AppTheme.colorED8514,
@@ -59,18 +62,31 @@ class _ProductAttributesBottomSheetState
     );
   }
 
-  _titleBar(BuildContext context) {
+  Widget _titleBar(BuildContext context, Product model) {
+    final sku = model.goodsSkus.first;
     return Container(
       child: Stack(
         clipBehavior: Clip.none,
         children: [
           Positioned(
             top: -30,
-            child: SizedBox(
-              height: 110,
-              width: 110,
-              child: Image(
-                image: R.image.kol_album_bg(),
+            child: GestureDetector(
+              onTap: () => debugPrint('on tap product image'),
+              child: SizedBox(
+                height: 110,
+                width: 110,
+                child: Stack(
+                  children: [
+                    FansImageView(url: sku.skuImage),
+                    Positioned(
+                      right: 4,
+                      bottom: 4,
+                      child: Image(
+                        image: R.image.product_search(),
+                      ),
+                    )
+                  ],
+                ),
               ),
             ),
           ),
@@ -87,7 +103,7 @@ class _ProductAttributesBottomSheetState
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         Text(
-                          'Mini Facial xxxxxxxxxxxxxxxxxxxxxxxxx',
+                          model.productName,
                           maxLines: 2,
                           style: TextStyle(
                             fontSize: 14,
@@ -101,7 +117,7 @@ class _ProductAttributesBottomSheetState
                           textBaseline: TextBaseline.alphabetic,
                           children: [
                             Text(
-                              '\$15',
+                              '\$${sku.currentPriceStr}',
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.w600,
@@ -110,7 +126,7 @@ class _ProductAttributesBottomSheetState
                             ),
                             SizedBox(width: 2),
                             Text(
-                              '\$30',
+                              '\$${sku.originalPriceStr}',
                               style: TextStyle(
                                 color: Color(0xff979AA9),
                                 fontSize: 12,
@@ -147,6 +163,26 @@ class _ProductAttributesBottomSheetState
   }
 }
 
+class FansImageView extends StatelessWidget {
+  const FansImageView({
+    Key key,
+    @required this.url,
+  }) : super(key: key);
+
+  final String url;
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(4.0),
+      child: FadeInImage(
+        placeholder: R.image.kol_album_bg(),
+        image: NetworkImage(url),
+      ),
+    );
+  }
+}
+
 class FloatingModal extends StatelessWidget {
   final Widget child;
   final Color backgroundColor;
@@ -171,12 +207,44 @@ class FloatingModal extends StatelessWidget {
   }
 }
 
-Future showProductAttributesBottomSheet(BuildContext context) {
+Future showProductAttributesBottomSheet(
+    BuildContext context, ProductAttributesViewModel viewModel) {
   return showCustomModalBottomSheet(
       context: context,
-      builder: (context) => ProductAttributesBottomSheet(),
+      builder: (context) => ProductAttributesBottomSheet(viewModel: viewModel),
       containerWidget: (_, animation, child) => FloatingModal(
             child: child,
           ),
-      expand: false);
+      expand: false,
+      isDismissible: false);
+}
+
+enum ProductAttributesActionType { addToCart, buyNow }
+
+extension ProductAttributesActionTypeExt on ProductAttributesActionType {
+  // ignore: missing_return
+  String get displayTitle {
+    switch (this) {
+      case ProductAttributesActionType.addToCart:
+        return 'Add to cart';
+      case ProductAttributesActionType.buyNow:
+        return 'Buy now';
+    }
+  }
+}
+
+class ProductAttributesViewModel {
+  final Product model;
+  final int quantity;
+  final ProductAttributesActionType actionType;
+  final Function(int) onQuantityChange;
+  final Function onTapAction;
+
+  ProductAttributesViewModel({
+    this.model,
+    this.quantity,
+    this.actionType,
+    this.onQuantityChange,
+    this.onTapAction,
+  });
 }

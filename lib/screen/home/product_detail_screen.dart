@@ -21,6 +21,8 @@ class ProductDetailScreen extends StatefulWidget {
 class _ProductDetailScreenState extends State<ProductDetailScreen> {
   String _productId;
 
+  int _quantity = 1;
+
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _ViewModel>(
@@ -35,7 +37,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
           title: VerifiedUserNameView(
             name: model.model.productName,
             isLarge: true,
-            verified: true,
+            verified: model.model.isOfficial == 1,
           ),
           elevation: 0,
         ),
@@ -49,51 +51,14 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     currentPriceStr: '${model.model.currentPrice}',
                     originalPriceStr: '${model.model.originalPrice}',
                     tagNormal: [],
-                    goodsDescription: model.model.description),
+                    goodsDescription: model.model.description,
+                    goods: model.model.goodsPictures
+                        .map((e) => e.picture)
+                        .toList()),
               ),
-              // Container(
-              //   height: 20,
-              //   padding: const EdgeInsets.only(top: 4.0),
-              //   child: ListView.builder(
-              //     scrollDirection: Axis.horizontal,
-              //     itemCount: 3,
-              //     itemBuilder: (ctx, i) {
-              //       return TagButton(
-              //         onPressed: () {},
-              //         text: '#tag$i',
-              //       );
-              //     },
-              //   ),
-              // ),
-              Container(
-                padding: const EdgeInsets.only(top: 20, bottom: 10),
-                child: Text(
-                  'Similar items from Desiperkins',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF0F1015),
-                  ),
-                ),
-              ),
-              Container(
-                height: 110,
-                padding: const EdgeInsets.only(top: 4.0),
-                child: ListView.separated(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: 10,
-                  itemBuilder: (ctx, i) {
-                    return Image(
-                      image: R.image.kol_album_bg(),
-                    );
-                  },
-                  separatorBuilder: (BuildContext context, int index) {
-                    return SizedBox(
-                      width: 8,
-                    );
-                  },
-                ),
-              ),
+              model.model.recommend != null && model.model.recommend.isNotEmpty
+                  ? SimilarProducts(recommends: model.model.recommend)
+                  : Container(),
             ],
           ),
         ),
@@ -104,39 +69,31 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               children: [
                 Expanded(
                   flex: 1,
-                  child: TextButton(
-                    style: TextButton.styleFrom(
-                      primary: Color(0xffED3544),
-                      backgroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(),
-                    ),
-                    onPressed: () {},
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.favorite,
-                          size: 18,
-                          color: Color(0xffED3544),
-                        ),
-                        Text(
-                          'SAVED',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: Color(0xffED3544),
-                          ),
-                        )
-                      ],
-                    ),
+                  child: FavoriteButton(
+                    isSaved: false,
                   ),
                 ),
                 Expanded(
                   flex: 2,
                   child: TextButton(
-                    onPressed: () async {
-                      await showProductAttributesBottomSheet(context);
-                    },
+                    onPressed: model.model == null
+                        ? null
+                        : () async {
+                            await showProductAttributesBottomSheet(
+                                context,
+                                ProductAttributesViewModel(
+                                  model: model.model,
+                                  quantity: _quantity,
+                                  actionType:
+                                      ProductAttributesActionType.addToCart,
+                                  onQuantityChange: (newValue) {
+                                    _quantity = newValue;
+                                  },
+                                  onTapAction: () {},
+                                ));
+                          },
                     style: TextButton.styleFrom(
+                      minimumSize: Size(44, 44),
                       primary: Colors.white,
                       backgroundColor: Color(0xffEC3644),
                       shape: RoundedRectangleBorder(),
@@ -150,8 +107,26 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 Expanded(
                   flex: 2,
                   child: TextButton(
-                    onPressed: () {},
+                    onPressed: model.model == null
+                        ? null
+                        : () async {
+                            await showProductAttributesBottomSheet(
+                                context,
+                                ProductAttributesViewModel(
+                                  model: model.model,
+                                  quantity: _quantity,
+                                  actionType:
+                                      ProductAttributesActionType.buyNow,
+                                  onQuantityChange: (newValue) {
+                                    setState(() {
+                                      _quantity = newValue;
+                                    });
+                                  },
+                                  onTapAction: () {},
+                                ));
+                          },
                     style: TextButton.styleFrom(
+                      minimumSize: Size(44, 44),
                       primary: Colors.white,
                       backgroundColor: AppTheme.colorED8514,
                       shape: RoundedRectangleBorder(),
@@ -168,6 +143,113 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   }
 }
 
+class SimilarProducts extends StatelessWidget {
+  final List<Goods> recommends;
+  const SimilarProducts({
+    Key key,
+    @required this.recommends,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          padding: const EdgeInsets.only(top: 20),
+          child: Text(
+            'Similar items from Desiperkins',
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+              color: Color(0xFF0F1015),
+            ),
+          ),
+        ),
+        GridView.count(
+          shrinkWrap: true,
+          physics: NeverScrollableScrollPhysics(),
+          padding: const EdgeInsets.only(top: 4),
+          mainAxisSpacing: 8,
+          crossAxisSpacing: 8,
+          crossAxisCount: 3,
+          children: recommends
+              .map(
+                (e) => ClipRRect(
+                  borderRadius: BorderRadius.circular(4.0),
+                  child: FadeInImage(
+                    placeholder: R.image.kol_album_bg(),
+                    image: NetworkImage(e.picture),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              )
+              .toList(),
+        ),
+      ],
+    );
+  }
+}
+
+class FavoriteButton extends StatefulWidget {
+  final bool isSaved;
+  final Function(bool) onChanged;
+  const FavoriteButton({
+    Key key,
+    this.isSaved = false,
+    this.onChanged,
+  }) : super(key: key);
+
+  @override
+  _FavoriteButtonState createState() => _FavoriteButtonState();
+}
+
+class _FavoriteButtonState extends State<FavoriteButton> {
+  bool _isSaved;
+  @override
+  void initState() {
+    _isSaved = widget.isSaved;
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final color = _isSaved ? AppTheme.colorED3544 : AppTheme.colorC4C5CD;
+    return TextButton(
+      style: TextButton.styleFrom(
+        minimumSize: Size(44, 44),
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(),
+      ),
+      onPressed: () {
+        if (widget.onChanged != null) {
+          widget.onChanged(!_isSaved);
+        }
+        setState(() {
+          _isSaved = !_isSaved;
+        });
+      },
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            Icons.favorite,
+            size: 14,
+            color: color,
+          ),
+          Text(
+            'SAVED',
+            style: TextStyle(
+              fontSize: 12,
+              color: color,
+            ),
+          )
+        ],
+      ),
+    );
+  }
+}
+
 class _ViewModel {
   final Product model;
 
@@ -175,6 +257,6 @@ class _ViewModel {
 
   static _ViewModel fromStore(Store<AppState> store, String id) {
     final state = store.state.productDetails.allStates[id];
-    return _ViewModel();
+    return _ViewModel(model: state.model);
   }
 }
