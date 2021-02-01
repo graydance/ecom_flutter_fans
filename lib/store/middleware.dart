@@ -23,6 +23,9 @@ List<Middleware<AppState>> createStoreMiddleware() {
   final fetchRecommends = _createFetchRecommends();
   final fetchGoods = _createFetchGoods();
   final fetchProductDetail = _createProductDetail();
+  final preOrder = _createPreOrder();
+  final order = _createOrder();
+  final payment = _createPayment();
 
   return [
     TypedMiddleware<AppState, VerifyEmailAction>(verifyEmail),
@@ -37,6 +40,9 @@ List<Middleware<AppState>> createStoreMiddleware() {
     TypedMiddleware<AppState, FetchShopDetailAction>(fetchShopDetail),
     TypedMiddleware<AppState, FetchGoodsAction>(fetchGoods),
     TypedMiddleware<AppState, FetchProductDetailAction>(fetchProductDetail),
+    TypedMiddleware<AppState, PreOrderAction>(preOrder),
+    TypedMiddleware<AppState, OrderAction>(order),
+    TypedMiddleware<AppState, PayAction>(payment),
   ];
 }
 
@@ -292,6 +298,65 @@ Middleware<AppState> _createProductDetail() {
         },
       ).catchError((err) {
         action.completer.completeError(err);
+      });
+    }
+    next(action);
+  };
+}
+
+Middleware<AppState> _createPreOrder() {
+  return (Store<AppState> store, action, NextDispatcher next) {
+    if (action is PreOrderAction) {
+      Networking.request(PreOrderAPI(
+        buyGoods: action.buyGoods,
+      )).then(
+        (data) {
+          var response = data['data'];
+          final model = OrderDetail.fromMap(response);
+          action.completer.complete(model);
+          store.dispatch(PreOrderSuccessAction(orderDetail: model));
+        },
+      ).catchError((err) {
+        action.completer.completeError(err.toString());
+      });
+    }
+    next(action);
+  };
+}
+
+Middleware<AppState> _createOrder() {
+  return (Store<AppState> store, action, NextDispatcher next) {
+    if (action is OrderAction) {
+      Networking.request(OrderAPI(
+        action.buyGoods,
+        action.shippingAddressId,
+        action.billingAddressId,
+      )).then(
+        (data) {
+          final model = data['data'];
+          action.completer.complete(model);
+        },
+      ).catchError((err) {
+        action.completer.completeError(err.toString());
+      });
+    }
+    next(action);
+  };
+}
+
+Middleware<AppState> _createPayment() {
+  return (Store<AppState> store, action, NextDispatcher next) {
+    if (action is PayAction) {
+      Networking.request(PayAPI(
+        orderId: action.orderId,
+        payName: action.payName,
+      )).then(
+        (data) {
+          final response = data['data'];
+          action.completer.complete(response['payInfo']);
+        },
+      ).catchError((err) {
+        action.completer.completeError(err.toString());
       });
     }
     next(action);

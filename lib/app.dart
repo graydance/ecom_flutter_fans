@@ -1,3 +1,4 @@
+import 'package:fans/screen/order/payment_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -21,10 +22,10 @@ class ReduxApp extends StatelessWidget {
             scaffoldBackgroundColor: Colors.white,
             primaryColor: Colors.white,
           ),
-          initialRoute: Routes.splash,
+          initialRoute: Routes.home,
           navigatorKey: Keys.navigatorKey,
           routes: {
-            Routes.splash: (context) => SplashScreen(),
+            // Routes.splash: (context) => SplashScreen(),
             Routes.welcome: (context) => WelcomeScreen(),
             Routes.verifyEmail: (context) => AuthEmailScreen(),
             Routes.signup: (context) => SignupScreen(),
@@ -42,6 +43,9 @@ class ReduxApp extends StatelessWidget {
             Routes.searchByTag: (context) => SearchByTagScreen(),
             Routes.shop: (context) => ShopDetailScreen(),
             Routes.productDetail: (context) => ProductDetailScreen(),
+            Routes.cart: (context) => CartScreen(),
+            Routes.preOrder: (context) => PreOrderScreen(),
+            Routes.payment: (context) => PaymentScreen(),
           },
           builder: EasyLoading.init(),
         ));
@@ -62,6 +66,9 @@ class Routes {
   static final interests = 'interests';
   static final home = '/home';
   static final searchByTag = '/search_by_tag';
-  static final shop = 'shop';
-  static final productDetail = 'product_detail';
+  static final shop = '/shop';
+  static final productDetail = '/product_detail';
+  static final cart = '/cart';
+  static final preOrder = '/preorder';
+  static final payment = '/payment';
 }

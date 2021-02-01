@@ -47,7 +47,10 @@ class _ProductAttributesBottomSheetState
               width: double.infinity,
               height: 50,
               child: TextButton(
-                onPressed: widget.viewModel.onTapAction,
+                onPressed: () {
+                  Navigator.of(context).pop();
+                  widget.viewModel.onTapAction();
+                },
                 child: Text(widget.viewModel.actionType.displayTitle),
                 style: TextButton.styleFrom(
                   primary: Colors.white,

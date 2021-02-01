@@ -1,7 +1,9 @@
 import 'dart:async';
 
-import 'package:fans/models/models.dart';
+import 'package:flutter/material.dart';
+
 import 'package:fans/models/feed.dart';
+import 'package:fans/models/models.dart';
 
 class FetchFeedsStartLoadingAction {
   /// 类型选择( 0:following , 1:for you)
@@ -120,4 +122,37 @@ class FetchProductDetailSuccessAction {
   final Product product;
 
   FetchProductDetailSuccessAction(this.product);
+}
+
+class PreOrderAction {
+  final List<OrderParameters> buyGoods;
+  final Completer completer;
+
+  PreOrderAction({@required this.buyGoods, this.completer});
+}
+
+class PreOrderSuccessAction {
+  final OrderDetail orderDetail;
+
+  PreOrderSuccessAction({
+    this.orderDetail,
+  });
+}
+
+class OrderAction {
+  final List<OrderParameters> buyGoods;
+  final String shippingAddressId;
+  final String billingAddressId;
+  final Completer completer;
+
+  OrderAction(this.buyGoods, this.shippingAddressId, this.billingAddressId,
+      this.completer);
+}
+
+class PayAction {
+  final String orderId;
+  final String payName;
+  final Completer completer;
+
+  PayAction(this.orderId, this.payName, this.completer);
 }

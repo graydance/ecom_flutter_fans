@@ -8,6 +8,14 @@ class AppTheme {
   static final colorC4C5CD = Color(0xffC4C5CD);
   static final colorED3544 = Color(0xFFED3544);
   static final colorF6F6F6 = Color(0xFFF6F6F6);
+  static final color48B6EF = Color(0xFF48B6EF);
+  static final color555764 = Color(0xFF555764);
+
+  /// checkbox color
+  static final colorFEAC1B = Color(0xFFFEAC1B);
+
+  /// checkbox uncheck color
+  static final colorE7E8EC = Color(0xFFE7E8EC);
 }
 
 class HexColor extends Color {

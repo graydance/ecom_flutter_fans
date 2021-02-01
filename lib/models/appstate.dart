@@ -12,6 +12,7 @@ class AppState {
   final SearchByTagStateList tagSearch;
   final ShopDetailState shopDetail;
   final ProductDetailsOnScreen productDetails;
+  final PreOrderState preOrder;
 
   AppState({
     this.verifyEmail = const VerifyEmailState(),
@@ -21,6 +22,7 @@ class AppState {
     this.tagSearch = const SearchByTagStateList(),
     this.shopDetail = const ShopDetailState(),
     this.productDetails = const ProductDetailsOnScreen(),
+    this.preOrder = const PreOrderState(),
   });
 
   factory AppState.init() => AppState();
@@ -33,6 +35,7 @@ class AppState {
     SearchByTagStateList tagSearch,
     ShopDetailState shopDetail,
     ProductDetailsOnScreen productDetails,
+    PreOrderState preOrderState,
   }) {
     return AppState(
       verifyEmail: verifyEmail ?? this.verifyEmail,
@@ -42,6 +45,7 @@ class AppState {
       tagSearch: tagSearch ?? this.tagSearch,
       shopDetail: shopDetail ?? this.shopDetail,
       productDetails: productDetails ?? this.productDetails,
+      preOrder: preOrderState ?? this.preOrder,
     );
   }
 
@@ -56,7 +60,8 @@ class AppState {
         o.feeds == feeds &&
         o.tagSearch == tagSearch &&
         o.shopDetail == shopDetail &&
-        o.productDetails == productDetails;
+        o.productDetails == productDetails &&
+        o.preOrder == preOrder;
   }
 
   @override
@@ -67,11 +72,12 @@ class AppState {
         feeds.hashCode ^
         tagSearch.hashCode ^
         shopDetail.hashCode ^
-        productDetails.hashCode;
+        productDetails.hashCode ^
+        preOrder.hashCode;
   }
 
   @override
   String toString() {
-    return 'AppState(verifyEmail: $verifyEmail, auth: $auth, interests: $interests, feeds: $feeds, tagSearch: $tagSearch, shopDetail: $shopDetail, productDetails: $productDetails)';
+    return 'AppState(verifyEmail: $verifyEmail, auth: $auth, interests: $interests, feeds: $feeds, tagSearch: $tagSearch, shopDetail: $shopDetail, productDetails: $productDetails, preOrderState: $preOrder)';
   }
 }

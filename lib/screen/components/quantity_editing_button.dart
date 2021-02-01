@@ -1,19 +1,23 @@
 import 'package:fans/theme.dart';
 import 'package:flutter/material.dart';
 
+enum QuantityEditingButtonStyle { large, small }
+
 class QuantityEditingButton extends StatefulWidget {
+  final QuantityEditingButtonStyle style;
   final int quantity;
   final int min;
   final int max;
   final Function(int) onChanged;
 
-  QuantityEditingButton(
-      {Key key,
-      this.quantity = 1,
-      this.min = 1,
-      this.max = 99999,
-      this.onChanged})
-      : super(key: key);
+  QuantityEditingButton({
+    Key key,
+    this.style = QuantityEditingButtonStyle.large,
+    this.quantity = 1,
+    this.min = 1,
+    this.max = 9999,
+    @required this.onChanged,
+  }) : super(key: key);
 
   @override
   _QuantityEditingButtonState createState() => _QuantityEditingButtonState();
@@ -21,6 +25,46 @@ class QuantityEditingButton extends StatefulWidget {
 
 class _QuantityEditingButtonState extends State<QuantityEditingButton> {
   int _quantity;
+
+  TextStyle get _tipTextStyle {
+    switch (widget.style) {
+      case QuantityEditingButtonStyle.large:
+        return TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
+          color: AppTheme.color0F1015,
+        );
+      case QuantityEditingButtonStyle.small:
+        return TextStyle(
+          fontSize: 12,
+          color: AppTheme.color555764,
+        );
+      default:
+        throw Error();
+    }
+  }
+
+  double get _buttonSize {
+    switch (widget.style) {
+      case QuantityEditingButtonStyle.large:
+        return 30;
+      case QuantityEditingButtonStyle.small:
+        return 24;
+      default:
+        throw Error();
+    }
+  }
+
+  double get _iconSize {
+    switch (widget.style) {
+      case QuantityEditingButtonStyle.large:
+        return 15;
+      case QuantityEditingButtonStyle.small:
+        return 15;
+      default:
+        throw Error();
+    }
+  }
 
   @override
   void initState() {
@@ -36,34 +80,21 @@ class _QuantityEditingButtonState extends State<QuantityEditingButton> {
       children: [
         Text(
           'Quantity',
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-            color: AppTheme.color0F1015,
-          ),
+          style: _tipTextStyle,
         ),
         SizedBox(
-          height: 30,
-          width: 30,
-          child: TextButton(
-            onPressed: _quantity > widget.min
-                ? () {
-                    setState(() {
-                      _quantity -= 1;
-                    });
-                    if (widget.onChanged != null) widget.onChanged(_quantity);
-                  }
-                : null,
-            style: TextButton.styleFrom(
-              primary: AppTheme.color979AA9,
-              backgroundColor: _quantity > widget.min
-                  ? AppTheme.colorEDEEF0
-                  : AppTheme.colorF6F6F6,
-            ),
-            child: Icon(
-              Icons.remove,
-              size: 15,
-            ),
+          height: _buttonSize,
+          width: _buttonSize,
+          child: QuantityButton(
+            icon: Icons.remove,
+            iconSize: _iconSize,
+            isEnable: _quantity > widget.min,
+            onPressed: () {
+              setState(() {
+                _quantity -= 1;
+              });
+              if (widget.onChanged != null) widget.onChanged(_quantity);
+            },
           ),
         ),
         Container(
@@ -82,30 +113,59 @@ class _QuantityEditingButtonState extends State<QuantityEditingButton> {
           ),
         ),
         SizedBox(
-          height: 30,
-          width: 30,
-          child: TextButton(
-            onPressed: _quantity < widget.max
-                ? () {
-                    setState(() {
-                      _quantity += 1;
-                    });
-                    if (widget.onChanged != null) widget.onChanged(_quantity);
-                  }
-                : null,
-            style: TextButton.styleFrom(
-              primary: AppTheme.color979AA9,
-              backgroundColor: _quantity < widget.max
-                  ? AppTheme.colorEDEEF0
-                  : AppTheme.colorF6F6F6,
-            ),
-            child: Icon(
-              Icons.add,
-              size: 15,
-            ),
+          height: _buttonSize,
+          width: _buttonSize,
+          child: QuantityButton(
+            icon: Icons.add,
+            iconSize: _iconSize,
+            isEnable: _quantity < widget.max,
+            onPressed: () {
+              setState(() {
+                _quantity += 1;
+              });
+              if (widget.onChanged != null) widget.onChanged(_quantity);
+            },
           ),
         ),
       ],
+    );
+  }
+}
+
+class QuantityButton extends StatelessWidget {
+  const QuantityButton({
+    Key key,
+    @required bool isEnable,
+    @required double iconSize,
+    @required IconData icon,
+    @required VoidCallback onPressed,
+  })  : _isEnable = isEnable,
+        _iconSize = iconSize,
+        _icon = icon,
+        _onPressed = onPressed,
+        super(key: key);
+
+  final bool _isEnable;
+  final double _iconSize;
+  final IconData _icon;
+  final VoidCallback _onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: _isEnable ? _onPressed : null,
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(4),
+          color: _isEnable ? AppTheme.colorEDEEF0 : AppTheme.colorF6F6F6,
+        ),
+        padding: const EdgeInsets.all(5),
+        child: Icon(
+          _icon,
+          size: _iconSize,
+          color: AppTheme.color979AA9,
+        ),
+      ),
     );
   }
 }

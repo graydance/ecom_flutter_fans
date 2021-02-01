@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:fans/models/models.dart';
 import 'package:flutter/material.dart';
 
 enum HttpMethod { GET, POST }
@@ -154,6 +157,98 @@ class ProductDetailAPI extends API {
   String get path => '/user/good/detail';
 }
 
+class AddAddressAPI extends API {
+  final String firstName;
+  final String lastName;
+  final String addressLine1;
+  final String addressLine2;
+  final String zipCode;
+  final String city;
+  final String province;
+  final String country;
+  final String phoneNumber;
+  final bool isDefault;
+
+  AddAddressAPI({
+    this.firstName,
+    this.lastName,
+    this.addressLine1,
+    this.addressLine2,
+    this.zipCode,
+    this.city,
+    this.province,
+    this.country,
+    this.phoneNumber,
+    this.isDefault,
+  });
+
+  @override
+  Map<String, dynamic> get parameters => {
+        'firstName': firstName,
+        'lastName': lastName,
+        'addressLine1': addressLine1,
+        'addressLine2': addressLine2,
+        'zipCode': zipCode,
+        'city': city,
+        'province': province,
+        'country': country,
+        'phoneNumber': phoneNumber,
+        'isDefault': isDefault ? 1 : 0,
+      };
+
+  @override
+  String get path => '/user/address/add';
+}
+
+class PreOrderAPI extends API {
+  final List<OrderParameters> buyGoods;
+  final String addressId;
+
+  PreOrderAPI({@required this.buyGoods, this.addressId});
+
+  @override
+  Map<String, dynamic> get parameters => {
+        'buyGoods': buyGoods.map((e) => e.toMap()).toList(),
+        'addressId': addressId ?? ''
+      };
+
+  @override
+  String get path => '/user/good/order_pre';
+}
+
+class OrderAPI extends API {
+  final List<OrderParameters> buyGoods;
+  final String shippingAddressId;
+  final String billingAddressId;
+
+  OrderAPI(this.buyGoods, this.shippingAddressId, this.billingAddressId);
+
+  @override
+  Map<String, dynamic> get parameters => {
+        'buyGoods': buyGoods.map((e) => e.toMap()).toList(),
+        'addressId': shippingAddressId,
+        'billAddressId': billingAddressId,
+      };
+
+  @override
+  String get path => '/user/good/order';
+}
+
+class PayAPI extends API {
+  final String orderId;
+  final String payName;
+
+  PayAPI({@required this.orderId, @required this.payName});
+
+  @override
+  Map<String, dynamic> get parameters => {
+        'orderId': orderId,
+        'payName': payName,
+      };
+
+  @override
+  String get path => '/user/good/pay';
+}
 // var version = '';
 
 // var dio = Dio(

@@ -1,6 +1,8 @@
 import 'dart:async';
 
+import 'package:fans/app.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
@@ -141,7 +143,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                       _quantity = newValue;
                                     },
                                     onTapAction: () {
-                                      model.onTapAddToCart(_quantity);
+                                      model.onTapBuyNow(_quantity);
                                     },
                                   ),
                                 );
@@ -283,9 +285,37 @@ class _ViewModel {
   });
 
   static _ViewModel fromStore(Store<AppState> store, String id) {
-    _onTapAddToCart(int quantity) {}
-    _onTapBuyNow(int quantity) {}
     final state = store.state.productDetails.allStates[id];
+    _onTapAddToCart(int quantity) {
+      Keys.navigatorKey.currentState.pushNamed(Routes.cart);
+    }
+
+    _onTapBuyNow(int quantity) {
+      EasyLoading.show();
+      final completer = Completer();
+      completer.future.then((value) {
+        EasyLoading.dismiss();
+        Keys.navigatorKey.currentState
+            .pushNamed(Routes.preOrder, arguments: value);
+      }).catchError((error) {
+        EasyLoading.dismiss();
+        EasyLoading.showToast(error.toString());
+      });
+
+      final action = PreOrderAction(
+        buyGoods: [
+          OrderParameters(
+            idolGoodsId: state.model.idolGoodsId,
+            skuSpecIds: state.model.goodsSkus.first.skuSpecIds,
+            number: quantity,
+          )
+        ],
+        completer: completer,
+      );
+
+      store.dispatch(action);
+    }
+
     return _ViewModel(
         model: state.model,
         onTapAddToCart: _onTapAddToCart,
