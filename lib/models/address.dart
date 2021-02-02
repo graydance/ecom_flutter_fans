@@ -53,7 +53,7 @@ class Address {
     String createdAt,
     String updatedAt,
     String userId,
-    int isChecked,
+    int isBillDefault,
   }) {
     return Address(
       id: id ?? this.id,
@@ -70,7 +70,7 @@ class Address {
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       userId: userId ?? this.userId,
-      isBillDefault: isChecked ?? this.isBillDefault,
+      isBillDefault: isBillDefault ?? this.isBillDefault,
     );
   }
 
@@ -90,7 +90,7 @@ class Address {
       'createdAt': createdAt,
       'updatedAt': updatedAt,
       'userId': userId,
-      'isChecked': isBillDefault,
+      'isBillDefault': isBillDefault,
     };
   }
 
@@ -98,21 +98,21 @@ class Address {
     if (map == null) return null;
 
     return Address(
-      id: map['id'],
-      firstName: map['firstName'],
-      lastName: map['lastName'],
-      addressLine1: map['addressLine1'],
-      addressLine2: map['addressLine2'],
-      zipCode: map['zipCode'],
-      city: map['city'],
-      province: map['province'],
-      country: map['country'],
-      phoneNumber: map['phoneNumber'],
-      isDefault: map['isDefault'],
-      createdAt: map['createdAt'],
-      updatedAt: map['updatedAt'],
-      userId: map['userId'],
-      isBillDefault: map['isChecked'],
+      id: map['id'] ?? '',
+      firstName: map['firstName'] ?? '',
+      lastName: map['lastName'] ?? '',
+      addressLine1: map['addressLine1'] ?? '',
+      addressLine2: map['addressLine2'] ?? '',
+      zipCode: map['zipCode'] ?? '',
+      city: map['city'] ?? '',
+      province: map['province'] ?? '',
+      country: map['country'] ?? '',
+      phoneNumber: map['phoneNumber'] ?? '',
+      isDefault: map['isDefault'] ?? 0,
+      createdAt: map['createdAt'] ?? '',
+      updatedAt: map['updatedAt'] ?? '',
+      userId: map['userId'] ?? '',
+      isBillDefault: map['isBillDefault'] ?? 0,
     );
   }
 
@@ -164,6 +164,6 @@ class Address {
 
   @override
   String toString() {
-    return 'Address(id: $id, firstName: $firstName, lastName: $lastName, addressLine1: $addressLine1, addressLine2: $addressLine2, zipCode: $zipCode, city: $city, province: $province, country: $country, phoneNumber: $phoneNumber, isDefault: $isDefault, createdAt: $createdAt, updatedAt: $updatedAt, userId: $userId, isChecked: $isBillDefault)';
+    return 'Address(id: $id, firstName: $firstName, lastName: $lastName, addressLine1: $addressLine1, addressLine2: $addressLine2, zipCode: $zipCode, city: $city, province: $province, country: $country, phoneNumber: $phoneNumber, isDefault: $isDefault, createdAt: $createdAt, updatedAt: $updatedAt, userId: $userId, isBillDefault: $isBillDefault)';
   }
 }

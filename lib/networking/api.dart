@@ -168,6 +168,7 @@ class AddAddressAPI extends API {
   final String country;
   final String phoneNumber;
   final bool isDefault;
+  final bool isBillDefault;
 
   AddAddressAPI({
     this.firstName,
@@ -180,6 +181,7 @@ class AddAddressAPI extends API {
     this.country,
     this.phoneNumber,
     this.isDefault,
+    this.isBillDefault,
   });
 
   @override
@@ -194,6 +196,7 @@ class AddAddressAPI extends API {
         'country': country,
         'phoneNumber': phoneNumber,
         'isDefault': isDefault ? 1 : 0,
+        'isBillDefault': isBillDefault ? 1 : 0,
       };
 
   @override

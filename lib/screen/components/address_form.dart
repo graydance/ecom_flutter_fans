@@ -7,8 +7,10 @@ import 'package:fans/theme.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 class AddressForm extends StatefulWidget {
+  final bool isEditShipping;
   final VoidCallback onAdded;
-  AddressForm({Key key, this.onAdded}) : super(key: key);
+  AddressForm({Key key, @required this.isEditShipping, this.onAdded})
+      : super(key: key);
 
   @override
   _AddressFormState createState() => _AddressFormState();
@@ -48,7 +50,6 @@ class _AddressFormState extends State<AddressForm> {
 
     return Form(
       key: _formKey,
-      autovalidateMode: AutovalidateMode.onUserInteraction,
       child: Column(
         children: [
           Row(
@@ -186,7 +187,8 @@ class _AddressFormState extends State<AddressForm> {
         province: _provinceController.text,
         country: _countryController.text,
         phoneNumber: _phoneNumberController.text,
-        isDefault: isDefault,
+        isDefault: widget.isEditShipping ? isDefault : false,
+        isBillDefault: widget.isEditShipping ? false : isDefault,
       ),
     ).then((value) {
       setState(() {

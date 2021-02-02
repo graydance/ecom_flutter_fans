@@ -1,4 +1,5 @@
 import 'package:fans/screen/order/payment_screen.dart';
+import 'package:fans/screen/order/payment_success_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -46,6 +47,7 @@ class ReduxApp extends StatelessWidget {
             Routes.cart: (context) => CartScreen(),
             Routes.preOrder: (context) => PreOrderScreen(),
             Routes.payment: (context) => PaymentScreen(),
+            Routes.paymentSuccess: (context) => PaymentSuccessScreen(),
           },
           builder: EasyLoading.init(),
         ));
@@ -71,4 +73,5 @@ class Routes {
   static final cart = '/cart';
   static final preOrder = '/preorder';
   static final payment = '/payment';
+  static final paymentSuccess = '/payment_success';
 }
