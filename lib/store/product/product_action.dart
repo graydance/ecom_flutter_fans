@@ -125,7 +125,7 @@ class FetchProductDetailSuccessAction {
 }
 
 class PreOrderAction {
-  final List<OrderParameters> buyGoods;
+  final List<OrderParameter> buyGoods;
   final Completer completer;
 
   PreOrderAction({@required this.buyGoods, this.completer});
@@ -140,7 +140,7 @@ class PreOrderSuccessAction {
 }
 
 class OrderAction {
-  final List<OrderParameters> buyGoods;
+  final List<OrderParameter> buyGoods;
   final String shippingAddressId;
   final String billingAddressId;
   final Completer completer;
@@ -158,16 +158,30 @@ class PayAction {
 }
 
 class AddCartAction {
-  final OrderParameters parameters;
+  final OrderParameter parameter;
   final Completer completer;
 
-  AddCartAction(this.parameters, this.completer);
+  AddCartAction(this.parameter, this.completer);
 }
 
 class FetchCartListAction {
   final Completer completer;
 
   FetchCartListAction(this.completer);
+}
+
+class UpdateCartAction {
+  final OrderParameter parameter;
+  final Completer completer;
+
+  UpdateCartAction(this.parameter, this.completer);
+}
+
+class DeleteCartAction {
+  final List<OrderParameter> parameters;
+  final Completer completer;
+
+  DeleteCartAction(this.parameters, this.completer);
 }
 
 class OnUpdateCartAction {

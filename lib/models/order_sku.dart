@@ -221,12 +221,12 @@ class OrderSku {
 }
 
 @immutable
-class OrderParameters {
+class OrderParameter {
   final String skuSpecIds;
   final String idolGoodsId;
   final int number;
 
-  OrderParameters({this.skuSpecIds, this.idolGoodsId, this.number});
+  OrderParameter({this.skuSpecIds, this.idolGoodsId, this.number});
 
   Map<String, dynamic> toMap() {
     return {
@@ -236,10 +236,10 @@ class OrderParameters {
     };
   }
 
-  factory OrderParameters.fromMap(Map<String, dynamic> map) {
+  factory OrderParameter.fromMap(Map<String, dynamic> map) {
     if (map == null) return null;
 
-    return OrderParameters(
+    return OrderParameter(
       skuSpecIds: map['skuSpecIds'],
       idolGoodsId: map['idolGoodsId'],
       number: map['number'],
@@ -248,14 +248,14 @@ class OrderParameters {
 
   String toJson() => json.encode(toMap());
 
-  factory OrderParameters.fromJson(String source) =>
-      OrderParameters.fromMap(json.decode(source));
+  factory OrderParameter.fromJson(String source) =>
+      OrderParameter.fromMap(json.decode(source));
 
   @override
   bool operator ==(Object o) {
     if (identical(this, o)) return true;
 
-    return o is OrderParameters &&
+    return o is OrderParameter &&
         o.skuSpecIds == skuSpecIds &&
         o.idolGoodsId == idolGoodsId &&
         o.number == number;

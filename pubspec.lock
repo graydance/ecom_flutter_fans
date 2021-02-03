@@ -438,7 +438,7 @@ packages:
     source: hosted
     version: "0.2.1"
   redux:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: redux
       url: "https://pub.flutter-io.cn"
@@ -575,6 +575,13 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "0.3.12-nullsafety.9"
+  throttling:
+    dependency: "direct main"
+    description:
+      name: throttling
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "0.9.0"
   typed_data:
     dependency: transitive
     description:

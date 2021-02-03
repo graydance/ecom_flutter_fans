@@ -3,6 +3,7 @@ import 'package:fans/models/product.dart';
 import 'package:fans/networking/api_exceptions.dart';
 import 'package:fans/networking/networking.dart';
 import 'package:fans/storage/auth_storage.dart';
+import 'package:flutter/foundation.dart';
 import 'package:redux/redux.dart';
 
 import 'package:fans/networking/api.dart';
@@ -28,6 +29,8 @@ List<Middleware<AppState>> createStoreMiddleware() {
   final payment = _createPayment();
   final addCart = _createAddCart();
   final fetchCartList = _createFetchCartList();
+  final updateCart = _createUpdateCart();
+  final deleteCart = _createDeleteCart();
 
   return [
     TypedMiddleware<AppState, VerifyEmailAction>(verifyEmail),
@@ -47,6 +50,8 @@ List<Middleware<AppState>> createStoreMiddleware() {
     TypedMiddleware<AppState, PayAction>(payment),
     TypedMiddleware<AppState, AddCartAction>(addCart),
     TypedMiddleware<AppState, FetchCartListAction>(fetchCartList),
+    TypedMiddleware<AppState, UpdateCartAction>(updateCart),
+    TypedMiddleware<AppState, DeleteCartAction>(deleteCart),
   ];
 }
 
@@ -370,7 +375,7 @@ Middleware<AppState> _createPayment() {
 Middleware<AppState> _createAddCart() {
   return (Store<AppState> store, action, NextDispatcher next) {
     if (action is AddCartAction) {
-      Networking.request(AddCartAPI(params: action.parameters)).then(
+      Networking.request(AddCartAPI(params: action.parameter)).then(
         (data) {
           action.completer.complete();
         },
@@ -389,8 +394,45 @@ Middleware<AppState> _createFetchCartList() {
         (data) {
           final response = data['data'];
           final cart = Cart.fromMap(response);
+          action.completer.complete(cart);
           store.dispatch(OnUpdateCartAction(cart));
+        },
+      ).catchError((err) {
+        action.completer.completeError(err.toString());
+      });
+    }
+    next(action);
+  };
+}
+
+Middleware<AppState> _createUpdateCart() {
+  return (Store<AppState> store, action, NextDispatcher next) {
+    if (action is UpdateCartAction) {
+      debugPrint('Call UpdateCartAction');
+      Networking.request(UpdateCartAPI(params: action.parameter)).then(
+        (data) {
+          final response = data['data'];
+          final cart = Cart.fromMap(response);
           action.completer.complete();
+          store.dispatch(OnUpdateCartAction(cart));
+        },
+      ).catchError((err) {
+        action.completer.completeError(err.toString());
+      });
+    }
+    next(action);
+  };
+}
+
+Middleware<AppState> _createDeleteCart() {
+  return (Store<AppState> store, action, NextDispatcher next) {
+    if (action is DeleteCartAction) {
+      Networking.request(DeleteCartAPI(params: action.parameters)).then(
+        (data) {
+          final response = data['data'];
+          final cart = Cart.fromMap(response);
+          action.completer.complete(cart);
+          store.dispatch(OnUpdateCartAction(cart));
         },
       ).catchError((err) {
         action.completer.completeError(err.toString());

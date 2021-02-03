@@ -8,6 +8,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_redux: ^0.7.0
+  redux: ^4.0.0+3
   dio: ^3.0.7
   redux_logging: ^0.4.0
   logging: ^0.11.4
@@ -19,6 +20,7 @@ dependencies:
   flutter_easyloading: ^2.2.2
   intl: ^0.16.1
   modal_bottom_sheet: ^1.0.0+1
+  throttling: ^0.9.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:fans/models/models.dart';
 import 'package:flutter/material.dart';
@@ -21,7 +22,7 @@ extension HttpMethodExt on HttpMethod {
 abstract class TargetType {
   String get path;
   HttpMethod get method;
-  Map<String, dynamic> get parameters;
+  dynamic get parameters;
 }
 
 class API extends TargetType {
@@ -31,7 +32,7 @@ class API extends TargetType {
   }
 
   @override
-  Map<String, dynamic> get parameters => Map();
+  dynamic get parameters => Map();
 
   @override
   String get path => throw UnimplementedError();
@@ -204,7 +205,7 @@ class AddAddressAPI extends API {
 }
 
 class PreOrderAPI extends API {
-  final List<OrderParameters> buyGoods;
+  final List<OrderParameter> buyGoods;
   final String addressId;
 
   PreOrderAPI({@required this.buyGoods, this.addressId});
@@ -220,7 +221,7 @@ class PreOrderAPI extends API {
 }
 
 class OrderAPI extends API {
-  final List<OrderParameters> buyGoods;
+  final List<OrderParameter> buyGoods;
   final String shippingAddressId;
   final String billingAddressId;
 
@@ -254,7 +255,7 @@ class PayAPI extends API {
 }
 
 class AddCartAPI extends API {
-  final OrderParameters params;
+  final OrderParameter params;
 
   AddCartAPI({@required this.params});
 
@@ -275,4 +276,32 @@ class CartListAPI extends API {
 
   @override
   String get path => '/user/good/cart_list';
+}
+
+class UpdateCartAPI extends API {
+  final OrderParameter params;
+
+  UpdateCartAPI({@required this.params});
+
+  @override
+  Map<String, dynamic> get parameters => {
+        'idolGoodsId': params.idolGoodsId,
+        'skuSpecIds': params.skuSpecIds,
+        'number': params.number,
+      };
+
+  @override
+  String get path => '/user/good/update_cart';
+}
+
+class DeleteCartAPI extends API {
+  final List<OrderParameter> params;
+
+  DeleteCartAPI({@required this.params});
+
+  @override
+  get parameters => params.map((e) => e.toMap()).toList();
+
+  @override
+  String get path => '/user/good/del_cart';
 }

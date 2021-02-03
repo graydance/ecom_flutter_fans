@@ -298,7 +298,7 @@ class _ViewModel {
       });
 
       final action = AddCartAction(
-        OrderParameters(
+        OrderParameter(
           idolGoodsId: state.model.idolGoodsId,
           skuSpecIds: state.model.goodsSkus.first.skuSpecIds,
           number: quantity,
@@ -323,7 +323,7 @@ class _ViewModel {
 
       final action = PreOrderAction(
         buyGoods: [
-          OrderParameters(
+          OrderParameter(
             idolGoodsId: state.model.idolGoodsId,
             skuSpecIds: state.model.goodsSkus.first.skuSpecIds,
             number: quantity,

@@ -29,7 +29,7 @@ class TabbarScreenState extends State<TabbarScreen> {
 
   var _pages = [
     HomeScreen(),
-    WelcomeScreen(),
+    CartScreen(),
     WelcomeScreen(),
     WelcomeScreen(),
   ];

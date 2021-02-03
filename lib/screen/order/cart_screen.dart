@@ -1,8 +1,20 @@
-import 'package:flutter/material.dart';
+import 'dart:async';
 
+import 'package:fans/app.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_easyrefresh/easy_refresh.dart';
+import 'package:flutter_redux/flutter_redux.dart';
+import 'package:redux/redux.dart';
+
+import 'package:fans/models/models.dart';
 import 'package:fans/r.g.dart';
+import 'package:fans/screen/components/emtpy_view.dart';
 import 'package:fans/screen/components/quantity_editing_button.dart';
+import 'package:fans/screen/order/pre_order_screen.dart';
+import 'package:fans/store/actions.dart';
 import 'package:fans/theme.dart';
+import 'package:throttling/throttling.dart';
 
 class CartScreen extends StatefulWidget {
   CartScreen({Key key}) : super(key: key);
@@ -12,171 +24,404 @@ class CartScreen extends StatefulWidget {
 }
 
 class _CartScreenState extends State<CartScreen> {
-  bool _isEditing = true;
+  final _controller = MultiSelectController();
+  Map<String, int> _itemQuantities = {};
+
+  String _subtotal = '';
+  String _total = '';
+
+  final _debouncing = Debouncing();
+
+  @override
+  void dispose() {
+    _debouncing.dispose();
+    super.dispose();
+  }
+
+  _onQuantityChanged(BuildContext context, int quantity, OrderSku item,
+      _ViewModel viewModel) async {
+    _itemQuantities[item.id] = quantity * item.currentPrice;
+    final sum =
+        _itemQuantities.values.reduce((value, element) => value + element);
+    setState(() {
+      _subtotal = (sum / 100.0).toStringAsFixed(2);
+      _total = ((sum + viewModel.cart.taxes) / 100.0).toStringAsFixed(2);
+    });
+
+    List<OrderSku> list = List.from(viewModel.cart.list);
+    list[list.indexWhere((e) => e.id == item.id)] =
+        item.copyWith(number: quantity);
+    final updateAction =
+        OnUpdateCartAction(viewModel.cart.copyWith(list: list));
+    StoreProvider.of<AppState>(context).dispatch(updateAction);
+
+    final completer = Completer();
+    _debouncing.debounce(() {
+      // final action = UpdateCartAction(
+      //     OrderParameter(
+      //         idolGoodsId: item.idolGoodsId,
+      //         skuSpecIds: item.skuSpecIds,
+      //         number: quantity),
+      //     completer);
+      // StoreProvider.of<AppState>(context).dispatch(action);
+      Future.delayed(Duration(seconds: 1))
+          .then((value) => completer.complete());
+    });
+    await completer.future;
+  }
+
+  _onTapToolBarRemove() async {
+    if (_controller.selectedIds.isEmpty) return;
+
+    final params = _controller.list
+        .where((e) => _controller.selectedIds.contains(e.id))
+        .toList();
+
+    await _deleteCarts(params);
+  }
+
+  _deleteCarts(List<OrderSku> list) async {
+    EasyLoading.show();
+
+    final params = list
+        .map((item) => OrderParameter(
+              idolGoodsId: item.idolGoodsId,
+              skuSpecIds: item.skuSpecIds,
+            ))
+        .toList();
+    final completer = Completer();
+    final action = DeleteCartAction(params, completer);
+    StoreProvider.of<AppState>(context).dispatch(action);
+
+    try {
+      await completer.future;
+      EasyLoading.dismiss();
+    } catch (error) {
+      EasyLoading.dismiss();
+      EasyLoading.showToast(error.toString());
+    }
+  }
+
+  _updateData(_ViewModel viewModel) {
+    _itemQuantities = Map.fromIterable(viewModel.cart.list,
+        key: (e) => e.id, value: (e) => e.number * e.currentPrice);
+
+    _controller.setList(viewModel.cart.list);
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('My Cart(2)'),
-        elevation: 0,
-        actions: [
-          Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: TextButton(
-              onPressed: () {
-                setState(() {
-                  _isEditing = !_isEditing;
-                });
-              },
-              child: Text(
-                'Manage',
-                style: TextStyle(
-                  color: AppTheme.colorED8514,
+    return StoreConnector<AppState, _ViewModel>(
+      converter: _ViewModel.fromStore,
+      onDidChange: _updateData,
+      builder: (ctx, viewModel) => Scaffold(
+        appBar: AppBar(
+          title: Text(viewModel.title),
+          elevation: 0,
+          actions: [
+            Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: TextButton(
+                onPressed: () {
+                  setState(() {
+                    _controller.isSelecting = !_controller.isSelecting;
+                  });
+                },
+                child: Text(
+                  _controller.isSelecting ? 'Done' : 'Manage',
+                  style: TextStyle(
+                    color: AppTheme.colorED8514,
+                    fontSize: 12,
+                  ),
                 ),
-              ),
-              style: TextButton.styleFrom(
-                side: BorderSide(color: AppTheme.colorED8514),
-              ),
-            ),
-          ),
-        ],
-      ),
-      body: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: CustomScrollView(
-          slivers: [
-            SliverFixedExtentList(
-              itemExtent: 120.0,
-              delegate: SliverChildBuilderDelegate(
-                (BuildContext context, int index) {
-                  return CartListTile(
-                    isEditing: _isEditing,
-                  );
-                  // return new Container(
-                  //   alignment: Alignment.center,
-                  //   color: Colors.lightBlue[100 * (index % 9)],
-                  //   child: new Text('list item $index'),
-                  // );
-                },
-                childCount: 5, //50个列表项
-              ),
-            ),
-            SliverFixedExtentList(
-              itemExtent: 50.0,
-              delegate: SliverChildBuilderDelegate(
-                (BuildContext context, int index) {
-                  return ListTile(
-                    leading: Text('Subtotal:'),
-                    trailing: Text('\$79'),
-                  );
-                },
-                childCount: 5, //50个列表项
+                style: TextButton.styleFrom(
+                  side: BorderSide(color: AppTheme.colorED8514),
+                ),
               ),
             ),
           ],
+        ),
+        body: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: EasyRefresh(
+            onRefresh: () async {
+              final completer = Completer();
+              StoreProvider.of<AppState>(context)
+                  .dispatch(FetchCartListAction(completer));
+
+              final Cart cart = await completer.future;
+              setState(() {
+                _subtotal = cart.subtotalStr;
+                _total = cart.totalStr;
+              });
+            },
+            firstRefresh: true,
+            firstRefreshWidget: Center(
+              child: CircularProgressIndicator(),
+            ),
+            emptyWidget: viewModel.cart.list.isEmpty ? EmptyView() : null,
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  ListView.separated(
+                    physics: NeverScrollableScrollPhysics(),
+                    separatorBuilder: (BuildContext context, int index) {
+                      return SizedBox(
+                        height: 20,
+                      );
+                    },
+                    shrinkWrap: true,
+                    itemBuilder: (ctx, i) {
+                      final item = viewModel.cart.list[i];
+                      if (_controller.isSelecting) {
+                        return Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            CircleCheckBox(
+                                value: _controller.isSelected(item.id),
+                                onChanged: (value) {
+                                  setState(() {
+                                    _controller.toggle(item.id);
+                                  });
+                                }),
+                            SizedBox(
+                              width: 16,
+                            ),
+                            Expanded(
+                              child: CartItemTile(
+                                item: item,
+                                onQuantityChanged: (quantity, item) async {
+                                  await _onQuantityChanged(
+                                      context, quantity, item, viewModel);
+                                },
+                                onTapRemove: (item) {
+                                  _deleteCarts([item]);
+                                },
+                              ),
+                            ),
+                          ],
+                        );
+                      }
+                      return CartItemTile(
+                        item: item,
+                        onQuantityChanged: (quantity, item) async {
+                          await _onQuantityChanged(
+                              context, quantity, item, viewModel);
+                        },
+                        onTapRemove: (item) {
+                          _deleteCarts([item]);
+                        },
+                      );
+                    },
+                    itemCount: viewModel.cart.list.length,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        bottomNavigationBar: Container(
+          padding:
+              EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                if (viewModel.cart.list.isNotEmpty && !_controller.isSelecting)
+                  _buildSummary(_subtotal, viewModel.cart.shipping,
+                      viewModel.cart.taxesStr, _total),
+                if (_controller.isSelecting)
+                  EditingToolBar(
+                    isSelectAll: _controller.isSelectedAll,
+                    onTapSelectAll: (value) {
+                      setState(() {
+                        if (value) {
+                          _controller.selectAll();
+                        } else {
+                          _controller.deselectAll();
+                        }
+                      });
+                    },
+                    onTapRemove: () async {
+                      await _onTapToolBarRemove();
+                    },
+                  ),
+                TextButton(
+                  onPressed: viewModel.cart.list.isNotEmpty
+                      ? () {
+                          viewModel.onCheckout(viewModel.cart.list);
+                        }
+                      : null,
+                  child: Text(
+                    'Check out',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  style: TextButton.styleFrom(
+                    minimumSize: Size(44, 44),
+                    backgroundColor: viewModel.cart.list.isNotEmpty
+                        ? AppTheme.colorED8514
+                        : AppTheme.colorED8514.withAlpha(80),
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
   }
-}
 
-class CartListTile extends StatefulWidget {
-  final bool isEditing;
-  final Function(bool) onEditingChanged;
-  CartListTile({Key key, this.isEditing = false, this.onEditingChanged})
-      : super(key: key);
-
-  @override
-  _CartListTileState createState() => _CartListTileState();
-}
-
-class _CartListTileState extends State<CartListTile> {
-  bool _isEditing;
-
-  @override
-  void initState() {
-    _isEditing = widget.isEditing;
-    super.initState();
-  }
-
-  // onEditingChanged(newValue) {
-  //   setState(() {
-  //     _isEditing = newValue;
-  //   });
-  // }
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
+  _buildSummary(
+      String subtotal, String shipping, String taxesStr, String totalStr) {
+    return Column(
       children: [
-        _isEditing
-            ? CircleCheckBox(value: false, onChanged: (value) {})
-            : Container(),
         SizedBox(
-          width: 16,
+          height: 12,
         ),
-        SizedBox(
-          height: 110,
-          width: 110,
-          child: FadeInImage(
-            placeholder: R.image.kol_album_bg(),
-            image: NetworkImage(''),
-          ),
+        OrderPriceTile(
+          leading: 'Subtotal',
+          trailing: subtotal,
         ),
-        SizedBox(
-          width: 8,
+        OrderPriceTile(
+          leading: 'Shipping',
+          trailing: shipping,
         ),
-        Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('Title'),
-            Text('\$15'),
-            QuantityEditingButton(
-              style: QuantityEditingButtonStyle.small,
-              onChanged: (newValue) {},
+        OrderPriceTile(
+          leading: 'Taxes',
+          trailing: taxesStr,
+        ),
+        Divider(),
+        ListTile(
+          title: Text(
+            'Total:',
+            style: TextStyle(
+              color: AppTheme.color0F1015,
+              fontWeight: FontWeight.w600,
+              fontSize: 14,
             ),
-            Text('* error message')
-          ],
+          ),
+          trailing: Text(
+            totalStr,
+            style: TextStyle(
+              color: AppTheme.color0F1015,
+              fontWeight: FontWeight.w600,
+              fontSize: 20,
+            ),
+          ),
         ),
       ],
     );
   }
 }
 
-class CircleCheckBox extends StatefulWidget {
-  final bool value;
-  final Function(bool) onChanged;
-  CircleCheckBox({Key key, this.value, this.onChanged}) : super(key: key);
+class CartItemTile extends StatelessWidget {
+  final OrderSku item;
+  final Function(int quantity, OrderSku item) onQuantityChanged;
+  final Function(OrderSku item) onTapRemove;
+
+  const CartItemTile(
+      {Key key, this.item, this.onQuantityChanged, this.onTapRemove})
+      : super(key: key);
 
   @override
-  _CircleCheckBoxState createState() => _CircleCheckBoxState();
+  Widget build(BuildContext context) {
+    final String error = item.isStockEnough ? '' : '* Out of stock';
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          height: 110,
+          width: 110,
+          child: FadeInImage(
+            placeholder: R.image.kol_album_bg(),
+            fit: BoxFit.cover,
+            // TODO item.skuImage
+            image: NetworkImage(
+                'https://images.unsplash.com/photo-1593642532400-2682810df593?ixid=MXwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&q=80'),
+          ),
+        ),
+        SizedBox(
+          width: 8,
+        ),
+        Expanded(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                item.goodsName,
+                maxLines: 3,
+                style: TextStyle(
+                  color: AppTheme.color0F1015,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 14,
+                ),
+              ),
+              Text(
+                item.currentPriceStr,
+                style: TextStyle(
+                  color: AppTheme.color0F1015,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 14,
+                ),
+              ),
+              QuantityEditingButton(
+                style: QuantityEditingButtonStyle.small,
+                quantity: item.number,
+                max: item.stock,
+                onChanged: (value) {
+                  if (onQuantityChanged != null) onQuantityChanged(value, item);
+                },
+              ),
+              Text(
+                error,
+                style: TextStyle(
+                  fontSize: 10,
+                  color: AppTheme.colorED3544,
+                ),
+              ),
+            ],
+          ),
+        ),
+        PopupMenuButton(
+          itemBuilder: (BuildContext context) => [
+            PopupMenuItem(
+                value: item,
+                child: Text(
+                  'Remove',
+                  style: TextStyle(fontSize: 14),
+                )),
+          ],
+          onSelected: (value) {
+            if (onTapRemove != null) onTapRemove(value);
+          },
+          iconSize: 20,
+          padding: EdgeInsets.zero,
+        )
+      ],
+    );
+  }
 }
 
-class _CircleCheckBoxState extends State<CircleCheckBox> {
-  bool _value = false;
+class CircleCheckBox extends StatelessWidget {
+  final bool value;
+  final Function(bool) onChanged;
 
-  @override
-  void initState() {
-    _value = widget.value;
-    super.initState();
-  }
+  const CircleCheckBox({Key key, this.value, this.onChanged}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        setState(() {
-          _value = !_value;
-        });
-        widget.onChanged(_value);
+        if (onChanged != null) onChanged(!value);
       },
       child: Container(
         decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: _value ? AppTheme.colorFEAC1B : AppTheme.colorE7E8EC),
+            color: value ? AppTheme.colorFEAC1B : AppTheme.colorE7E8EC),
         child: Padding(
           padding: const EdgeInsets.all(2.0),
           child: Icon(
@@ -187,5 +432,185 @@ class _CircleCheckBoxState extends State<CircleCheckBox> {
         ),
       ),
     );
+  }
+}
+
+class EditingToolBar extends StatefulWidget {
+  final bool isSelectAll;
+  final Function(bool) onTapSelectAll;
+  final VoidCallback onTapRemove;
+
+  EditingToolBar(
+      {Key key,
+      this.isSelectAll = false,
+      this.onTapSelectAll,
+      this.onTapRemove})
+      : super(key: key);
+
+  @override
+  _EditingToolBarState createState() => _EditingToolBarState();
+}
+
+class _EditingToolBarState extends State<EditingToolBar> {
+  final _textStyle = TextStyle(
+    fontSize: 12,
+    color: AppTheme.color555764,
+  );
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 80,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Row(
+            children: [
+              CircleCheckBox(
+                value: widget.isSelectAll,
+                onChanged: widget.onTapSelectAll,
+              ),
+              SizedBox(
+                width: 4,
+              ),
+              Text('Select All', style: _textStyle),
+            ],
+          ),
+          // TextButton.icon(
+          //   onPressed: () {},
+          //   icon: Icon(
+          //     Icons.favorite,
+          //     color: AppTheme.colorED3544,
+          //     size: 20,
+          //   ),
+          //   label: Text(
+          //     'Save for later',
+          //     style: _textStyle,
+          //   ),
+          // ),
+          TextButton(
+            onPressed: () {
+              if (widget.onTapRemove != null) widget.onTapRemove();
+            },
+            child: Text('Remove', style: _textStyle),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ViewModel {
+  final Cart cart;
+  final String title;
+  final Function(List<OrderSku>) onCheckout;
+
+  _ViewModel({this.cart, this.title, this.onCheckout});
+
+  static _ViewModel fromStore(Store<AppState> store) {
+    final cart = store.state.cart;
+    final title =
+        'My Cart' + (cart.list.isEmpty ? '' : '(${cart.list.length})');
+
+    _onCheckout(List<OrderSku> list) {
+      EasyLoading.show();
+      final completer = Completer();
+      completer.future.then((value) {
+        EasyLoading.dismiss();
+        Keys.navigatorKey.currentState
+            .pushNamed(Routes.preOrder, arguments: value);
+      }).catchError((error) {
+        EasyLoading.dismiss();
+        EasyLoading.showToast(error.toString());
+      });
+
+      final action = PreOrderAction(
+        buyGoods: list
+            .map((e) => OrderParameter(
+                  idolGoodsId: e.idolGoodsId,
+                  skuSpecIds: e.skuSpecIds,
+                  number: e.number,
+                ))
+            .toList(),
+        completer: completer,
+      );
+
+      store.dispatch(action);
+    }
+
+    return _ViewModel(cart: cart, title: title, onCheckout: _onCheckout);
+  }
+}
+
+class MultiSelectController {
+  Set<String> selectedIds = {};
+  bool isSelecting = false;
+  bool isSelectedAll = false;
+  List<OrderSku> list = [];
+
+  setList(List<OrderSku> items) {
+    list = items;
+    selectedIds =
+        items.where((e) => selectedIds.contains(e.id)).map((e) => e.id).toSet();
+  }
+
+  /// Returns true if the id is selected
+  bool isSelected(String id) {
+    return selectedIds.contains(id);
+  }
+
+  void checkSelectAll() {
+    isSelectedAll = selectedIds.length == list.length;
+  }
+
+  /// Toggle all select.
+  /// If there are some that not selected, it will select all.
+  /// If not, it will deselect all.
+  void toggleAll() {
+    if (selectedIds.length == list.length) {
+      deselectAll();
+    } else {
+      selectAll();
+    }
+
+    checkSelectAll();
+  }
+
+  /// Select all
+  void selectAll() {
+    selectedIds = list.map((e) => e.id).toSet();
+    checkSelectAll();
+  }
+
+  /// Deselect all
+  void deselectAll() {
+    selectedIds.clear();
+    checkSelectAll();
+  }
+
+  /// Toggle at index
+  void toggle(String id) {
+    if (selectedIds.contains(id)) {
+      selectedIds.remove(id);
+    } else {
+      selectedIds.add(id);
+    }
+    checkSelectAll();
+  }
+
+  /// Select at index
+  void select(String id) {
+    if (!selectedIds.contains(id)) {
+      selectedIds.add(id);
+      checkSelectAll();
+    }
+  }
+
+  /// Deselect at index
+  void deselect(String id) {
+    if (selectedIds.contains(id)) {
+      selectedIds.remove(id);
+      checkSelectAll();
+    }
   }
 }

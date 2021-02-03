@@ -718,7 +718,7 @@ class _ViewModel {
 
     Future _refreshData() {
       final buyGoods = orderDetail.list
-          .map((sku) => OrderParameters(
+          .map((sku) => OrderParameter(
               idolGoodsId: sku.idolGoodsId,
               skuSpecIds: sku.skuSpecIds,
               number: sku.number))
@@ -741,7 +741,7 @@ class _ViewModel {
       });
 
       final buyGoods = orderDetail.list
-          .map((sku) => OrderParameters(
+          .map((sku) => OrderParameter(
               idolGoodsId: sku.idolGoodsId,
               skuSpecIds: sku.skuSpecIds,
               number: sku.number))
