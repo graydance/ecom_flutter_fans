@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:meta/meta.dart';
 
+import 'package:fans/models/models.dart';
 import 'package:fans/store/states.dart';
 
 @immutable
@@ -13,6 +14,7 @@ class AppState {
   final ShopDetailState shopDetail;
   final ProductDetailsOnScreen productDetails;
   final PreOrderState preOrder;
+  final Cart cart;
 
   AppState({
     this.verifyEmail = const VerifyEmailState(),
@@ -23,6 +25,7 @@ class AppState {
     this.shopDetail = const ShopDetailState(),
     this.productDetails = const ProductDetailsOnScreen(),
     this.preOrder = const PreOrderState(),
+    this.cart = const Cart(),
   });
 
   factory AppState.init() => AppState();
@@ -35,7 +38,8 @@ class AppState {
     SearchByTagStateList tagSearch,
     ShopDetailState shopDetail,
     ProductDetailsOnScreen productDetails,
-    PreOrderState preOrderState,
+    PreOrderState preOrder,
+    Cart cart,
   }) {
     return AppState(
       verifyEmail: verifyEmail ?? this.verifyEmail,
@@ -45,7 +49,8 @@ class AppState {
       tagSearch: tagSearch ?? this.tagSearch,
       shopDetail: shopDetail ?? this.shopDetail,
       productDetails: productDetails ?? this.productDetails,
-      preOrder: preOrderState ?? this.preOrder,
+      preOrder: preOrder ?? this.preOrder,
+      cart: cart ?? this.cart,
     );
   }
 
@@ -61,7 +66,8 @@ class AppState {
         o.tagSearch == tagSearch &&
         o.shopDetail == shopDetail &&
         o.productDetails == productDetails &&
-        o.preOrder == preOrder;
+        o.preOrder == preOrder &&
+        o.cart == cart;
   }
 
   @override
@@ -73,11 +79,12 @@ class AppState {
         tagSearch.hashCode ^
         shopDetail.hashCode ^
         productDetails.hashCode ^
-        preOrder.hashCode;
+        preOrder.hashCode ^
+        cart.hashCode;
   }
 
   @override
   String toString() {
-    return 'AppState(verifyEmail: $verifyEmail, auth: $auth, interests: $interests, feeds: $feeds, tagSearch: $tagSearch, shopDetail: $shopDetail, productDetails: $productDetails, preOrderState: $preOrder)';
+    return 'AppState(verifyEmail: $verifyEmail, auth: $auth, interests: $interests, feeds: $feeds, tagSearch: $tagSearch, shopDetail: $shopDetail, productDetails: $productDetails, preOrder: $preOrder, cart: $cart)';
   }
 }

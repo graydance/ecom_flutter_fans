@@ -287,7 +287,26 @@ class _ViewModel {
   static _ViewModel fromStore(Store<AppState> store, String id) {
     final state = store.state.productDetails.allStates[id];
     _onTapAddToCart(int quantity) {
-      Keys.navigatorKey.currentState.pushNamed(Routes.cart);
+      EasyLoading.show();
+      final completer = Completer();
+      completer.future.then((value) {
+        EasyLoading.dismiss();
+        Keys.navigatorKey.currentState.pushNamed(Routes.cart);
+      }).catchError((error) {
+        EasyLoading.dismiss();
+        EasyLoading.showToast(error.toString());
+      });
+
+      final action = AddCartAction(
+        OrderParameters(
+          idolGoodsId: state.model.idolGoodsId,
+          skuSpecIds: state.model.goodsSkus.first.skuSpecIds,
+          number: quantity,
+        ),
+        completer,
+      );
+
+      store.dispatch(action);
     }
 
     _onTapBuyNow(int quantity) {

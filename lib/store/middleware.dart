@@ -26,6 +26,8 @@ List<Middleware<AppState>> createStoreMiddleware() {
   final preOrder = _createPreOrder();
   final order = _createOrder();
   final payment = _createPayment();
+  final addCart = _createAddCart();
+  final fetchCartList = _createFetchCartList();
 
   return [
     TypedMiddleware<AppState, VerifyEmailAction>(verifyEmail),
@@ -43,6 +45,8 @@ List<Middleware<AppState>> createStoreMiddleware() {
     TypedMiddleware<AppState, PreOrderAction>(preOrder),
     TypedMiddleware<AppState, OrderAction>(order),
     TypedMiddleware<AppState, PayAction>(payment),
+    TypedMiddleware<AppState, AddCartAction>(addCart),
+    TypedMiddleware<AppState, FetchCartListAction>(fetchCartList),
   ];
 }
 
@@ -354,6 +358,39 @@ Middleware<AppState> _createPayment() {
         (data) {
           final response = data['data'];
           action.completer.complete(response['payInfo']);
+        },
+      ).catchError((err) {
+        action.completer.completeError(err.toString());
+      });
+    }
+    next(action);
+  };
+}
+
+Middleware<AppState> _createAddCart() {
+  return (Store<AppState> store, action, NextDispatcher next) {
+    if (action is AddCartAction) {
+      Networking.request(AddCartAPI(params: action.parameters)).then(
+        (data) {
+          action.completer.complete();
+        },
+      ).catchError((err) {
+        action.completer.completeError(err.toString());
+      });
+    }
+    next(action);
+  };
+}
+
+Middleware<AppState> _createFetchCartList() {
+  return (Store<AppState> store, action, NextDispatcher next) {
+    if (action is FetchCartListAction) {
+      Networking.request(CartListAPI()).then(
+        (data) {
+          final response = data['data'];
+          final cart = Cart.fromMap(response);
+          store.dispatch(OnUpdateCartAction(cart));
+          action.completer.complete();
         },
       ).catchError((err) {
         action.completer.completeError(err.toString());

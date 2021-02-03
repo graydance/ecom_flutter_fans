@@ -252,42 +252,27 @@ class PayAPI extends API {
   @override
   String get path => '/user/good/pay';
 }
-// var version = '';
 
-// var dio = Dio(
-//   BaseOptions(
-//     connectTimeout: 30000,
-//     receiveTimeout: 30000,
-//     headers: getAuthorizationHeader(),
-//   ),
-// )..interceptors.addAll([
-//     ErrorInterceptor(),
-//     LogInterceptor(
-//       requestBody: true,
-//       responseHeader: false,
-//       responseBody: true,
-//     ),
-//   ]);
+class AddCartAPI extends API {
+  final OrderParameters params;
 
-// Map<String, dynamic> getAuthorizationHeader() {
-//   var headers;
-//   var token = AuthStorage.getToken();
-//   if (token != null && token.isNotEmpty) {
-//     headers = {
-//       'x-token': token,
-//     };
-//   }
-//   return headers;
-// }
+  AddCartAPI({@required this.params});
 
-// void setApiIO(io) {
-//   dio = io;
-// }
+  @override
+  Map<String, dynamic> get parameters => {
+        'idolGoodsId': params.idolGoodsId,
+        'skuSpecIds': params.skuSpecIds,
+        'number': params.number,
+      };
 
-// Future<Map<String, dynamic>> api(path, data) async {
-//   Response rsp = await dio.post('$apiEntry$path', data: data);
-//   if (rsp.data['code'] == 0) {
-//     return rsp.data;
-//   }
-//   throw APIException.fromResponse(rsp.data);
-// }
+  @override
+  String get path => '/user/good/add_cart';
+}
+
+class CartListAPI extends API {
+  @override
+  Map<String, dynamic> get parameters => {};
+
+  @override
+  String get path => '/user/good/cart_list';
+}

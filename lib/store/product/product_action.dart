@@ -156,3 +156,22 @@ class PayAction {
 
   PayAction(this.orderId, this.payName, this.completer);
 }
+
+class AddCartAction {
+  final OrderParameters parameters;
+  final Completer completer;
+
+  AddCartAction(this.parameters, this.completer);
+}
+
+class FetchCartListAction {
+  final Completer completer;
+
+  FetchCartListAction(this.completer);
+}
+
+class OnUpdateCartAction {
+  final Cart cart;
+
+  OnUpdateCartAction(this.cart);
+}
