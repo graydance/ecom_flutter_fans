@@ -115,6 +115,7 @@ Middleware<AppState> _createLogin() {
           .then(
         (data) {
           var user = User.fromMap(data['data']);
+          store.dispatch(LocalUpdateUserAction(user));
           store.dispatch(OnAuthenticatedAction(user));
           Keys.navigatorKey.currentState.pushReplacementNamed(Routes.interests);
         },
@@ -134,6 +135,7 @@ Middleware<AppState> _createSignup() {
           .then(
         (data) {
           var user = User.fromMap(data['data']);
+          store.dispatch(LocalUpdateUserAction(user));
           store.dispatch(OnAuthenticatedAction(user));
           Keys.navigatorKey.currentState.pushReplacementNamed(Routes.interests);
         },
