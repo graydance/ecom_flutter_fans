@@ -44,8 +44,9 @@ class _CartScreenState extends State<CartScreen> {
     final sum =
         _itemQuantities.values.reduce((value, element) => value + element);
     setState(() {
-      _subtotal = (sum / 100.0).toStringAsFixed(2);
-      _total = ((sum + viewModel.cart.taxes) / 100.0).toStringAsFixed(2);
+      _subtotal = viewModel.currency + (sum / 100.0).toStringAsFixed(2);
+      _total = viewModel.currency +
+          ((sum + viewModel.cart.taxes) / 100.0).toStringAsFixed(2);
     });
 
     List<OrderSku> list = List.from(viewModel.cart.list);
@@ -57,15 +58,15 @@ class _CartScreenState extends State<CartScreen> {
 
     final completer = Completer();
     _debouncing.debounce(() {
-      // final action = UpdateCartAction(
-      //     OrderParameter(
-      //         idolGoodsId: item.idolGoodsId,
-      //         skuSpecIds: item.skuSpecIds,
-      //         number: quantity),
-      //     completer);
-      // StoreProvider.of<AppState>(context).dispatch(action);
-      Future.delayed(Duration(seconds: 1))
-          .then((value) => completer.complete());
+      final action = UpdateCartAction(
+          OrderParameter(
+              idolGoodsId: item.idolGoodsId,
+              skuSpecIds: item.skuSpecIds,
+              number: quantity),
+          completer);
+      StoreProvider.of<AppState>(context).dispatch(action);
+      // Future.delayed(Duration(seconds: 1))
+      //     .then((value) => completer.complete());
     });
     await completer.future;
   }
@@ -118,28 +119,30 @@ class _CartScreenState extends State<CartScreen> {
         appBar: AppBar(
           title: Text(viewModel.title),
           elevation: 0,
-          actions: [
-            Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: TextButton(
-                onPressed: () {
-                  setState(() {
-                    _controller.isSelecting = !_controller.isSelecting;
-                  });
-                },
-                child: Text(
-                  _controller.isSelecting ? 'Done' : 'Manage',
-                  style: TextStyle(
-                    color: AppTheme.colorED8514,
-                    fontSize: 12,
+          actions: viewModel.cart.list.isEmpty
+              ? []
+              : [
+                  Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: TextButton(
+                      onPressed: () {
+                        setState(() {
+                          _controller.isSelecting = !_controller.isSelecting;
+                        });
+                      },
+                      child: Text(
+                        _controller.isSelecting ? 'Done' : 'Manage',
+                        style: TextStyle(
+                          color: AppTheme.colorED8514,
+                          fontSize: 12,
+                        ),
+                      ),
+                      style: TextButton.styleFrom(
+                        side: BorderSide(color: AppTheme.colorED8514),
+                      ),
+                    ),
                   ),
-                ),
-                style: TextButton.styleFrom(
-                  side: BorderSide(color: AppTheme.colorED8514),
-                ),
-              ),
-            ),
-          ],
+                ],
         ),
         body: Container(
           padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -151,15 +154,15 @@ class _CartScreenState extends State<CartScreen> {
 
               final Cart cart = await completer.future;
               setState(() {
-                _subtotal = cart.subtotalStr;
-                _total = cart.totalStr;
+                _subtotal = viewModel.currency + cart.subtotalStr;
+                _total = viewModel.currency + cart.totalStr;
               });
             },
             firstRefresh: true,
             firstRefreshWidget: Center(
               child: CircularProgressIndicator(),
             ),
-            emptyWidget: viewModel.cart.list.isEmpty ? EmptyView() : null,
+            emptyWidget: viewModel.cart.list.isEmpty ? CartEmptyView() : null,
             child: SingleChildScrollView(
               child: Column(
                 children: [
@@ -189,6 +192,7 @@ class _CartScreenState extends State<CartScreen> {
                             ),
                             Expanded(
                               child: CartItemTile(
+                                currency: viewModel.currency,
                                 item: item,
                                 onQuantityChanged: (quantity, item) async {
                                   await _onQuantityChanged(
@@ -203,6 +207,7 @@ class _CartScreenState extends State<CartScreen> {
                         );
                       }
                       return CartItemTile(
+                        currency: viewModel.currency,
                         item: item,
                         onQuantityChanged: (quantity, item) async {
                           await _onQuantityChanged(
@@ -231,7 +236,7 @@ class _CartScreenState extends State<CartScreen> {
               children: [
                 if (viewModel.cart.list.isNotEmpty && !_controller.isSelecting)
                   _buildSummary(_subtotal, viewModel.cart.shipping,
-                      viewModel.cart.taxesStr, _total),
+                      viewModel.currency + viewModel.cart.taxesStr, _total),
                 if (_controller.isSelecting)
                   EditingToolBar(
                     isSelectAll: _controller.isSelectedAll,
@@ -248,23 +253,24 @@ class _CartScreenState extends State<CartScreen> {
                       await _onTapToolBarRemove();
                     },
                   ),
-                TextButton(
-                  onPressed: viewModel.cart.list.isNotEmpty
-                      ? () {
-                          viewModel.onCheckout(viewModel.cart.list);
-                        }
-                      : null,
-                  child: Text(
-                    'Check out',
-                    style: TextStyle(color: Colors.white),
+                if (viewModel.cart.list.isNotEmpty && !_controller.isSelecting)
+                  TextButton(
+                    onPressed: viewModel.cart.list.isNotEmpty
+                        ? () {
+                            viewModel.onCheckout(viewModel.cart.list);
+                          }
+                        : null,
+                    child: Text(
+                      'Check out',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    style: TextButton.styleFrom(
+                      minimumSize: Size(44, 44),
+                      backgroundColor: viewModel.cart.list.isNotEmpty
+                          ? AppTheme.colorED8514
+                          : AppTheme.colorED8514.withAlpha(80),
+                    ),
                   ),
-                  style: TextButton.styleFrom(
-                    minimumSize: Size(44, 44),
-                    backgroundColor: viewModel.cart.list.isNotEmpty
-                        ? AppTheme.colorED8514
-                        : AppTheme.colorED8514.withAlpha(80),
-                  ),
-                ),
               ],
             ),
           ),
@@ -317,12 +323,17 @@ class _CartScreenState extends State<CartScreen> {
 }
 
 class CartItemTile extends StatelessWidget {
+  final String currency;
   final OrderSku item;
   final Function(int quantity, OrderSku item) onQuantityChanged;
   final Function(OrderSku item) onTapRemove;
 
   const CartItemTile(
-      {Key key, this.item, this.onQuantityChanged, this.onTapRemove})
+      {Key key,
+      @required this.currency,
+      this.item,
+      this.onQuantityChanged,
+      this.onTapRemove})
       : super(key: key);
 
   @override
@@ -338,9 +349,7 @@ class CartItemTile extends StatelessWidget {
           child: FadeInImage(
             placeholder: R.image.kol_album_bg(),
             fit: BoxFit.cover,
-            // TODO item.skuImage
-            image: NetworkImage(
-                'https://images.unsplash.com/photo-1593642532400-2682810df593?ixid=MXwxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1050&q=80'),
+            image: NetworkImage(item.skuImage),
           ),
         ),
         SizedBox(
@@ -361,7 +370,7 @@ class CartItemTile extends StatelessWidget {
                 ),
               ),
               Text(
-                item.currentPriceStr,
+                '$currency${item.currentPriceStr}',
                 style: TextStyle(
                   color: AppTheme.color0F1015,
                   fontWeight: FontWeight.w600,
@@ -500,14 +509,61 @@ class _EditingToolBarState extends State<EditingToolBar> {
   }
 }
 
+class CartEmptyView extends StatelessWidget {
+  const CartEmptyView({Key key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              'Your cart is currently empty',
+              style: TextStyle(
+                fontSize: 16,
+                color: AppTheme.color0F1015,
+                fontWeight: FontWeight.w600,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(
+              height: 40,
+            ),
+            if (Keys.navigatorKey.currentState.canPop())
+              TextButton(
+                onPressed: () {
+                  Keys.navigatorKey.currentState.pop();
+                },
+                child: Text(
+                  'Show now',
+                  style: TextStyle(color: Colors.white),
+                ),
+                style: TextButton.styleFrom(
+                  minimumSize: Size(44, 44),
+                  backgroundColor: AppTheme.colorED8514,
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _ViewModel {
+  final String currency;
   final Cart cart;
   final String title;
   final Function(List<OrderSku>) onCheckout;
 
-  _ViewModel({this.cart, this.title, this.onCheckout});
+  _ViewModel({this.currency, this.cart, this.title, this.onCheckout});
 
   static _ViewModel fromStore(Store<AppState> store) {
+    final currency = store.state.auth.user.monetaryUnit;
     final cart = store.state.cart;
     final title =
         'My Cart' + (cart.list.isEmpty ? '' : '(${cart.list.length})');
@@ -538,7 +594,8 @@ class _ViewModel {
       store.dispatch(action);
     }
 
-    return _ViewModel(cart: cart, title: title, onCheckout: _onCheckout);
+    return _ViewModel(
+        currency: currency, cart: cart, title: title, onCheckout: _onCheckout);
   }
 }
 

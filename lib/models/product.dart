@@ -28,6 +28,8 @@ class Product {
   final String storeName;
   final int isOfficial;
   final List<Goods> recommend;
+  final String originalPriceStr;
+  final String currentPriceStr;
 
   const Product({
     this.id = '',
@@ -52,6 +54,8 @@ class Product {
     this.storeName = '',
     this.isOfficial = 0,
     this.recommend = const [],
+    this.originalPriceStr = '',
+    this.currentPriceStr = '',
   });
 
   Product copyWith({
@@ -77,6 +81,8 @@ class Product {
     String storeName,
     int isOfficial,
     List<Goods> recommend,
+    String originalPriceStr,
+    String currentPriceStr,
   }) {
     return Product(
       id: id ?? this.id,
@@ -101,6 +107,8 @@ class Product {
       storeName: storeName ?? this.storeName,
       isOfficial: isOfficial ?? this.isOfficial,
       recommend: recommend ?? this.recommend,
+      originalPriceStr: originalPriceStr ?? this.originalPriceStr,
+      currentPriceStr: currentPriceStr ?? this.currentPriceStr,
     );
   }
 
@@ -130,7 +138,9 @@ class Product {
         o.nickName == nickName &&
         o.storeName == storeName &&
         o.isOfficial == isOfficial &&
-        listEquals(o.recommend, recommend);
+        listEquals(o.recommend, recommend) &&
+        o.originalPriceStr == originalPriceStr &&
+        o.currentPriceStr == currentPriceStr;
   }
 
   @override
@@ -156,12 +166,14 @@ class Product {
         nickName.hashCode ^
         storeName.hashCode ^
         isOfficial.hashCode ^
-        recommend.hashCode;
+        recommend.hashCode ^
+        originalPriceStr.hashCode ^
+        currentPriceStr.hashCode;
   }
 
   @override
   String toString() {
-    return 'Product(id: $id, productName: $productName, originalPrice: $originalPrice, currentPrice: $currentPrice, earningPrice: $earningPrice, description: $description, carNumber: $carNumber, collectNumber: $collectNumber, status: $status, originalUrl: $originalUrl, specType: $specType, width: $width, height: $height, supplierId: $supplierId, goodsPictures: $goodsPictures, goodsSkus: $goodsSkus, idolId: $idolId, idolGoodsId: $idolGoodsId, nickName: $nickName, storeName: $storeName, isOfficial: $isOfficial, recommend: $recommend)';
+    return 'Product(id: $id, productName: $productName, originalPrice: $originalPrice, currentPrice: $currentPrice, earningPrice: $earningPrice, description: $description, carNumber: $carNumber, collectNumber: $collectNumber, status: $status, originalUrl: $originalUrl, specType: $specType, width: $width, height: $height, supplierId: $supplierId, goodsPictures: $goodsPictures, goodsSkus: $goodsSkus, idolId: $idolId, idolGoodsId: $idolGoodsId, nickName: $nickName, storeName: $storeName, isOfficial: $isOfficial, recommend: $recommend, originalPriceStr: $originalPriceStr, currentPriceStr: $currentPriceStr)';
   }
 
   Map<String, dynamic> toMap() {
@@ -188,6 +200,8 @@ class Product {
       'storeName': storeName,
       'isOfficial': isOfficial,
       'recommend': recommend?.map((x) => x?.toMap())?.toList(),
+      'originalPriceStr': originalPriceStr,
+      'currentPriceStr': currentPriceStr,
     };
   }
 
@@ -220,6 +234,8 @@ class Product {
       isOfficial: map['isOfficial'],
       recommend:
           List<Goods>.from(map['recommend']?.map((x) => Goods.fromMap(x))),
+      originalPriceStr: map['originalPriceStr'],
+      currentPriceStr: map['currentPriceStr'],
     );
   }
 

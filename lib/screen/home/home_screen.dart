@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:fans/app.dart';
+import 'package:fans/screen/components/cart_button.dart';
 import 'package:fans/screen/components/emtpy_view.dart';
 import 'package:fans/screen/components/product_feed_item.dart';
 import 'package:fans/screen/components/tag_button.dart';
@@ -53,44 +54,63 @@ class _HomeScreenState extends State<HomeScreen>
     return StoreConnector<AppState, _ViewModel>(
       converter: _ViewModel.fromStore,
       distinct: true,
-      builder: (ctx, model) => Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            child: SizedBox(
-              height: 24,
-              child: TabBar(
-                tabs: _tabValues.map((title) {
-                  return Text(
-                    title,
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  );
-                }).toList(),
-                isScrollable: true,
-                controller: _tabController,
-                indicatorColor: Color(0xffFEAC1B),
-                indicatorSize: TabBarIndicatorSize.label,
-                labelStyle: TextStyle(
-                  fontSize: 16.0,
-                ),
-                unselectedLabelColor: Color(0xff979aa9),
+      onInit: (store) => store.dispatch(FetchCartListAction(Completer())),
+      builder: (ctx, model) => Scaffold(
+        body: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            SizedBox(
+              height: 44,
+              child: Stack(
+                children: [
+                  Center(
+                    child: SizedBox(
+                      height: 24,
+                      child: TabBar(
+                        tabs: _tabValues.map((title) {
+                          return Text(
+                            title,
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          );
+                        }).toList(),
+                        isScrollable: true,
+                        controller: _tabController,
+                        indicatorColor: Color(0xffFEAC1B),
+                        indicatorSize: TabBarIndicatorSize.label,
+                        labelStyle: TextStyle(
+                          fontSize: 16.0,
+                        ),
+                        unselectedLabelColor: Color(0xff979aa9),
+                      ),
+                    ),
+                  ),
+                  Positioned(
+                    right: 10,
+                    child: SizedBox(
+                      height: 44,
+                      child: CartButton(
+                        count: model.cartCount,
+                      ),
+                    ),
+                  )
+                ],
               ),
             ),
-          ),
-          Expanded(
-            child: TabBarView(
-              controller: _tabController,
-              children: [
-                FeedListScreen(
-                  viewModel: model.followingViewModel,
-                ),
-                FeedListScreen(
-                  viewModel: model.foryouViewModel,
-                ),
-              ],
+            Expanded(
+              child: TabBarView(
+                controller: _tabController,
+                children: [
+                  FeedListScreen(
+                    viewModel: model.followingViewModel,
+                  ),
+                  FeedListScreen(
+                    viewModel: model.foryouViewModel,
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -239,7 +259,7 @@ class RecommendListBar extends StatelessWidget {
             ),
           ),
           Container(
-            height: 210,
+            height: 160,
             child: ListView.builder(
               padding: const EdgeInsets.symmetric(horizontal: 12),
               scrollDirection: Axis.horizontal,
@@ -363,6 +383,7 @@ class _ProductItemState extends State<ProductItem> {
           ],
         ),
         ProductFeedItem(
+          currency: viewModel.currency,
           model: viewModel.model,
           onTap: viewModel.onTapProduct,
         ),
@@ -541,16 +562,19 @@ class _AdItemState extends State<AdItem> {
 }
 
 class _ViewModel {
+  final int cartCount;
   final _FeedViewModel followingViewModel;
   final _FeedViewModel foryouViewModel;
 
   _ViewModel({
+    this.cartCount = 0,
     this.followingViewModel,
     this.foryouViewModel,
   });
 
   static _ViewModel fromStore(Store<AppState> store) {
     return _ViewModel(
+      cartCount: store.state.cart.list.length,
       followingViewModel: _FeedViewModel.fromStore(store, 0),
       foryouViewModel: _FeedViewModel.fromStore(store, 1),
     );
@@ -636,13 +660,18 @@ class _RecommendItemViewModel {
 }
 
 class _FeedItemViewModel {
+  final String currency;
   final Feed model;
   final VoidCallback onTapAvatar;
   final Function(String) onTapTag;
   final Function(String) onTapProduct;
 
   _FeedItemViewModel(
-      {this.model, this.onTapAvatar, this.onTapTag, this.onTapProduct});
+      {this.currency,
+      this.model,
+      this.onTapAvatar,
+      this.onTapTag,
+      this.onTapProduct});
 
   static _FeedItemViewModel fromStore(Store<AppState> store, Feed item) {
     _onTapAvatar() {
@@ -661,6 +690,7 @@ class _FeedItemViewModel {
     }
 
     return _FeedItemViewModel(
+        currency: store.state.auth.user.monetaryUnit,
         model: item,
         onTapAvatar: _onTapAvatar,
         onTapTag: _onTapTag,

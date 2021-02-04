@@ -6,15 +6,16 @@ import 'package:intl/intl.dart';
 import 'package:fans/models/models.dart';
 import 'package:fans/r.g.dart';
 import 'package:fans/screen/components/meida_carousel_widget.dart';
-import 'package:fans/storage/auth_storage.dart';
 
 class ProductFeedItem extends StatelessWidget {
+  final String currency;
   final Feed model;
   final Function(String) onTap;
 
   const ProductFeedItem({
     Key key,
-    this.model,
+    @required this.currency,
+    @required this.model,
     this.onTap,
   }) : super(key: key);
 
@@ -135,7 +136,7 @@ class ProductFeedItem extends StatelessWidget {
             textBaseline: TextBaseline.ideographic,
             children: [
               Text(
-                '${AuthStorage.getUser().monetaryUnit}${model.currentPriceStr}',
+                '$currency${model.currentPriceStr}',
                 style: TextStyle(
                     color: Color(0xff0F1015),
                     fontSize: 18,
@@ -145,7 +146,7 @@ class ProductFeedItem extends StatelessWidget {
                 width: 8,
               ),
               Text(
-                '${AuthStorage.getUser().monetaryUnit}${model.originalPriceStr}',
+                '$currency${model.originalPriceStr}',
                 style: TextStyle(
                     color: AppTheme.color979AA9,
                     fontSize: 12,

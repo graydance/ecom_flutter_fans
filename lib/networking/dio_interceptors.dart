@@ -16,8 +16,8 @@ class ErrorInterceptor extends Interceptor {
 
 class TokenInterceptor extends Interceptor {
   @override
-  Future onRequest(RequestOptions options) {
-    final token = AuthStorage.getToken();
+  Future onRequest(RequestOptions options) async {
+    var token = await AuthStorage.getToken();
     if (token != null && token.isNotEmpty) {
       options.headers.addAll({
         'x-token': token,

@@ -31,6 +31,7 @@ class AppState {
   factory AppState.init() => AppState();
 
   AppState copyWith({
+    User user,
     VerifyEmailState verifyEmail,
     LoginOrSignupState auth,
     InterestListState interests,

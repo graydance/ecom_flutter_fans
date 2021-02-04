@@ -226,7 +226,7 @@ class OrderParameter {
   final String idolGoodsId;
   final int number;
 
-  OrderParameter({this.skuSpecIds, this.idolGoodsId, this.number});
+  OrderParameter({this.skuSpecIds, this.idolGoodsId, this.number = 0});
 
   Map<String, dynamic> toMap() {
     return {

@@ -106,8 +106,10 @@ class _SearchByTagScreenState extends State<SearchByTagScreen> {
                       color: Colors.white,
                       child: TagProductItem(
                         key: ValueKey(model.list[i].id),
+                        currency: model.currency,
                         model: model.list[i],
                         onTapTag: model.onTapTag,
+                        onTapProduct: model.onTapProduct,
                       ),
                     ),
                   );
@@ -123,9 +125,14 @@ class _SearchByTagScreenState extends State<SearchByTagScreen> {
 }
 
 class TagProductItem extends StatelessWidget {
+  final String currency;
   final Feed model;
   final Function(String) onTapTag;
-  const TagProductItem({Key key, this.model, this.onTapTag}) : super(key: key);
+  final Function(String) onTapProduct;
+
+  const TagProductItem(
+      {Key key, this.currency, this.model, this.onTapTag, this.onTapProduct})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -187,7 +194,11 @@ class TagProductItem extends StatelessWidget {
               ),
             ],
           ),
-          ProductFeedItem(model: model),
+          ProductFeedItem(
+            currency: currency,
+            model: model,
+            onTap: onTapProduct,
+          ),
         ],
       ),
     );
@@ -195,15 +206,17 @@ class TagProductItem extends StatelessWidget {
 }
 
 class _ViewModel {
+  final String currency;
   final Feed feed;
   final String tag;
   final int currentPage;
   final int totalPage;
   final List<Feed> list;
   final Function(String) onTapTag;
+  final Function(String) onTapProduct;
 
-  _ViewModel(this.feed, this.tag, this.currentPage, this.totalPage, this.list,
-      this.onTapTag);
+  _ViewModel(this.currency, this.feed, this.tag, this.currentPage,
+      this.totalPage, this.list, this.onTapTag, this.onTapProduct);
 
   static _ViewModel fromStore(Store<AppState> store, String pageId) {
     final state = store.state.tagSearch.allSearch[pageId];
@@ -212,7 +225,19 @@ class _ViewModel {
       Keys.navigatorKey.currentState.pushNamed(Routes.searchByTag);
     }
 
-    return _ViewModel(state.feed, state.tag, state.currentPage, state.totalPage,
-        state.list, _onTapTag);
+    _onTapProduct(String goodsId) {
+      store.dispatch(ShowProductDetailAction(goodsId));
+      Keys.navigatorKey.currentState.pushNamed(Routes.productDetail);
+    }
+
+    return _ViewModel(
+        store.state.auth.user.monetaryUnit,
+        state.feed,
+        state.tag,
+        state.currentPage,
+        state.totalPage,
+        state.list,
+        _onTapTag,
+        _onTapProduct);
   }
 }

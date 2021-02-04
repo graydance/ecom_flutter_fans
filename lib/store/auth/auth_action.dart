@@ -1,9 +1,32 @@
+import 'dart:async';
+
 import 'package:fans/models/models.dart';
+
+class VerifyAuthenticationState {}
 
 class LocalVerifyEmailAction {
   final String email;
 
   LocalVerifyEmailAction(this.email);
+}
+
+class OnAuthenticatedAction {
+  final User user;
+
+  OnAuthenticatedAction(this.user);
+}
+
+class LocalUpdateUserAction {
+  final User user;
+
+  LocalUpdateUserAction(this.user);
+}
+
+class UpdateUserAction {
+  final User user;
+  final Completer completer;
+
+  UpdateUserAction(this.user, this.completer);
 }
 
 class VerifyEmailAction {
@@ -39,12 +62,6 @@ class LoginAction {
   final String password;
 
   LoginAction(this.email, this.password);
-}
-
-class LoginOrSignupSuccessAction {
-  final User user;
-
-  LoginOrSignupSuccessAction(this.user);
 }
 
 class LoginOrSignupFailureAction {

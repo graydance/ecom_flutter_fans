@@ -22,7 +22,7 @@ extension HttpMethodExt on HttpMethod {
 abstract class TargetType {
   String get path;
   HttpMethod get method;
-  dynamic get parameters;
+  Map<String, dynamic> get parameters;
 }
 
 class API extends TargetType {
@@ -32,7 +32,7 @@ class API extends TargetType {
   }
 
   @override
-  dynamic get parameters => Map();
+  Map<String, dynamic> get parameters => Map();
 
   @override
   String get path => throw UnimplementedError();
@@ -291,7 +291,7 @@ class UpdateCartAPI extends API {
       };
 
   @override
-  String get path => '/user/good/update_cart';
+  String get path => '/user/good/edit_cart';
 }
 
 class DeleteCartAPI extends API {
@@ -300,7 +300,8 @@ class DeleteCartAPI extends API {
   DeleteCartAPI({@required this.params});
 
   @override
-  get parameters => params.map((e) => e.toMap()).toList();
+  Map<String, dynamic> get parameters =>
+      {'delArr': params.map((e) => e.toMap()).toList()};
 
   @override
   String get path => '/user/good/del_cart';
