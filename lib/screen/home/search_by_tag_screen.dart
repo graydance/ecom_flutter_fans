@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:fans/app.dart';
 import 'package:fans/screen/components/emtpy_view.dart';
 import 'package:fans/screen/components/product_feed_item.dart';
 import 'package:fans/screen/components/verified_username_view.dart';
@@ -23,6 +24,7 @@ class SearchByTagScreen extends StatefulWidget {
 
 class _SearchByTagScreenState extends State<SearchByTagScreen> {
   final _refreshController = EasyRefreshController();
+  String _pageId;
 
   @override
   void dispose() {
@@ -33,7 +35,8 @@ class _SearchByTagScreenState extends State<SearchByTagScreen> {
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _ViewModel>(
-      converter: _ViewModel.fromStore,
+      onInit: (store) => _pageId = store.state.tagSearch.current,
+      converter: (store) => _ViewModel.fromStore(store, _pageId),
       builder: (ctx, model) => Scaffold(
         appBar: AppBar(
           title: VerifiedUserNameView(
@@ -103,7 +106,10 @@ class _SearchByTagScreenState extends State<SearchByTagScreen> {
                       color: Colors.white,
                       child: TagProductItem(
                         key: ValueKey(model.list[i].id),
+                        currency: model.currency,
                         model: model.list[i],
+                        onTapTag: model.onTapTag,
+                        onTapProduct: model.onTapProduct,
                       ),
                     ),
                   );
@@ -119,8 +125,14 @@ class _SearchByTagScreenState extends State<SearchByTagScreen> {
 }
 
 class TagProductItem extends StatelessWidget {
+  final String currency;
   final Feed model;
-  const TagProductItem({Key key, this.model}) : super(key: key);
+  final Function(String) onTapTag;
+  final Function(String) onTapProduct;
+
+  const TagProductItem(
+      {Key key, this.currency, this.model, this.onTapTag, this.onTapProduct})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -161,7 +173,9 @@ class TagProductItem extends StatelessWidget {
                                 style: TextStyle(
                                   fontSize: 14,
                                 ),
-                                onPressed: () {},
+                                onPressed: () {
+                                  onTapTag(e);
+                                },
                               ),
                             )
                             .toList(),
@@ -180,7 +194,11 @@ class TagProductItem extends StatelessWidget {
               ),
             ],
           ),
-          ProductFeedItem(model: model),
+          ProductFeedItem(
+            currency: currency,
+            model: model,
+            onTap: onTapProduct,
+          ),
         ],
       ),
     );
@@ -188,20 +206,38 @@ class TagProductItem extends StatelessWidget {
 }
 
 class _ViewModel {
+  final String currency;
   final Feed feed;
   final String tag;
   final int currentPage;
   final int totalPage;
   final List<Feed> list;
+  final Function(String) onTapTag;
+  final Function(String) onTapProduct;
 
-  _ViewModel(this.feed, this.tag, this.currentPage, this.totalPage, this.list);
+  _ViewModel(this.currency, this.feed, this.tag, this.currentPage,
+      this.totalPage, this.list, this.onTapTag, this.onTapProduct);
 
-  static _ViewModel fromStore(Store<AppState> store) {
+  static _ViewModel fromStore(Store<AppState> store, String pageId) {
+    final state = store.state.tagSearch.allSearch[pageId];
+    _onTapTag(String tag) {
+      store.dispatch(ShowSearchByTagAction(feed: state.feed, tag: tag));
+      Keys.navigatorKey.currentState.pushNamed(Routes.searchByTag);
+    }
+
+    _onTapProduct(String goodsId) {
+      store.dispatch(ShowProductDetailAction(goodsId));
+      Keys.navigatorKey.currentState.pushNamed(Routes.productDetail);
+    }
+
     return _ViewModel(
-        store.state.tagSearch.feed,
-        store.state.tagSearch.tag,
-        store.state.tagSearch.currentPage,
-        store.state.tagSearch.totalPage,
-        store.state.tagSearch.list);
+        store.state.auth.user.monetaryUnit,
+        state.feed,
+        state.tag,
+        state.currentPage,
+        state.totalPage,
+        state.list,
+        _onTapTag,
+        _onTapProduct);
   }
 }

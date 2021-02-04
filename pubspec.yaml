@@ -8,6 +8,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_redux: ^0.7.0
+  redux: ^4.0.0+3
   dio: ^3.0.7
   redux_logging: ^0.4.0
   logging: ^0.11.4
@@ -18,6 +19,8 @@ dependencies:
   flutter_easyrefresh: ^2.1.8
   flutter_easyloading: ^2.2.2
   intl: ^0.16.1
+  modal_bottom_sheet: ^1.0.0+1
+  throttling: ^0.9.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -54,6 +57,10 @@ flutter:
   - assets/images/kol/kol_tab_photos.png
   - assets/images/kol/kol_tab_photos_unselected.png
   - assets/images/logo.png
+  - assets/images/product/icon_payment.png
+  - assets/images/product/icon_shipping.png
+  - assets/images/product/payment_success.png
+  - assets/images/product/product_search.png
   - assets/images/tabbar/tabbar_home_highlight.png
   - assets/images/tabbar/tabbar_home_normal.png
   - assets/images/tabbar/tabbar_inbox_hightlight.png

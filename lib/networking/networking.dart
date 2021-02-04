@@ -13,6 +13,7 @@ class Networking {
     ),
   )..interceptors.addAll([
       ErrorInterceptor(),
+      TokenInterceptor(),
       LogInterceptor(
         requestBody: true,
         responseHeader: false,
@@ -22,9 +23,6 @@ class Networking {
 
   static Future<Map<String, dynamic>> request<T extends TargetType>(
       T targetType) async {
-    _dio.options.method = targetType.method.value;
-    _dio.options.headers.addAll(targetType.headers);
-
     Response rsp = (targetType.method == HttpMethod.POST)
         ? await _dio.post(targetType.path, data: targetType.parameters)
         : await _dio.get(targetType.path,

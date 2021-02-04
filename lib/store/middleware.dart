@@ -1,7 +1,11 @@
+import 'dart:async';
+
 import 'package:fans/models/feed.dart';
+import 'package:fans/models/product.dart';
 import 'package:fans/networking/api_exceptions.dart';
 import 'package:fans/networking/networking.dart';
 import 'package:fans/storage/auth_storage.dart';
+import 'package:flutter/foundation.dart';
 import 'package:redux/redux.dart';
 
 import 'package:fans/networking/api.dart';
@@ -10,6 +14,8 @@ import 'package:fans/models/models.dart';
 import 'package:fans/store/actions.dart';
 
 List<Middleware<AppState>> createStoreMiddleware() {
+  final verifyAuthState = _verifyAuthState();
+
   final verifyEmail = _createVerifyEmail();
   final login = _createLogin();
   final sendEmail = _createSendEmail();
@@ -21,8 +27,17 @@ List<Middleware<AppState>> createStoreMiddleware() {
   final fetchShopDetail = _createShopDetail();
   final fetchRecommends = _createFetchRecommends();
   final fetchGoods = _createFetchGoods();
+  final fetchProductDetail = _createProductDetail();
+  final preOrder = _createPreOrder();
+  final order = _createOrder();
+  final payment = _createPayment();
+  final addCart = _createAddCart();
+  final fetchCartList = _createFetchCartList();
+  final updateCart = _createUpdateCart();
+  final deleteCart = _createDeleteCart();
 
   return [
+    TypedMiddleware<AppState, VerifyAuthenticationState>(verifyAuthState),
     TypedMiddleware<AppState, VerifyEmailAction>(verifyEmail),
     TypedMiddleware<AppState, LoginAction>(login),
     TypedMiddleware<AppState, SignupAction>(signup),
@@ -34,7 +49,31 @@ List<Middleware<AppState>> createStoreMiddleware() {
     TypedMiddleware<AppState, SearchByTagAction>(searchByTag),
     TypedMiddleware<AppState, FetchShopDetailAction>(fetchShopDetail),
     TypedMiddleware<AppState, FetchGoodsAction>(fetchGoods),
+    TypedMiddleware<AppState, FetchProductDetailAction>(fetchProductDetail),
+    TypedMiddleware<AppState, PreOrderAction>(preOrder),
+    TypedMiddleware<AppState, OrderAction>(order),
+    TypedMiddleware<AppState, PayAction>(payment),
+    TypedMiddleware<AppState, AddCartAction>(addCart),
+    TypedMiddleware<AppState, FetchCartListAction>(fetchCartList),
+    TypedMiddleware<AppState, UpdateCartAction>(updateCart),
+    TypedMiddleware<AppState, DeleteCartAction>(deleteCart),
   ];
+}
+
+Middleware<AppState> _verifyAuthState() {
+  return (Store<AppState> store, action, NextDispatcher next) {
+    next(action);
+
+    AuthStorage.getUser().then((user) {
+      if (user.token.isNotEmpty) {
+        store.dispatch(LocalUpdateUserAction(user));
+        Keys.navigatorKey.currentState.pushReplacementNamed(Routes.home);
+      } else {
+        store.dispatch(LocalUpdateUserAction(User()));
+        Keys.navigatorKey.currentState.pushReplacementNamed(Routes.welcome);
+      }
+    });
+  };
 }
 
 Middleware<AppState> _createVerifyEmail() {
@@ -76,9 +115,7 @@ Middleware<AppState> _createLogin() {
           .then(
         (data) {
           var user = User.fromMap(data['data']);
-          AuthStorage.setToken(user.token);
-          AuthStorage.setUser(user);
-          store.dispatch(LoginOrSignupSuccessAction(user));
+          store.dispatch(OnAuthenticatedAction(user));
           Keys.navigatorKey.currentState.pushReplacementNamed(Routes.interests);
         },
       ).catchError((err) =>
@@ -97,9 +134,7 @@ Middleware<AppState> _createSignup() {
           .then(
         (data) {
           var user = User.fromMap(data['data']);
-          AuthStorage.setToken(user.token);
-          AuthStorage.setUser(user);
-          store.dispatch(LoginOrSignupSuccessAction(user));
+          store.dispatch(OnAuthenticatedAction(user));
           Keys.navigatorKey.currentState.pushReplacementNamed(Routes.interests);
         },
       ).catchError((err) =>
@@ -216,8 +251,8 @@ Middleware<AppState> _createSearchByTag() {
 
           bool isNoMore = feeds.isEmpty || currentPage == totalPage;
           action.completer?.complete(isNoMore);
-          store.dispatch(
-              SearchByTagSuccessAction(totalPage, currentPage, feeds));
+          store.dispatch(SearchByTagSuccessAction(
+              action.userId, action.tag, totalPage, currentPage, feeds));
         },
       ).catchError((err) {
         action.completer?.completeError(err?.toString() ?? '');
@@ -266,6 +301,156 @@ Middleware<AppState> _createFetchGoods() {
               totalPage: totalPage,
               type: action.type,
               list: models));
+        },
+      ).catchError((err) {
+        action.completer.completeError(err.toString());
+      });
+    }
+    next(action);
+  };
+}
+
+Middleware<AppState> _createProductDetail() {
+  return (Store<AppState> store, action, NextDispatcher next) {
+    if (action is FetchProductDetailAction) {
+      Networking.request(ProductDetailAPI(
+        idolGoodsId: action.idolGoodsId,
+      )).then(
+        (data) {
+          var response = data['data'];
+          var model = Product.fromMap(response);
+          action.completer.complete();
+          store.dispatch(FetchProductDetailSuccessAction(model));
+        },
+      ).catchError((err) {
+        action.completer.completeError(err);
+      });
+    }
+    next(action);
+  };
+}
+
+Middleware<AppState> _createPreOrder() {
+  return (Store<AppState> store, action, NextDispatcher next) {
+    if (action is PreOrderAction) {
+      Networking.request(PreOrderAPI(
+        buyGoods: action.buyGoods,
+      )).then(
+        (data) {
+          var response = data['data'];
+          final model = OrderDetail.fromMap(response);
+          action.completer.complete(model);
+          store.dispatch(PreOrderSuccessAction(orderDetail: model));
+        },
+      ).catchError((err) {
+        action.completer.completeError(err.toString());
+      });
+    }
+    next(action);
+  };
+}
+
+Middleware<AppState> _createOrder() {
+  return (Store<AppState> store, action, NextDispatcher next) {
+    if (action is OrderAction) {
+      Networking.request(OrderAPI(
+        action.buyGoods,
+        action.shippingAddressId,
+        action.billingAddressId,
+      )).then(
+        (data) {
+          final model = data['data'];
+          action.completer.complete(model);
+        },
+      ).catchError((err) {
+        action.completer.completeError(err.toString());
+      });
+    }
+    next(action);
+  };
+}
+
+Middleware<AppState> _createPayment() {
+  return (Store<AppState> store, action, NextDispatcher next) {
+    if (action is PayAction) {
+      Networking.request(PayAPI(
+        orderId: action.orderId,
+        payName: action.payName,
+      )).then(
+        (data) {
+          final response = data['data'];
+          action.completer.complete(response['payInfo']);
+        },
+      ).catchError((err) {
+        action.completer.completeError(err.toString());
+      });
+    }
+    next(action);
+  };
+}
+
+Middleware<AppState> _createAddCart() {
+  return (Store<AppState> store, action, NextDispatcher next) {
+    if (action is AddCartAction) {
+      Networking.request(AddCartAPI(params: action.parameter)).then(
+        (data) {
+          store.dispatch(FetchCartListAction(Completer()));
+          action.completer.complete();
+        },
+      ).catchError((err) {
+        action.completer.completeError(err.toString());
+      });
+    }
+    next(action);
+  };
+}
+
+Middleware<AppState> _createFetchCartList() {
+  return (Store<AppState> store, action, NextDispatcher next) {
+    if (action is FetchCartListAction) {
+      Networking.request(CartListAPI()).then(
+        (data) {
+          final response = data['data'];
+          final cart = Cart.fromMap(response);
+          action.completer.complete(cart);
+          store.dispatch(OnUpdateCartAction(cart));
+        },
+      ).catchError((err) {
+        action.completer.completeError(err.toString());
+      });
+    }
+    next(action);
+  };
+}
+
+Middleware<AppState> _createUpdateCart() {
+  return (Store<AppState> store, action, NextDispatcher next) {
+    if (action is UpdateCartAction) {
+      debugPrint('Call UpdateCartAction');
+      Networking.request(UpdateCartAPI(params: action.parameter)).then(
+        (data) {
+          final response = data['data'];
+          final cart = Cart.fromMap(response);
+          action.completer.complete();
+          store.dispatch(OnUpdateCartAction(cart));
+        },
+      ).catchError((err) {
+        action.completer.completeError(err.toString());
+      });
+    }
+    next(action);
+  };
+}
+
+Middleware<AppState> _createDeleteCart() {
+  return (Store<AppState> store, action, NextDispatcher next) {
+    if (action is DeleteCartAction) {
+      Networking.request(DeleteCartAPI(params: action.parameters)).then(
+        (data) {
+          final response = data['data'];
+          final cart = Cart.fromMap(response);
+          action.completer.complete(cart);
+          store.dispatch(OnUpdateCartAction(cart));
         },
       ).catchError((err) {
         action.completer.completeError(err.toString());

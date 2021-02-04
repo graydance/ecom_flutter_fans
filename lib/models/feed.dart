@@ -3,7 +3,11 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 
 class Feed {
+  /// 商品id
   final String id;
+  final String idolGoodsId;
+
+  /// 用户id
   final String userId;
   final int responseType;
   final String portrait;
@@ -31,6 +35,7 @@ class Feed {
 
   const Feed({
     this.id = '',
+    this.idolGoodsId = '',
     this.userId = '',
     this.responseType = 0,
     this.portrait = '',
@@ -59,6 +64,7 @@ class Feed {
 
   Feed copyWith({
     String id,
+    String idolGoodsId,
     String userId,
     int responseType,
     String portrait,
@@ -86,6 +92,7 @@ class Feed {
   }) {
     return Feed(
         id: id ?? this.id,
+        idolGoodsId: idolGoodsId ?? this.idolGoodsId,
         userId: userId ?? this.userId,
         responseType: responseType ?? this.responseType,
         portrait: portrait ?? this.portrait,
@@ -115,6 +122,7 @@ class Feed {
   Map<String, dynamic> toMap() {
     return {
       'id': id,
+      'idolGoodsId': idolGoodsId,
       'userId': userId,
       'responseType': responseType,
       'portrait': portrait,
@@ -147,6 +155,7 @@ class Feed {
 
     return Feed(
       id: map['id'] ?? '',
+      idolGoodsId: map['idolGoodsId'] ?? '',
       userId: map['userId'] ?? '',
       responseType: map['responseType'] ?? 0,
       portrait: map['portrait'] ?? '',
@@ -184,6 +193,7 @@ class Feed {
 
     return o is Feed &&
         o.id == id &&
+        o.idolGoodsId == idolGoodsId &&
         o.userId == userId &&
         o.responseType == responseType &&
         o.portrait == portrait &&
@@ -213,6 +223,7 @@ class Feed {
   @override
   int get hashCode {
     return id.hashCode ^
+        idolGoodsId.hashCode ^
         userId.hashCode ^
         responseType.hashCode ^
         portrait.hashCode ^
@@ -241,6 +252,6 @@ class Feed {
 
   @override
   String toString() {
-    return 'Feed(id: $id, userId: $userId, responseType: $responseType, portrait: $portrait, nickName: $nickName, aboutMe: $aboutMe, followStatus: $followStatus, productName: $productName, originalPrice: $originalPrice, originalPriceStr: $originalPriceStr, currentPrice: $currentPrice, currentPriceStr: $currentPriceStr, goodsDescription: $goodsDescription, discount: $discount, shoppingCar: $shoppingCar, collectNum: $collectNum, followNum: $followNum, bioLink: $bioLink, tagNormal: $tagNormal, tagSelected: $tagSelected, goods: $goods, products: $products, followers: $followers, isOfficial: $isOfficial, userName: $userName)';
+    return 'Feed(id: $id, idolGoodsId: $idolGoodsId, userId: $userId, responseType: $responseType, portrait: $portrait, nickName: $nickName, aboutMe: $aboutMe, followStatus: $followStatus, productName: $productName, originalPrice: $originalPrice, originalPriceStr: $originalPriceStr, currentPrice: $currentPrice, currentPriceStr: $currentPriceStr, goodsDescription: $goodsDescription, discount: $discount, shoppingCar: $shoppingCar, collectNum: $collectNum, followNum: $followNum, bioLink: $bioLink, tagNormal: $tagNormal, tagSelected: $tagSelected, goods: $goods, products: $products, followers: $followers, isOfficial: $isOfficial, userName: $userName)';
   }
 }
