@@ -182,7 +182,7 @@ class _ViewModel {
       this.isLoading, this.error, this.email, this.onLogin, this.onCheck);
   static _ViewModel fromStore(Store<AppState> store) {
     _onLogin(String password) {
-      store.dispatch(LoginAction(store.state.verifyEmail.email, '123456'));
+      store.dispatch(LoginAction(store.state.verifyEmail.email, password));
     }
 
     _onCheck(String password) {
