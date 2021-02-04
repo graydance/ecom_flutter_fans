@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:fans/storage/auth_storage.dart';
 
 import 'api_exceptions.dart';
 
@@ -10,5 +11,18 @@ class ErrorInterceptor extends Interceptor {
     // 错误提示
     err.error = exception;
     return super.onError(err);
+  }
+}
+
+class TokenInterceptor extends Interceptor {
+  @override
+  Future onRequest(RequestOptions options) async {
+    var token = await AuthStorage.getToken();
+    if (token != null && token.isNotEmpty) {
+      options.headers.addAll({
+        'x-token': token,
+      });
+    }
+    return super.onRequest(options);
   }
 }

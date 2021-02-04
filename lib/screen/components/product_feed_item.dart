@@ -1,3 +1,4 @@
+import 'package:fans/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
@@ -5,15 +6,16 @@ import 'package:intl/intl.dart';
 import 'package:fans/models/models.dart';
 import 'package:fans/r.g.dart';
 import 'package:fans/screen/components/meida_carousel_widget.dart';
-import 'package:fans/storage/auth_storage.dart';
 
 class ProductFeedItem extends StatelessWidget {
+  final String currency;
   final Feed model;
-  final VoidCallback onTap;
+  final Function(String) onTap;
 
   const ProductFeedItem({
     Key key,
-    this.model,
+    @required this.currency,
+    @required this.model,
     this.onTap,
   }) : super(key: key);
 
@@ -34,17 +36,20 @@ class ProductFeedItem extends StatelessWidget {
             ),
           ),
         ),
-        SizedBox(
-          height: 300,
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(4.0),
-            child: Container(
-              color: Color(0xfff8f8f8),
-              child: Stack(
-                children: [
-                  GestureDetector(
-                    onTap: () => onTap,
-                    child: MediaCarouselWidget(
+        GestureDetector(
+          onTap: () {
+            debugPrint('GestureDetector ${model.idolGoodsId}');
+            if (onTap != null) onTap(model.id);
+          },
+          child: SizedBox(
+            height: 300,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(4.0),
+              child: Container(
+                color: Color(0xfff8f8f8),
+                child: Stack(
+                  children: [
+                    MediaCarouselWidget(
                       items: model.goods.map((url) {
                         return Image(
                           fit: BoxFit.cover,
@@ -52,73 +57,74 @@ class ProductFeedItem extends StatelessWidget {
                         );
                       }).toList(),
                     ),
-                  ),
-                  Positioned(
-                    top: 0,
-                    left: 0,
-                    child: Container(
-                      height: 20,
-                      width: 70,
-                      decoration: BoxDecoration(
-                        color: Color(0xffFEAC1B),
-                        borderRadius: BorderRadius.only(
-                          bottomRight: Radius.circular(50),
+                    Positioned(
+                      top: 0,
+                      left: 0,
+                      child: Container(
+                        height: 20,
+                        width: 70,
+                        decoration: BoxDecoration(
+                          color: Color(0xffFEAC1B),
+                          borderRadius: BorderRadius.only(
+                            bottomRight: Radius.circular(50),
+                          ),
                         ),
-                      ),
-                      child: Center(
-                        child: Text(
-                          '${model.discount} off',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
+                        child: Center(
+                          child: Text(
+                            '${model.discount} off',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                  Positioned(
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    height: 100,
-                    child: Image(
-                      image: R.image.product_mask_bg(),
-                      fit: BoxFit.fill,
+                    Positioned(
+                      bottom: 0,
+                      left: 0,
+                      right: 0,
+                      height: 100,
+                      child: Image(
+                        image: R.image.product_mask_bg(),
+                        fit: BoxFit.fill,
+                      ),
                     ),
-                  ),
-                  // 购物车和收藏
-                  Positioned(
-                    bottom: 8,
-                    right: 8,
-                    child: Column(
-                      children: [
-                        Column(
-                          children: [
-                            Image(image: R.image.add_cart()),
-                            Text(
-                              NumberFormat.compact().format(model.shoppingCar),
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 12),
-                            ),
-                          ],
-                        ),
-                        SizedBox(
-                          height: 12,
-                        ),
-                        Column(
-                          children: [
-                            Image(image: R.image.favorite()),
-                            Text(
-                              NumberFormat.compact().format(model.collectNum),
-                              style:
-                                  TextStyle(color: Colors.white, fontSize: 12),
-                            ),
-                          ],
-                        ),
-                      ],
+                    // 购物车和收藏
+                    Positioned(
+                      bottom: 8,
+                      right: 8,
+                      child: Column(
+                        children: [
+                          Column(
+                            children: [
+                              Image(image: R.image.add_cart()),
+                              Text(
+                                NumberFormat.compact()
+                                    .format(model.shoppingCar),
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 12),
+                              ),
+                            ],
+                          ),
+                          SizedBox(
+                            height: 12,
+                          ),
+                          Column(
+                            children: [
+                              Image(image: R.image.favorite()),
+                              Text(
+                                NumberFormat.compact().format(model.collectNum),
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 12),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
@@ -130,7 +136,7 @@ class ProductFeedItem extends StatelessWidget {
             textBaseline: TextBaseline.ideographic,
             children: [
               Text(
-                '${AuthStorage.getUser().monetaryUnit}${model.currentPriceStr}',
+                '$currency${model.currentPriceStr}',
                 style: TextStyle(
                     color: Color(0xff0F1015),
                     fontSize: 18,
@@ -140,9 +146,9 @@ class ProductFeedItem extends StatelessWidget {
                 width: 8,
               ),
               Text(
-                '${AuthStorage.getUser().monetaryUnit}${model.originalPriceStr}',
+                '$currency${model.originalPriceStr}',
                 style: TextStyle(
-                    color: Color(0xff979AA9),
+                    color: AppTheme.color979AA9,
                     fontSize: 12,
                     decoration: TextDecoration.lineThrough),
               ),

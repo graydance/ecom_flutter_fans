@@ -1,4 +1,7 @@
-import 'package:fans/storage/auth_storage.dart';
+import 'dart:convert';
+import 'dart:math';
+
+import 'package:fans/models/models.dart';
 import 'package:flutter/material.dart';
 
 enum HttpMethod { GET, POST }
@@ -18,7 +21,6 @@ extension HttpMethodExt on HttpMethod {
 
 abstract class TargetType {
   String get path;
-  Map<String, String> get headers;
   HttpMethod get method;
   Map<String, dynamic> get parameters;
 }
@@ -27,18 +29,6 @@ class API extends TargetType {
   @override
   HttpMethod get method {
     return HttpMethod.POST;
-  }
-
-  @override
-  Map<String, String> get headers {
-    var headers;
-    var token = AuthStorage.getToken();
-    if (token != null && token.isNotEmpty) {
-      headers = {
-        'x-token': token,
-      };
-    }
-    return headers ?? Map();
   }
 
   @override
@@ -157,53 +147,162 @@ class GoodsAPI extends API {
 }
 
 class ProductDetailAPI extends API {
-  final String goodsId;
+  final String idolGoodsId;
 
-  ProductDetailAPI({this.goodsId});
+  ProductDetailAPI({this.idolGoodsId});
 
   @override
-  Map<String, dynamic> get parameters => {'goodsId': goodsId};
+  Map<String, dynamic> get parameters => {'idolGoodsId': idolGoodsId};
 
   @override
   String get path => '/user/good/detail';
 }
 
-// var version = '';
+class AddAddressAPI extends API {
+  final String firstName;
+  final String lastName;
+  final String addressLine1;
+  final String addressLine2;
+  final String zipCode;
+  final String city;
+  final String province;
+  final String country;
+  final String phoneNumber;
+  final bool isDefault;
+  final bool isBillDefault;
 
-// var dio = Dio(
-//   BaseOptions(
-//     connectTimeout: 30000,
-//     receiveTimeout: 30000,
-//     headers: getAuthorizationHeader(),
-//   ),
-// )..interceptors.addAll([
-//     ErrorInterceptor(),
-//     LogInterceptor(
-//       requestBody: true,
-//       responseHeader: false,
-//       responseBody: true,
-//     ),
-//   ]);
+  AddAddressAPI({
+    this.firstName,
+    this.lastName,
+    this.addressLine1,
+    this.addressLine2,
+    this.zipCode,
+    this.city,
+    this.province,
+    this.country,
+    this.phoneNumber,
+    this.isDefault,
+    this.isBillDefault,
+  });
 
-// Map<String, dynamic> getAuthorizationHeader() {
-//   var headers;
-//   var token = AuthStorage.getToken();
-//   if (token != null && token.isNotEmpty) {
-//     headers = {
-//       'x-token': token,
-//     };
-//   }
-//   return headers;
-// }
+  @override
+  Map<String, dynamic> get parameters => {
+        'firstName': firstName,
+        'lastName': lastName,
+        'addressLine1': addressLine1,
+        'addressLine2': addressLine2,
+        'zipCode': zipCode,
+        'city': city,
+        'province': province,
+        'country': country,
+        'phoneNumber': phoneNumber,
+        'isDefault': isDefault ? 1 : 0,
+        'isBillDefault': isBillDefault ? 1 : 0,
+      };
 
-// void setApiIO(io) {
-//   dio = io;
-// }
+  @override
+  String get path => '/user/address/add';
+}
 
-// Future<Map<String, dynamic>> api(path, data) async {
-//   Response rsp = await dio.post('$apiEntry$path', data: data);
-//   if (rsp.data['code'] == 0) {
-//     return rsp.data;
-//   }
-//   throw APIException.fromResponse(rsp.data);
-// }
+class PreOrderAPI extends API {
+  final List<OrderParameter> buyGoods;
+  final String addressId;
+
+  PreOrderAPI({@required this.buyGoods, this.addressId});
+
+  @override
+  Map<String, dynamic> get parameters => {
+        'buyGoods': buyGoods.map((e) => e.toMap()).toList(),
+        'addressId': addressId ?? ''
+      };
+
+  @override
+  String get path => '/user/good/order_pre';
+}
+
+class OrderAPI extends API {
+  final List<OrderParameter> buyGoods;
+  final String shippingAddressId;
+  final String billingAddressId;
+
+  OrderAPI(this.buyGoods, this.shippingAddressId, this.billingAddressId);
+
+  @override
+  Map<String, dynamic> get parameters => {
+        'buyGoods': buyGoods.map((e) => e.toMap()).toList(),
+        'addressId': shippingAddressId,
+        'billAddressId': billingAddressId,
+      };
+
+  @override
+  String get path => '/user/good/order';
+}
+
+class PayAPI extends API {
+  final String orderId;
+  final String payName;
+
+  PayAPI({@required this.orderId, @required this.payName});
+
+  @override
+  Map<String, dynamic> get parameters => {
+        'orderId': orderId,
+        'payName': payName,
+      };
+
+  @override
+  String get path => '/user/good/pay';
+}
+
+class AddCartAPI extends API {
+  final OrderParameter params;
+
+  AddCartAPI({@required this.params});
+
+  @override
+  Map<String, dynamic> get parameters => {
+        'idolGoodsId': params.idolGoodsId,
+        'skuSpecIds': params.skuSpecIds,
+        'number': params.number,
+      };
+
+  @override
+  String get path => '/user/good/add_cart';
+}
+
+class CartListAPI extends API {
+  @override
+  Map<String, dynamic> get parameters => {};
+
+  @override
+  String get path => '/user/good/cart_list';
+}
+
+class UpdateCartAPI extends API {
+  final OrderParameter params;
+
+  UpdateCartAPI({@required this.params});
+
+  @override
+  Map<String, dynamic> get parameters => {
+        'idolGoodsId': params.idolGoodsId,
+        'skuSpecIds': params.skuSpecIds,
+        'number': params.number,
+      };
+
+  @override
+  String get path => '/user/good/edit_cart';
+}
+
+class DeleteCartAPI extends API {
+  final List<OrderParameter> params;
+
+  DeleteCartAPI({@required this.params});
+
+  @override
+  Map<String, dynamic> get parameters =>
+      {'delArr': params.map((e) => e.toMap()).toList()};
+
+  @override
+  String get path => '/user/good/del_cart';
+}

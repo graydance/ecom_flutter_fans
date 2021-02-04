@@ -1,7 +1,9 @@
 import 'dart:async';
 
-import 'package:fans/models/models.dart';
+import 'package:flutter/material.dart';
+
 import 'package:fans/models/feed.dart';
+import 'package:fans/models/models.dart';
 
 class FetchFeedsStartLoadingAction {
   /// 类型选择( 0:following , 1:for you)
@@ -104,19 +106,86 @@ class FetchGoodsFailedAction {
 }
 
 class ShowProductDetailAction {
-  final String goodsId;
+  final String idolGoodsId;
 
-  ShowProductDetailAction(this.goodsId);
+  ShowProductDetailAction(this.idolGoodsId);
 }
 
 class FetchProductDetailAction {
-  final String goodsId;
+  final String idolGoodsId;
+  final Completer completer;
 
-  FetchProductDetailAction(this.goodsId);
+  FetchProductDetailAction(this.idolGoodsId, this.completer);
 }
 
 class FetchProductDetailSuccessAction {
   final Product product;
 
   FetchProductDetailSuccessAction(this.product);
+}
+
+class PreOrderAction {
+  final List<OrderParameter> buyGoods;
+  final Completer completer;
+
+  PreOrderAction({@required this.buyGoods, this.completer});
+}
+
+class PreOrderSuccessAction {
+  final OrderDetail orderDetail;
+
+  PreOrderSuccessAction({
+    this.orderDetail,
+  });
+}
+
+class OrderAction {
+  final List<OrderParameter> buyGoods;
+  final String shippingAddressId;
+  final String billingAddressId;
+  final Completer completer;
+
+  OrderAction(this.buyGoods, this.shippingAddressId, this.billingAddressId,
+      this.completer);
+}
+
+class PayAction {
+  final String orderId;
+  final String payName;
+  final Completer completer;
+
+  PayAction(this.orderId, this.payName, this.completer);
+}
+
+class AddCartAction {
+  final OrderParameter parameter;
+  final Completer completer;
+
+  AddCartAction(this.parameter, this.completer);
+}
+
+class FetchCartListAction {
+  final Completer completer;
+
+  FetchCartListAction(this.completer);
+}
+
+class UpdateCartAction {
+  final OrderParameter parameter;
+  final Completer completer;
+
+  UpdateCartAction(this.parameter, this.completer);
+}
+
+class DeleteCartAction {
+  final List<OrderParameter> parameters;
+  final Completer completer;
+
+  DeleteCartAction(this.parameters, this.completer);
+}
+
+class OnUpdateCartAction {
+  final Cart cart;
+
+  OnUpdateCartAction(this.cart);
 }

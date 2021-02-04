@@ -1,6 +1,12 @@
+import 'package:fans/screen/order/payment_screen.dart';
+import 'package:fans/screen/order/payment_success_screen.dart';
+import 'package:fans/store/appreducers.dart';
+import 'package:fans/store/middleware.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:logging/logging.dart';
 import 'package:redux/redux.dart';
 
 import 'package:fans/models/appstate.dart';
@@ -8,10 +14,36 @@ import 'package:fans/screen/login/interest_list_screen.dart';
 import 'package:fans/screen/screens.dart';
 import 'package:fans/screen/home/shop_screen.dart';
 import 'package:fans/store/actions.dart';
+import 'package:redux_logging/redux_logging.dart';
 
-class ReduxApp extends StatelessWidget {
-  final Store<AppState> store;
-  const ReduxApp({this.store});
+class ReduxApp extends StatefulWidget {
+  @override
+  _ReduxAppState createState() => _ReduxAppState();
+}
+
+class _ReduxAppState extends State<ReduxApp> {
+  Store<AppState> store;
+
+  @override
+  void initState() {
+    super.initState();
+
+    EasyRefresh.defaultHeader = ClassicalHeader(showInfo: false);
+    EasyRefresh.defaultFooter = ClassicalFooter(showInfo: false);
+
+    final logger = new Logger('Fans');
+    logger.onRecord
+        .where((record) => record.loggerName == logger.name)
+        .listen((loggingMiddlewareRecord) => print(loggingMiddlewareRecord));
+    final middleware = new LoggingMiddleware(logger: logger);
+    store = Store<AppState>(
+      appReducer,
+      initialState: AppState(),
+      middleware: [...createStoreMiddleware(), middleware],
+    );
+    store.dispatch(VerifyAuthenticationState());
+  }
+
   @override
   Widget build(BuildContext context) {
     return StoreProvider<AppState>(
@@ -42,6 +74,10 @@ class ReduxApp extends StatelessWidget {
             Routes.searchByTag: (context) => SearchByTagScreen(),
             Routes.shop: (context) => ShopDetailScreen(),
             Routes.productDetail: (context) => ProductDetailScreen(),
+            Routes.cart: (context) => CartScreen(),
+            Routes.preOrder: (context) => PreOrderScreen(),
+            Routes.payment: (context) => PaymentScreen(),
+            Routes.paymentSuccess: (context) => PaymentSuccessScreen(),
           },
           builder: EasyLoading.init(),
         ));
@@ -62,6 +98,10 @@ class Routes {
   static final interests = 'interests';
   static final home = '/home';
   static final searchByTag = '/search_by_tag';
-  static final shop = 'shop';
-  static final productDetail = 'product_detail';
+  static final shop = '/shop';
+  static final productDetail = '/product_detail';
+  static final cart = '/cart';
+  static final preOrder = '/preorder';
+  static final payment = '/payment';
+  static final paymentSuccess = '/payment_success';
 }

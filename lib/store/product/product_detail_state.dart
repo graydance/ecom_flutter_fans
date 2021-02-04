@@ -41,17 +41,17 @@ class ProductDetailsOnScreen {
 
 @immutable
 class ProductDetailState {
-  final String goodsId;
+  final String idolGoodsId;
   final Product model;
 
-  ProductDetailState({this.goodsId = '', this.model = const Product()});
+  ProductDetailState({this.idolGoodsId = '', this.model = const Product()});
 
   ProductDetailState copyWith({
-    String goodsId,
+    String idolGoodsId,
     Product model,
   }) {
     return ProductDetailState(
-      goodsId: goodsId ?? this.goodsId,
+      idolGoodsId: idolGoodsId ?? this.idolGoodsId,
       model: model ?? this.model,
     );
   }
@@ -60,12 +60,15 @@ class ProductDetailState {
   bool operator ==(Object o) {
     if (identical(this, o)) return true;
 
-    return o is ProductDetailState && o.goodsId == goodsId && o.model == model;
+    return o is ProductDetailState &&
+        o.idolGoodsId == idolGoodsId &&
+        o.model == model;
   }
 
   @override
-  int get hashCode => goodsId.hashCode ^ model.hashCode;
+  int get hashCode => idolGoodsId.hashCode ^ model.hashCode;
 
   @override
-  String toString() => 'ProductDetailState(goodsId: $goodsId, model: $model)';
+  String toString() =>
+      'ProductDetailState(idolGoodsId: $idolGoodsId, model: $model)';
 }

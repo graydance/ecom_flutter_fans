@@ -2,28 +2,29 @@ import 'package:fans/models/user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthStorage {
-  static SharedPreferences preferences;
-  static Future<void> getInstance() async {
-    preferences = await SharedPreferences.getInstance();
-  }
-
   static const _tokenKey = 'fans_token_key';
   static const _userKey = 'fans_user_key';
 
-  static void setToken(String token) {
+  static Future<void> setToken(String token) async {
+    final preferences = await SharedPreferences.getInstance();
     preferences.setString(_tokenKey, token);
   }
 
-  static String getToken() {
+  static Future<String> getToken() async {
+    final preferences = await SharedPreferences.getInstance();
     return preferences.getString(_tokenKey);
   }
 
-  static void setUser(User user) {
+  static Future<void> setUser(User user) async {
+    final preferences = await SharedPreferences.getInstance();
+
     var jsonString = user.toJson();
     preferences.setString(_userKey, jsonString);
   }
 
-  static User getUser() {
+  static Future<User> getUser() async {
+    final preferences = await SharedPreferences.getInstance();
+
     var jsonString = preferences.getString(_userKey);
     if (jsonString == null || jsonString.isEmpty) {
       return User();

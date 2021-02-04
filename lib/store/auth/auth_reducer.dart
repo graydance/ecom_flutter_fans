@@ -1,3 +1,4 @@
+import 'package:fans/storage/auth_storage.dart';
 import 'package:redux/redux.dart';
 
 import 'package:fans/store/actions.dart';
@@ -43,14 +44,21 @@ bool _validateEmail(String email) {
 // Login
 
 final authReducer = combineReducers<LoginOrSignupState>([
+  TypedReducer<LoginOrSignupState, OnAuthenticatedAction>(_setAuthed),
   TypedReducer<LoginOrSignupState, CheckPasswordAction>(
       _setAuthCheckPasswordError),
   TypedReducer<LoginOrSignupState, AuthLoadingAction>(
       _setAuthCheckPasswordLoading),
-  TypedReducer<LoginOrSignupState, LoginOrSignupSuccessAction>(_setAuthSuccess),
   TypedReducer<LoginOrSignupState, LoginOrSignupFailureAction>(_setAuthError),
   TypedReducer<LoginOrSignupState, SendEmailFailureAction>(_setSendEmailError),
+  TypedReducer<LoginOrSignupState, LocalUpdateUserAction>(_onUserLocalUpdate),
+  TypedReducer<LoginOrSignupState, UpdateUserAction>(_onUserUpdate),
 ]);
+
+LoginOrSignupState _setAuthed(
+    LoginOrSignupState state, OnAuthenticatedAction action) {
+  return state.copyWith(user: action.user, isLoading: false, error: '');
+}
 
 LoginOrSignupState _setAuthCheckPasswordError(
     LoginOrSignupState state, CheckPasswordAction action) {
@@ -63,11 +71,6 @@ LoginOrSignupState _setAuthCheckPasswordError(
 LoginOrSignupState _setAuthCheckPasswordLoading(
     LoginOrSignupState state, AuthLoadingAction action) {
   return state.copyWith(isLoading: true, error: '');
-}
-
-LoginOrSignupState _setAuthSuccess(
-    LoginOrSignupState state, LoginOrSignupSuccessAction action) {
-  return state.copyWith(isLoading: false, error: '', user: action.user);
 }
 
 LoginOrSignupState _setAuthError(
@@ -110,4 +113,20 @@ InterestListState _setInterestListLoading(
 InterestListState _setUploadInterestsSuccess(
     InterestListState state, UploadInterestsSuccessAction action) {
   return state.copyWith(isLoading: false, error: '');
+}
+
+// User Reducer
+
+LoginOrSignupState _onUserUpdate(
+    LoginOrSignupState state, UpdateUserAction action) {
+  AuthStorage.setToken(action.user.token);
+  AuthStorage.setUser(action.user);
+  return state.copyWith(user: action.user);
+}
+
+LoginOrSignupState _onUserLocalUpdate(
+    LoginOrSignupState state, LocalUpdateUserAction action) {
+  AuthStorage.setToken(action.user.token);
+  AuthStorage.setUser(action.user);
+  return state.copyWith(user: action.user);
 }

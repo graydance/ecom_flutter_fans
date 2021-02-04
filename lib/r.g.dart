@@ -216,6 +216,26 @@ class _R_Image_AssetResource {
   // ignore: non_constant_identifier_names
   final logo = const AssetResource("assets/images/logo.png", packageName: null);
 
+  /// asset: assets/images/product/icon_payment.png
+  // ignore: non_constant_identifier_names
+  final icon_payment =
+      const AssetResource("assets/images/product/icon_payment.png", packageName: null);
+
+  /// asset: assets/images/product/icon_shipping.png
+  // ignore: non_constant_identifier_names
+  final icon_shipping =
+      const AssetResource("assets/images/product/icon_shipping.png", packageName: null);
+
+  /// asset: assets/images/product/payment_success.png
+  // ignore: non_constant_identifier_names
+  final payment_success =
+      const AssetResource("assets/images/product/payment_success.png", packageName: null);
+
+  /// asset: assets/images/product/product_search.png
+  // ignore: non_constant_identifier_names
+  final product_search =
+      const AssetResource("assets/images/product/product_search.png", packageName: null);
+
   /// asset: assets/images/tabbar/tabbar_home_highlight.png
   // ignore: non_constant_identifier_names
   final tabbar_home_highlight =
@@ -434,6 +454,30 @@ class _R_Image {
   // ignore: non_constant_identifier_names
   AssetImage logo() {
     return AssetImage(asset.logo.keyName);
+  }
+
+  /// asset: assets/images/product/icon_payment.png
+  // ignore: non_constant_identifier_names
+  AssetImage icon_payment() {
+    return AssetImage(asset.icon_payment.keyName);
+  }
+
+  /// asset: assets/images/product/icon_shipping.png
+  // ignore: non_constant_identifier_names
+  AssetImage icon_shipping() {
+    return AssetImage(asset.icon_shipping.keyName);
+  }
+
+  /// asset: assets/images/product/payment_success.png
+  // ignore: non_constant_identifier_names
+  AssetImage payment_success() {
+    return AssetImage(asset.payment_success.keyName);
+  }
+
+  /// asset: assets/images/product/product_search.png
+  // ignore: non_constant_identifier_names
+  AssetImage product_search() {
+    return AssetImage(asset.product_search.keyName);
   }
 
   /// asset: assets/images/tabbar/tabbar_home_highlight.png
