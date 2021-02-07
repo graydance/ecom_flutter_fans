@@ -1,5 +1,6 @@
 import 'package:fans/screen/order/payment_screen.dart';
 import 'package:fans/screen/order/payment_success_screen.dart';
+import 'package:fans/screen/shop/shop_screen.dart';
 import 'package:fans/store/appreducers.dart';
 import 'package:fans/store/middleware.dart';
 import 'package:flutter/material.dart';
@@ -12,7 +13,7 @@ import 'package:redux/redux.dart';
 import 'package:fans/models/appstate.dart';
 import 'package:fans/screen/login/interest_list_screen.dart';
 import 'package:fans/screen/screens.dart';
-import 'package:fans/screen/home/shop_screen.dart';
+import 'package:fans/screen/home/shop_detail_screen.dart';
 import 'package:fans/store/actions.dart';
 import 'package:redux_logging/redux_logging.dart';
 
@@ -72,12 +73,14 @@ class _ReduxAppState extends State<ReduxApp> {
                   onInit: () {},
                 ),
             Routes.searchByTag: (context) => SearchByTagScreen(),
-            Routes.shop: (context) => ShopDetailScreen(),
+            Routes.shopDetail: (context) => ShopDetailScreen(),
             Routes.productDetail: (context) => ProductDetailScreen(),
             Routes.cart: (context) => CartScreen(),
             Routes.preOrder: (context) => PreOrderScreen(),
             Routes.payment: (context) => PaymentScreen(),
             Routes.paymentSuccess: (context) => PaymentSuccessScreen(),
+            Routes.shop: (context) => ShopScreen(),
+            Routes.signin: (context) => SignInScreen(),
           },
           builder: EasyLoading.init(),
         ));
@@ -104,4 +107,6 @@ class Routes {
   static final preOrder = '/preorder';
   static final payment = '/payment';
   static final paymentSuccess = '/payment_success';
+  static final shopDetail = '/shop_detail';
+  static final signin = '/sign_in';
 }

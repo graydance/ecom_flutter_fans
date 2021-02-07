@@ -143,10 +143,11 @@ class OrderAction {
   final List<OrderParameter> buyGoods;
   final String shippingAddressId;
   final String billingAddressId;
+  final String email;
   final Completer completer;
 
   OrderAction(this.buyGoods, this.shippingAddressId, this.billingAddressId,
-      this.completer);
+      this.email, this.completer);
 }
 
 class PayAction {

@@ -1,5 +1,6 @@
-export 'auth/auth_action.dart';
-export 'product/product_action.dart';
+export './auth/auth_action.dart';
+export './product/product_action.dart';
+export './shop/shop_action.dart';
 
 import 'dart:async';
 

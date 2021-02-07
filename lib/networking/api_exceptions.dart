@@ -39,6 +39,9 @@ class APIException implements Exception {
         break;
       case DioErrorType.RESPONSE:
         {
+          if (error.response == null) {
+            return BadRequestException(-1, "Response is empty!");
+          }
           try {
             int errCode = error.response.statusCode;
             switch (errCode) {

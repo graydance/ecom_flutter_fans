@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:fans/app.dart';
 import 'package:fans/screen/components/order_status_image_view.dart';
 import 'package:fans/screen/order/payment_screen.dart';
+import 'package:fans/utils/validator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -16,6 +17,7 @@ import 'package:fans/r.g.dart';
 import 'package:fans/screen/components/address_form.dart';
 import 'package:fans/store/actions.dart';
 import 'package:fans/theme.dart';
+import 'package:fans/utils/list_extension.dart';
 
 class PreOrderScreen extends StatefulWidget {
   PreOrderScreen({Key key}) : super(key: key);
@@ -31,18 +33,42 @@ class _PreOrderScreenState extends State<PreOrderScreen> {
   Address _billingAddress = Address();
   bool _useShippingAddress = false;
 
+  final _emailController = TextEditingController();
+
+  @override
+  void dispose() {
+    super.dispose();
+    _emailController.dispose();
+  }
+
+  _bindAddress(OrderDetail orderDetail) {
+    if (_shippingAddress != null && _shippingAddress.id.isNotEmpty) return;
+
+    _shippingAddress = orderDetail.addresses
+        .firstWhere((e) => e.isDefault == 1, orElse: () => null);
+    if (_shippingAddress == null) {
+      _shippingAddress = orderDetail.addresses.firstOrNull() ?? Address();
+    }
+    _billingAddress = orderDetail.addresses
+        .firstWhere((e) => e.isBillDefault == 1, orElse: () => null);
+    if (_billingAddress == null) {
+      _billingAddress = orderDetail.addresses.firstOrNull() ?? Address();
+    }
+    _useShippingAddress =
+        _billingAddress.id.isEmpty || _billingAddress == _shippingAddress;
+  }
+
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _ViewModel>(
       converter: _ViewModel.fromStore,
       onInit: (store) {
-        final orderDetail = store.state.preOrder.orderDetail;
-        _shippingAddress = orderDetail.addresses
-            .firstWhere((e) => e.isDefault == 1, orElse: () => Address());
-        _billingAddress = orderDetail.addresses
-            .firstWhere((e) => e.isBillDefault == 1, orElse: () => Address());
-        _useShippingAddress =
-            _billingAddress.id.isEmpty || _billingAddress == _shippingAddress;
+        _bindAddress(store.state.preOrder.orderDetail);
+      },
+      onDidChange: (viewModel) {
+        _bindAddress(viewModel.orderDetail);
+
+        setState(() {});
       },
       builder: (ctx, viewModel) => Scaffold(
         appBar: AppBar(
@@ -62,7 +88,10 @@ class _PreOrderScreenState extends State<PreOrderScreen> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   OrderDetailsExpansionTile(
-                      context: context, model: viewModel.orderDetail),
+                      currency: viewModel.currency,
+                      context: context,
+                      model: viewModel.orderDetail),
+                  if (viewModel.isAnonymous) _buildEmail(),
                   _buildAddressList(viewModel),
                 ],
               ),
@@ -79,7 +108,8 @@ class _PreOrderScreenState extends State<PreOrderScreen> {
                       _shippingAddress.id.isNotEmpty &&
                       _billingAddress.id.isNotEmpty
                   ? () {
-                      viewModel.onTapPay(_shippingAddress, _billingAddress);
+                      viewModel.onTapPay(_shippingAddress, _billingAddress,
+                          _emailController.text ?? '');
                     }
                   : null,
               child: Text(
@@ -208,7 +238,8 @@ class _PreOrderScreenState extends State<PreOrderScreen> {
           ),
           _buildAddressTile(
             _shippingAddress,
-            _shippingAddress.id == viewModel.shippingDefaultAddress.id,
+            _shippingAddress.id == viewModel.shippingDefaultAddress.id &&
+                viewModel.shippingDefaultAddress.id.isNotEmpty,
             viewModel,
             (value) {
               setState(() {
@@ -276,7 +307,8 @@ class _PreOrderScreenState extends State<PreOrderScreen> {
           ),
           _buildAddressTile(
             _billingAddress,
-            _billingAddress.id == viewModel.billingDefaultAddress.id,
+            _billingAddress.id == viewModel.billingDefaultAddress.id &&
+                viewModel.billingDefaultAddress.id.isNotEmpty,
             viewModel,
             (value) {
               setState(() {
@@ -373,17 +405,98 @@ class _PreOrderScreenState extends State<PreOrderScreen> {
   }
 
   _buildAddressForm(_ViewModel viewModel, bool isAddShipping) {
-    return AddressForm(
-        isEditShipping: isAddShipping,
-        onAdded: () {
-          FocusScope.of(context).requestFocus(FocusNode());
-          viewModel.refreshData().then((value) {
-            setState(() {
-              _showShippingAddressForm = false;
-              _showBillingAddressForm = false;
-            });
-          });
-        });
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          height: 8,
+        ),
+        Text(
+          'Add Address',
+          style: TextStyle(
+            fontSize: 14,
+            color: AppTheme.color0F1015,
+          ),
+        ),
+        AddressForm(
+            isEditShipping: isAddShipping,
+            onAdded: () {
+              FocusScope.of(context).requestFocus(FocusNode());
+              viewModel.refreshData().then((value) {
+                setState(() {
+                  _showShippingAddressForm = false;
+                  _showBillingAddressForm = false;
+                });
+              });
+            }),
+      ],
+    );
+  }
+
+  _buildEmail() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          height: 20,
+        ),
+        Text(
+          'Email',
+          style: TextStyle(
+            fontSize: 16,
+            color: AppTheme.color0F1015,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        TextFormField(
+          decoration: InputDecoration(
+            hintText: 'Enter your email*',
+            hintStyle: TextStyle(fontSize: 12.0, color: AppTheme.colorC4C5CD),
+            border: UnderlineInputBorder(
+              borderSide: BorderSide(color: AppTheme.colorC4C5CD),
+            ),
+            enabledBorder: UnderlineInputBorder(
+              borderSide: BorderSide(color: AppTheme.colorC4C5CD),
+            ),
+            focusedBorder: UnderlineInputBorder(
+              borderSide: BorderSide(color: AppTheme.color0F1015),
+            ),
+          ),
+          controller: _emailController,
+          validator: (value) =>
+              validateEmail(value) ? null : 'Email is required',
+        ),
+        SizedBox(
+          height: 10,
+        ),
+        GestureDetector(
+          onTap: () {
+            Keys.navigatorKey.currentState.pushNamed(Routes.signin);
+          },
+          child: RichText(
+            text: TextSpan(
+              children: [
+                TextSpan(
+                  text: 'I ready have a account ',
+                  style: TextStyle(
+                    color: AppTheme.color555764,
+                    fontSize: 12,
+                  ),
+                ),
+                TextSpan(
+                  text: 'Login',
+                  style: TextStyle(
+                    decoration: TextDecoration.underline,
+                    color: Colors.blue,
+                    fontSize: 12,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
   }
 }
 
@@ -504,10 +617,12 @@ class OrderDetailsExpansionTile extends StatefulWidget {
   const OrderDetailsExpansionTile({
     Key key,
     @required this.context,
+    @required this.currency,
     @required this.model,
   }) : super(key: key);
 
   final BuildContext context;
+  final String currency;
   final OrderDetail model;
 
   @override
@@ -548,7 +663,7 @@ class _OrderDetailsExpansionTileState extends State<OrderDetailsExpansionTile> {
                   size: 20,
                 ),
         ]),
-        trailing: Text('${widget.model.totalStr}'),
+        trailing: Text('${widget.currency}${widget.model.totalStr}'),
         backgroundColor: Colors.white,
         initiallyExpanded: _isExpanded,
         onExpansionChanged: (isExpanded) {
@@ -598,7 +713,7 @@ class _OrderDetailsExpansionTileState extends State<OrderDetailsExpansionTile> {
                           ),
                         ),
                         Text(
-                          item.currentPriceStr,
+                          '${widget.currency}${item.currentPriceStr}',
                           style: TextStyle(
                             color: AppTheme.color0F1015,
                             fontWeight: FontWeight.w600,
@@ -624,7 +739,7 @@ class _OrderDetailsExpansionTileState extends State<OrderDetailsExpansionTile> {
           ),
           OrderPriceTile(
             leading: 'Subtotal',
-            trailing: widget.model.subtotalStr,
+            trailing: '${widget.currency}${widget.model.subtotalStr}',
           ),
           OrderPriceTile(
             leading: 'Shipping',
@@ -632,7 +747,7 @@ class _OrderDetailsExpansionTileState extends State<OrderDetailsExpansionTile> {
           ),
           OrderPriceTile(
             leading: 'Taxes',
-            trailing: widget.model.taxesStr,
+            trailing: '${widget.currency}${widget.model.taxesStr}',
           ),
           Divider(),
           ListTile(
@@ -645,7 +760,7 @@ class _OrderDetailsExpansionTileState extends State<OrderDetailsExpansionTile> {
               ),
             ),
             trailing: Text(
-              widget.model.totalStr,
+              '${widget.currency}${widget.model.totalStr}',
               style: TextStyle(
                 color: AppTheme.color0F1015,
                 fontWeight: FontWeight.w600,
@@ -695,13 +810,17 @@ class OrderPriceTile extends StatelessWidget {
 }
 
 class _ViewModel {
+  final bool isAnonymous;
+  final String currency;
   final OrderDetail orderDetail;
   final Address shippingDefaultAddress;
   final Address billingDefaultAddress;
   final Future<dynamic> Function() refreshData;
-  final Function(Address, Address) onTapPay;
+  final Function(Address, Address, String) onTapPay;
 
   _ViewModel({
+    this.isAnonymous,
+    this.currency,
     this.orderDetail,
     this.shippingDefaultAddress,
     this.billingDefaultAddress,
@@ -728,13 +847,14 @@ class _ViewModel {
       return completer.future;
     }
 
-    _onTapPay(Address shippingAddress, Address billingAddress) {
+    _onTapPay(Address shippingAddress, Address billingAddress, String email) {
       EasyLoading.show();
       final completer = Completer();
       completer.future.then((value) {
         EasyLoading.dismiss();
         Keys.navigatorKey.currentState.pushNamed(Routes.payment,
-            arguments: PaymentScreenParams(shippingAddress, value['id']));
+            arguments: PaymentScreenParams(
+                shippingAddress, value['id'], value['number']));
       }).catchError((error) {
         EasyLoading.dismiss();
         EasyLoading.showToast(error.toString());
@@ -747,10 +867,12 @@ class _ViewModel {
               number: sku.number))
           .toList();
       store.dispatch(OrderAction(
-          buyGoods, shippingAddress.id, billingAddress.id, completer));
+          buyGoods, shippingAddress.id, billingAddress.id, email, completer));
     }
 
     return _ViewModel(
+      isAnonymous: store.state.auth.user.isAnonymous == 1,
+      currency: store.state.auth.user.monetaryUnit,
       orderDetail: orderDetail,
       shippingDefaultAddress: shippingAddress,
       billingDefaultAddress: billingAddress,

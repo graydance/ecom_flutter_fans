@@ -4,6 +4,8 @@ import 'package:fans/models/models.dart';
 
 class VerifyAuthenticationState {}
 
+class AnonymousLoginAction {}
+
 class LocalVerifyEmailAction {
   final String email;
 
@@ -112,3 +114,11 @@ class UploadInterestsAction {
 }
 
 class UploadInterestsSuccessAction {}
+
+class SignInAction {
+  final String email;
+  final String password;
+  final Completer completer;
+
+  SignInAction(this.email, this.password, this.completer);
+}
