@@ -1,8 +1,6 @@
-import 'dart:convert';
-import 'dart:math';
+import 'package:flutter/material.dart';
 
 import 'package:fans/models/models.dart';
-import 'package:flutter/material.dart';
 
 enum HttpMethod { GET, POST }
 

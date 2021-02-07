@@ -268,7 +268,7 @@ class _ViewModel {
         EasyLoading.dismiss();
         debugPrint('push to payment with $value');
         Keys.navigatorKey.currentState.pushNamedAndRemoveUntil(
-            Routes.paymentSuccess, ModalRoute.withName(Routes.home),
+            Routes.paymentSuccess, (route) => route.isFirst,
             arguments: params.number);
       }).catchError((error) {
         EasyLoading.dismiss();

@@ -104,10 +104,25 @@ class _PreOrderScreenState extends State<PreOrderScreen> {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: TextButton(
-              onPressed: viewModel.orderDetail.canOrder &&
-                      _shippingAddress.id.isNotEmpty &&
+              onPressed: _shippingAddress.id.isNotEmpty &&
                       _billingAddress.id.isNotEmpty
                   ? () {
+                      if (!viewModel.orderDetail.canOrder) {
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: const Text('Out of stock'),
+                          duration: const Duration(seconds: 2),
+                        ));
+                        return;
+                      }
+                      if (viewModel.isAnonymous &&
+                          !validateEmail(_emailController.text)) {
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: const Text('The email is invalid'),
+                          duration: const Duration(seconds: 2),
+                        ));
+                        return;
+                      }
+
                       viewModel.onTapPay(_shippingAddress, _billingAddress,
                           _emailController.text ?? '');
                     }
