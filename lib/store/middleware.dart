@@ -75,16 +75,23 @@ Middleware<AppState> _verifyAuthState() {
     next(action);
 
     AuthStorage.getUser().then((user) {
-      if (user.isAnonymous == 0 && user.token.isNotEmpty) {
+      if (user.token.isNotEmpty) {
         store.dispatch(LocalUpdateUserAction(user));
-        Keys.navigatorKey.currentState
-            .pushReplacementNamed(Routes.shop, arguments: 'eLRGN8Bw');
+        if (kIsWeb) {
+          Keys.navigatorKey.currentState
+              .pushReplacementNamed(Routes.shop + '/eLRGN8Bw');
+        } else {
+          Keys.navigatorKey.currentState.pushReplacementNamed(Routes.home);
+        }
       } else {
         store.dispatch(LocalUpdateUserAction(User()));
         store.dispatch(AnonymousLoginAction());
-        // Keys.navigatorKey.currentState.pushReplacementNamed(Routes.welcome);
-        Keys.navigatorKey.currentState
-            .pushReplacementNamed(Routes.shop, arguments: 'eLRGN8Bw');
+        if (kIsWeb) {
+          Keys.navigatorKey.currentState
+              .pushReplacementNamed(Routes.shop + '/eLRGN8Bw');
+        } else {
+          Keys.navigatorKey.currentState.pushReplacementNamed(Routes.welcome);
+        }
       }
     });
   };
