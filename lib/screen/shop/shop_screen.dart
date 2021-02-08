@@ -19,7 +19,8 @@ import 'package:redux/redux.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ShopScreen extends StatefulWidget {
-  ShopScreen({Key key}) : super(key: key);
+  final String userId;
+  ShopScreen({Key key, this.userId}) : super(key: key);
 
   @override
   _ShopScreenState createState() => _ShopScreenState();
@@ -61,7 +62,7 @@ class _ShopScreenState extends State<ShopScreen>
     return StoreConnector<AppState, _ViewModel>(
       converter: (store) {
         return _ViewModel.fromStore(
-            store, ModalRoute.of(context).settings.arguments);
+            store, widget.userId); //ModalRoute.of(context).settings.arguments
       },
       onInitialBuild: (viewModel) async {
         _refreshLinksController.callRefresh();
