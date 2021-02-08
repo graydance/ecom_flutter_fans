@@ -23,6 +23,7 @@ class User {
   final int heatRank;
   final String bioLink;
   final String token;
+  final int isAnonymous;
 
   const User({
     this.id = '',
@@ -40,11 +41,12 @@ class User {
     this.heatRank = 0,
     this.bioLink = '',
     this.token = '',
+    this.isAnonymous = 0,
   });
 
   @override
   String toString() {
-    return 'User(id: $id, nickName: $nickName, portrait: $portrait, email: $email, gender: $gender, aboutMe: $aboutMe, bindPhone: $bindPhone, availableBalance: $availableBalance, lifetimeEarnings: $lifetimeEarnings, monetaryCountry: $monetaryCountry, monetaryUnit: $monetaryUnit, shopStatus: $shopStatus, heatRank: $heatRank, bioLink: $bioLink, token: $token)';
+    return 'User(id: $id, nickName: $nickName, portrait: $portrait, email: $email, gender: $gender, aboutMe: $aboutMe, bindPhone: $bindPhone, availableBalance: $availableBalance, lifetimeEarnings: $lifetimeEarnings, monetaryCountry: $monetaryCountry, monetaryUnit: $monetaryUnit, shopStatus: $shopStatus, heatRank: $heatRank, bioLink: $bioLink, token: $token, isAnonymous: $isAnonymous)';
   }
 
   User copyWith({
@@ -63,6 +65,7 @@ class User {
     int heatRank,
     String bioLink,
     String token,
+    int isAnonymous,
   }) {
     return User(
       id: id ?? this.id,
@@ -80,6 +83,7 @@ class User {
       heatRank: heatRank ?? this.heatRank,
       bioLink: bioLink ?? this.bioLink,
       token: token ?? this.token,
+      isAnonymous: isAnonymous ?? this.isAnonymous,
     );
   }
 
@@ -102,7 +106,8 @@ class User {
         o.shopStatus == shopStatus &&
         o.heatRank == heatRank &&
         o.bioLink == bioLink &&
-        o.token == token;
+        o.token == token &&
+        o.isAnonymous == isAnonymous;
   }
 
   @override
@@ -121,7 +126,8 @@ class User {
         shopStatus.hashCode ^
         heatRank.hashCode ^
         bioLink.hashCode ^
-        token.hashCode;
+        token.hashCode ^
+        isAnonymous.hashCode;
   }
 
   Map<String, dynamic> toMap() {
@@ -141,6 +147,7 @@ class User {
       'heatRank': heatRank,
       'bioLink': bioLink,
       'token': token,
+      'type': isAnonymous,
     };
   }
 
@@ -148,21 +155,22 @@ class User {
     if (map == null) return null;
 
     return User(
-      id: map['id'] ?? '',
-      nickName: map['nickName'] ?? '',
-      portrait: map['portrait'] ?? '',
-      email: map['email'] ?? '',
-      gender: map['gender'] ?? 0,
-      aboutMe: map['aboutMe'] ?? '',
-      bindPhone: map['bindPhone'] ?? '',
-      availableBalance: map['availableBalance'] ?? 0,
-      lifetimeEarnings: map['lifetimeEarnings'] ?? 0,
-      monetaryCountry: map['monetaryCountry'] ?? '',
-      monetaryUnit: map['monetaryUnit'] ?? '',
-      shopStatus: map['shopStatus'] ?? 0,
-      heatRank: map['heatRank'] ?? 0,
-      bioLink: map['bioLink'] ?? '',
-      token: map['token'] ?? '',
+      id: map['id'],
+      nickName: map['nickName'],
+      portrait: map['portrait'],
+      email: map['email'],
+      gender: map['gender'],
+      aboutMe: map['aboutMe'],
+      bindPhone: map['bindPhone'],
+      availableBalance: map['availableBalance'],
+      lifetimeEarnings: map['lifetimeEarnings'],
+      monetaryCountry: map['monetaryCountry'],
+      monetaryUnit: map['monetaryUnit'],
+      shopStatus: map['shopStatus'],
+      heatRank: map['heatRank'],
+      bioLink: map['bioLink'],
+      token: map['token'],
+      isAnonymous: map['type'] ?? 0,
     );
   }
 

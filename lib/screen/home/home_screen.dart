@@ -652,7 +652,7 @@ class _RecommendItemViewModel {
   static _RecommendItemViewModel fromStore(Store<AppState> store, Feed item) {
     _onTapAvatar() {
       store.dispatch(ShowShopDetailAction(userId: item.id));
-      Keys.navigatorKey.currentState.pushNamed(Routes.shop);
+      Keys.navigatorKey.currentState.pushNamed(Routes.shopDetail);
     }
 
     return _RecommendItemViewModel(model: item, onTapAvatar: _onTapAvatar);
@@ -676,7 +676,7 @@ class _FeedItemViewModel {
   static _FeedItemViewModel fromStore(Store<AppState> store, Feed item) {
     _onTapAvatar() {
       store.dispatch(ShowShopDetailAction(userId: item.id));
-      Keys.navigatorKey.currentState.pushNamed(Routes.shop);
+      Keys.navigatorKey.currentState.pushNamed(Routes.shopDetail);
     }
 
     _onTapTag(String tag) {

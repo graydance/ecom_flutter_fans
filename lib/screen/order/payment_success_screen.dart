@@ -47,7 +47,7 @@ class _PaymentSuccessScreenState extends State<PaymentSuccessScreen> {
                 height: 20,
               ),
               Text(
-                orderId,
+                '#$orderId',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
@@ -73,7 +73,7 @@ class _PaymentSuccessScreenState extends State<PaymentSuccessScreen> {
                 child: TextButton(
                   onPressed: () {
                     Keys.navigatorKey.currentState
-                        .popUntil(ModalRoute.withName(Routes.home));
+                        .popUntil((route) => route.isFirst);
                   },
                   style: TextButton.styleFrom(
                       minimumSize: Size(44, 44),

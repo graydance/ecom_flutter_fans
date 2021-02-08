@@ -35,6 +35,11 @@ List<Middleware<AppState>> createStoreMiddleware() {
   final fetchCartList = _createFetchCartList();
   final updateCart = _createUpdateCart();
   final deleteCart = _createDeleteCart();
+  final fetchSellerInfo = _createSellerInfo();
+  final fetchIdolLinks = _createIdolLinks();
+  final fetchIdolGoods = _createFetchShopGoods();
+  final anonymousLogin = _createAnonymousLogin();
+  final signin = _createSignin();
 
   return [
     TypedMiddleware<AppState, VerifyAuthenticationState>(verifyAuthState),
@@ -57,6 +62,11 @@ List<Middleware<AppState>> createStoreMiddleware() {
     TypedMiddleware<AppState, FetchCartListAction>(fetchCartList),
     TypedMiddleware<AppState, UpdateCartAction>(updateCart),
     TypedMiddleware<AppState, DeleteCartAction>(deleteCart),
+    TypedMiddleware<AppState, FetchSellerInfoAction>(fetchSellerInfo),
+    TypedMiddleware<AppState, FetchIdolLinksAction>(fetchIdolLinks),
+    TypedMiddleware<AppState, FetchIdolGoodsAction>(fetchIdolGoods),
+    TypedMiddleware<AppState, AnonymousLoginAction>(anonymousLogin),
+    TypedMiddleware<AppState, SignInAction>(signin),
   ];
 }
 
@@ -65,12 +75,16 @@ Middleware<AppState> _verifyAuthState() {
     next(action);
 
     AuthStorage.getUser().then((user) {
-      if (user.token.isNotEmpty) {
+      if (user.isAnonymous == 0 && user.token.isNotEmpty) {
         store.dispatch(LocalUpdateUserAction(user));
-        Keys.navigatorKey.currentState.pushReplacementNamed(Routes.home);
+        Keys.navigatorKey.currentState
+            .pushReplacementNamed(Routes.shop, arguments: 'eLRGN8Bw');
       } else {
         store.dispatch(LocalUpdateUserAction(User()));
-        Keys.navigatorKey.currentState.pushReplacementNamed(Routes.welcome);
+        store.dispatch(AnonymousLoginAction());
+        // Keys.navigatorKey.currentState.pushReplacementNamed(Routes.welcome);
+        Keys.navigatorKey.currentState
+            .pushReplacementNamed(Routes.shop, arguments: 'eLRGN8Bw');
       }
     });
   };
@@ -114,7 +128,7 @@ Middleware<AppState> _createLogin() {
               LoginAPI(email: action.email, password: action.password))
           .then(
         (data) {
-          var user = User.fromMap(data['data']);
+          final user = User.fromMap(data['data']);
           store.dispatch(LocalUpdateUserAction(user));
           store.dispatch(OnAuthenticatedAction(user));
           Keys.navigatorKey.currentState.pushReplacementNamed(Routes.interests);
@@ -359,6 +373,7 @@ Middleware<AppState> _createOrder() {
         action.buyGoods,
         action.shippingAddressId,
         action.billingAddressId,
+        action.email,
       )).then(
         (data) {
           final model = data['data'];
@@ -453,6 +468,96 @@ Middleware<AppState> _createDeleteCart() {
           final cart = Cart.fromMap(response);
           action.completer.complete(cart);
           store.dispatch(OnUpdateCartAction(cart));
+        },
+      ).catchError((err) {
+        action.completer.completeError(err.toString());
+      });
+    }
+    next(action);
+  };
+}
+
+Middleware<AppState> _createSellerInfo() {
+  return (Store<AppState> store, action, NextDispatcher next) {
+    if (action is FetchSellerInfoAction) {
+      Networking.request(ShopDetailAPI(action.userId)).then(
+        (data) {
+          final seller = Feed.fromMap(data['data']);
+          action.completer.complete(seller);
+        },
+      ).catchError((err) {
+        action.completer.completeError(err.toString());
+      });
+    }
+    next(action);
+  };
+}
+
+Middleware<AppState> _createIdolLinks() {
+  return (Store<AppState> store, action, NextDispatcher next) {
+    if (action is FetchIdolLinksAction) {
+      Networking.request(IdolLinksAPI(action.userId)).then(
+        (data) {
+          final response = data['data'] as List;
+          List<IdolLink> models =
+              response.map((e) => IdolLink.fromMap(e)).toList();
+          action.completer.complete(models);
+        },
+      ).catchError((err) {
+        action.completer.completeError(err.toString());
+      });
+    }
+    next(action);
+  };
+}
+
+Middleware<AppState> _createFetchShopGoods() {
+  return (Store<AppState> store, action, NextDispatcher next) {
+    if (action is FetchIdolGoodsAction) {
+      Networking.request(GoodsAPI(
+              userId: action.userId,
+              type: action.type,
+              page: action.page,
+              limit: action.limit))
+          .then(
+        (data) {
+          final response = data['data'];
+          action.completer.complete(response);
+        },
+      ).catchError((err) {
+        action.completer.completeError(err.toString());
+      });
+    }
+    next(action);
+  };
+}
+
+Middleware<AppState> _createAnonymousLogin() {
+  return (Store<AppState> store, action, NextDispatcher next) {
+    if (action is AnonymousLoginAction) {
+      Networking.request(AnonymousLoginAPI()).then(
+        (data) {
+          final user = User.fromMap(data['data']);
+          store.dispatch(LocalUpdateUserAction(user));
+          store.dispatch(OnAuthenticatedAction(user));
+        },
+      ).catchError((err) {});
+    }
+    next(action);
+  };
+}
+
+Middleware<AppState> _createSignin() {
+  return (Store<AppState> store, action, NextDispatcher next) {
+    if (action is SignInAction) {
+      Networking.request(
+              LoginAPI(email: action.email, password: action.password))
+          .then(
+        (data) {
+          final user = User.fromMap(data['data']);
+          store.dispatch(LocalUpdateUserAction(user));
+          store.dispatch(OnAuthenticatedAction(user));
+          action.completer.complete();
         },
       ).catchError((err) {
         action.completer.completeError(err.toString());

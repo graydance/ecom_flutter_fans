@@ -1,8 +1,6 @@
-import 'dart:convert';
-import 'dart:math';
+import 'package:flutter/material.dart';
 
 import 'package:fans/models/models.dart';
-import 'package:flutter/material.dart';
 
 enum HttpMethod { GET, POST }
 
@@ -115,7 +113,7 @@ class ShopDetailAPI extends API {
   Map<String, dynamic> get parameters => {'userId': userId};
 
   @override
-  String get path => '/user/detail';
+  String get path => '/user/pub/detail';
 }
 
 class FollowAPI extends API {
@@ -224,14 +222,17 @@ class OrderAPI extends API {
   final List<OrderParameter> buyGoods;
   final String shippingAddressId;
   final String billingAddressId;
+  final String email;
 
-  OrderAPI(this.buyGoods, this.shippingAddressId, this.billingAddressId);
+  OrderAPI(
+      this.buyGoods, this.shippingAddressId, this.billingAddressId, this.email);
 
   @override
   Map<String, dynamic> get parameters => {
         'buyGoods': buyGoods.map((e) => e.toMap()).toList(),
         'addressId': shippingAddressId,
         'billAddressId': billingAddressId,
+        'email': email,
       };
 
   @override
@@ -305,4 +306,21 @@ class DeleteCartAPI extends API {
 
   @override
   String get path => '/user/good/del_cart';
+}
+
+class IdolLinksAPI extends API {
+  final String userId;
+
+  IdolLinksAPI(this.userId);
+
+  @override
+  Map<String, dynamic> get parameters => {'userId': userId};
+
+  @override
+  String get path => '/user/pub/link';
+}
+
+class AnonymousLoginAPI extends API {
+  @override
+  String get path => '/user/pub/virtual_login';
 }

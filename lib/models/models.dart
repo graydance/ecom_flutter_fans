@@ -7,3 +7,4 @@ export './product.dart';
 export './order_detail.dart';
 export './order_sku.dart';
 export './cart.dart';
+export './idol_link.dart';

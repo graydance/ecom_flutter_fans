@@ -10,6 +10,7 @@ class AppTheme {
   static final colorF6F6F6 = Color(0xFFF6F6F6);
   static final color48B6EF = Color(0xFF48B6EF);
   static final color555764 = Color(0xFF555764);
+  static final colorF8F8F8 = Color(0xFFF8F8F8);
 
   /// checkbox color
   static final colorFEAC1B = Color(0xFFFEAC1B);
