@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:fans/app.dart';
 import 'package:fans/models/goods_skus.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
@@ -89,12 +90,13 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     bottom: MediaQuery.of(context).padding.bottom),
                 child: Row(
                   children: [
-                    Expanded(
-                      flex: 1,
-                      child: FavoriteButton(
-                        isSaved: false,
+                    if (!model.isAnonymous)
+                      Expanded(
+                        flex: 1,
+                        child: FavoriteButton(
+                          isSaved: false,
+                        ),
                       ),
-                    ),
                     Expanded(
                       flex: 2,
                       child: TextButton(
@@ -286,6 +288,7 @@ class _FavoriteButtonState extends State<FavoriteButton> {
 }
 
 class _ViewModel {
+  final bool isAnonymous;
   final Product model;
   final String currency;
   final String currentPrice;
@@ -294,6 +297,7 @@ class _ViewModel {
   final Function(int) onTapBuyNow;
 
   _ViewModel({
+    this.isAnonymous,
     this.model,
     this.currency,
     this.currentPrice,
@@ -370,6 +374,7 @@ class _ViewModel {
     final currency = store.state.auth.user.monetaryUnit;
     final first = state.model.goodsSkus.firstOrNull() ?? GoodsSkus();
     return _ViewModel(
+        isAnonymous: store.state.auth.user.isAnonymous == 1,
         model: state.model,
         currency: currency,
         currentPrice: first.currentPriceStr,
