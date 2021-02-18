@@ -1,21 +1,21 @@
-import 'package:fans/screen/order/payment_screen.dart';
-import 'package:fans/screen/order/payment_success_screen.dart';
-import 'package:fans/screen/shop/shop_screen.dart';
-import 'package:fans/store/appreducers.dart';
-import 'package:fans/store/middleware.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:logging/logging.dart';
 import 'package:redux/redux.dart';
+import 'package:redux_logging/redux_logging.dart';
 
 import 'package:fans/models/appstate.dart';
-import 'package:fans/screen/login/interest_list_screen.dart';
-import 'package:fans/screen/screens.dart';
 import 'package:fans/screen/home/shop_detail_screen.dart';
+import 'package:fans/screen/login/interest_list_screen.dart';
+import 'package:fans/screen/order/payment_screen.dart';
+import 'package:fans/screen/order/payment_success_screen.dart';
+import 'package:fans/screen/screens.dart';
+import 'package:fans/screen/shop/shop_screen.dart';
 import 'package:fans/store/actions.dart';
-import 'package:redux_logging/redux_logging.dart';
+import 'package:fans/store/appreducers.dart';
+import 'package:fans/store/middleware.dart';
 
 class ReduxApp extends StatefulWidget {
   @override

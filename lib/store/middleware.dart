@@ -231,6 +231,7 @@ Middleware<AppState> _createFetchFeeds() {
       ).catchError((err) {
         action.completer.completeError(err);
         store.dispatch(FetchFeedsFailedAction(action.type, err.toString()));
+        _handleUnauthorisedException(store, err, action);
       });
     }
     next(action);
@@ -249,7 +250,7 @@ Middleware<AppState> _createFetchRecommends() {
           store.dispatch(FetchRecommendSellersSuccessAction(models));
         },
       ).catchError((err) {
-        print(err.toString());
+        _handleUnauthorisedException(store, err, action);
       });
     }
     next(action);
@@ -279,6 +280,7 @@ Middleware<AppState> _createSearchByTag() {
         },
       ).catchError((err) {
         action.completer?.completeError(err?.toString() ?? '');
+        _handleUnauthorisedException(store, err, action);
       });
     }
     next(action);
@@ -295,6 +297,7 @@ Middleware<AppState> _createShopDetail() {
         },
       ).catchError((err) {
         store.dispatch(FetchShopDetailFailedAction(error: err.toString()));
+        _handleUnauthorisedException(store, err, action);
       });
     }
     next(action);
@@ -327,6 +330,7 @@ Middleware<AppState> _createFetchGoods() {
         },
       ).catchError((err) {
         action.completer.completeError(err.toString());
+        _handleUnauthorisedException(store, err, action);
       });
     }
     next(action);
@@ -347,6 +351,7 @@ Middleware<AppState> _createProductDetail() {
         },
       ).catchError((err) {
         action.completer.completeError(err);
+        _handleUnauthorisedException(store, err, action);
       });
     }
     next(action);
@@ -367,6 +372,7 @@ Middleware<AppState> _createPreOrder() {
         },
       ).catchError((err) {
         action.completer.completeError(err.toString());
+        _handleUnauthorisedException(store, err, action);
       });
     }
     next(action);
@@ -388,6 +394,7 @@ Middleware<AppState> _createOrder() {
         },
       ).catchError((err) {
         action.completer.completeError(err.toString());
+        _handleUnauthorisedException(store, err, action);
       });
     }
     next(action);
@@ -407,6 +414,7 @@ Middleware<AppState> _createPayment() {
         },
       ).catchError((err) {
         action.completer.completeError(err.toString());
+        _handleUnauthorisedException(store, err, action);
       });
     }
     next(action);
@@ -423,6 +431,7 @@ Middleware<AppState> _createAddCart() {
         },
       ).catchError((err) {
         action.completer.completeError(err.toString());
+        _handleUnauthorisedException(store, err, action);
       });
     }
     next(action);
@@ -441,6 +450,7 @@ Middleware<AppState> _createFetchCartList() {
         },
       ).catchError((err) {
         action.completer.completeError(err.toString());
+        _handleUnauthorisedException(store, err, action);
       });
     }
     next(action);
@@ -460,6 +470,7 @@ Middleware<AppState> _createUpdateCart() {
         },
       ).catchError((err) {
         action.completer.completeError(err.toString());
+        _handleUnauthorisedException(store, err, action);
       });
     }
     next(action);
@@ -478,6 +489,7 @@ Middleware<AppState> _createDeleteCart() {
         },
       ).catchError((err) {
         action.completer.completeError(err.toString());
+        _handleUnauthorisedException(store, err, action);
       });
     }
     next(action);
@@ -494,6 +506,7 @@ Middleware<AppState> _createSellerInfo() {
         },
       ).catchError((err) {
         action.completer.completeError(err.toString());
+        _handleUnauthorisedException(store, err, action);
       });
     }
     next(action);
@@ -512,6 +525,7 @@ Middleware<AppState> _createIdolLinks() {
         },
       ).catchError((err) {
         action.completer.completeError(err.toString());
+        _handleUnauthorisedException(store, err, action);
       });
     }
     next(action);
@@ -533,6 +547,7 @@ Middleware<AppState> _createFetchShopGoods() {
         },
       ).catchError((err) {
         action.completer.completeError(err.toString());
+        _handleUnauthorisedException(store, err, action);
       });
     }
     next(action);
@@ -572,4 +587,18 @@ Middleware<AppState> _createSignin() {
     }
     next(action);
   };
+}
+
+_handleUnauthorisedException(
+    Store<AppState> store, dynamic error, dynamic action) {
+  if (error is UnauthorisedException) {
+    Networking.request(AnonymousLoginAPI()).then(
+      (data) {
+        final user = User.fromMap(data['data']);
+        store.dispatch(LocalUpdateUserAction(user));
+        store.dispatch(OnAuthenticatedAction(user));
+        store.dispatch(action);
+      },
+    ).catchError((err) {});
+  }
 }
