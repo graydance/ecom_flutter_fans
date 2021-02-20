@@ -5,7 +5,7 @@ import 'package:intl/intl.dart';
 
 import 'package:fans/models/models.dart';
 import 'package:fans/r.g.dart';
-import 'package:fans/screen/components/meida_carousel_widget.dart';
+import 'package:fans/screen/components/media_carousel_widget.dart';
 
 class ProductFeedItem extends StatelessWidget {
   final String currency;

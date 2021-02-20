@@ -9,7 +9,6 @@ import 'package:redux/redux.dart';
 
 import 'package:fans/models/models.dart';
 import 'package:fans/r.g.dart';
-import 'package:fans/screen/components/emtpy_view.dart';
 import 'package:fans/screen/components/quantity_editing_button.dart';
 import 'package:fans/screen/order/pre_order_screen.dart';
 import 'package:fans/store/actions.dart';
