@@ -254,7 +254,8 @@ class _ShopScreenState extends State<ShopScreen>
                             return GestureDetector(
                               onTap: () {
                                 StoreProvider.of<AppState>(context).dispatch(
-                                    ShowProductDetailAction(model.idolGoodsId));
+                                    ShowProductDetailAction(
+                                        'nA8aZRZB')); //model.idolGoodsId
                                 Keys.navigatorKey.currentState
                                     .pushNamed(Routes.productDetail);
                               },

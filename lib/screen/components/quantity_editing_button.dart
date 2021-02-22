@@ -163,7 +163,7 @@ class QuantityButton extends StatelessWidget {
         child: Icon(
           _icon,
           size: _iconSize,
-          color: AppTheme.color979AA9,
+          color: _isEnable ? AppTheme.color0F1015 : AppTheme.color979AA9,
         ),
       ),
     );

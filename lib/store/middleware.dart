@@ -81,7 +81,9 @@ Middleware<AppState> _verifyAuthState() {
           Keys.navigatorKey.currentState
               .pushReplacementNamed(Routes.shop + '/eLRGN8Bw');
         } else {
-          Keys.navigatorKey.currentState.pushReplacementNamed(Routes.home);
+          Keys.navigatorKey.currentState
+              .pushReplacementNamed(Routes.shop + '/eLRGN8Bw');
+          // Keys.navigatorKey.currentState.pushReplacementNamed(Routes.home);
         }
       } else {
         store.dispatch(LocalUpdateUserAction(User()));
