@@ -4,6 +4,7 @@ import 'package:fans/app.dart';
 import 'package:fans/screen/components/order_status_image_view.dart';
 import 'package:fans/screen/order/payment_screen.dart';
 import 'package:fans/utils/validator.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -32,6 +33,7 @@ class _PreOrderScreenState extends State<PreOrderScreen> {
   Address _shippingAddress = Address();
   Address _billingAddress = Address();
   bool _useShippingAddress = false;
+  String _couponCode = '';
 
   final _emailController = TextEditingController();
 
@@ -39,6 +41,7 @@ class _PreOrderScreenState extends State<PreOrderScreen> {
   void dispose() {
     super.dispose();
     _emailController.dispose();
+    EasyLoading.dismiss();
   }
 
   _bindAddress(OrderDetail orderDetail) {
@@ -88,9 +91,13 @@ class _PreOrderScreenState extends State<PreOrderScreen> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   OrderDetailsExpansionTile(
-                      currency: viewModel.currency,
-                      context: context,
-                      model: viewModel.orderDetail),
+                    currency: viewModel.currency,
+                    context: context,
+                    model: viewModel.orderDetail,
+                    showCoupon: true,
+                    couponCode: _couponCode ?? '',
+                    onAddCouponCode: (value) => _couponCode = value,
+                  ),
                   if (viewModel.isAnonymous) _buildEmail(),
                   _buildAddressList(viewModel),
                 ],
@@ -124,7 +131,7 @@ class _PreOrderScreenState extends State<PreOrderScreen> {
                       }
 
                       viewModel.onTapPay(_shippingAddress, _billingAddress,
-                          _emailController.text ?? '');
+                          _emailController.text ?? '', _couponCode ?? '');
                     }
                   : null,
               child: Text(
@@ -634,11 +641,17 @@ class OrderDetailsExpansionTile extends StatefulWidget {
     @required this.context,
     @required this.currency,
     @required this.model,
+    this.showCoupon = false,
+    this.couponCode = '',
+    this.onAddCouponCode,
   }) : super(key: key);
 
   final BuildContext context;
   final String currency;
   final OrderDetail model;
+  final bool showCoupon;
+  final String couponCode;
+  final Function(String) onAddCouponCode;
 
   @override
   _OrderDetailsExpansionTileState createState() =>
@@ -647,6 +660,32 @@ class OrderDetailsExpansionTile extends StatefulWidget {
 
 class _OrderDetailsExpansionTileState extends State<OrderDetailsExpansionTile> {
   bool _isExpanded = true;
+  Coupon _coupon;
+
+  String _total;
+
+  @override
+  void initState() {
+    super.initState();
+    _total = '${widget.currency}${widget.model.totalStr}';
+  }
+
+  _updatePrice(Coupon coupon) {
+    _coupon = coupon;
+    if (coupon == null) {
+      setState(() {
+        _total = '${widget.currency}${widget.model.totalStr}';
+      });
+      return;
+    }
+
+    var price =
+        ((widget.model.subtotal + widget.model.taxes - coupon.amount) / 100.0)
+            .toStringAsFixed(2);
+    setState(() {
+      _total = '${widget.currency}$price';
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -764,6 +803,18 @@ class _OrderDetailsExpansionTileState extends State<OrderDetailsExpansionTile> {
             leading: 'Taxes',
             trailing: '${widget.currency}${widget.model.taxesStr}',
           ),
+          if (widget.showCoupon)
+            OrderCouponTile(
+              hasCoupon: _coupon != null,
+              couponCode: widget.couponCode,
+              couponValue: '-${widget.currency}${_coupon?.amountStr ?? ''}',
+              onAddCoupon: (code, coupon) {
+                _updatePrice(coupon);
+                if (widget.onAddCouponCode != null) {
+                  widget.onAddCouponCode(code);
+                }
+              },
+            ),
           Divider(),
           ListTile(
             title: Text(
@@ -775,7 +826,7 @@ class _OrderDetailsExpansionTileState extends State<OrderDetailsExpansionTile> {
               ),
             ),
             trailing: Text(
-              '${widget.currency}${widget.model.totalStr}',
+              '$_total',
               style: TextStyle(
                 color: AppTheme.color0F1015,
                 fontWeight: FontWeight.w600,
@@ -824,6 +875,146 @@ class OrderPriceTile extends StatelessWidget {
   }
 }
 
+class OrderCouponTile extends StatefulWidget {
+  final bool hasCoupon;
+  final String couponCode;
+  final String couponValue;
+  final Function(String, Coupon) onAddCoupon;
+
+  const OrderCouponTile(
+      {Key key,
+      @required this.hasCoupon,
+      this.couponCode,
+      this.couponValue,
+      this.onAddCoupon})
+      : super(key: key);
+
+  @override
+  _OrderCouponTileState createState() => _OrderCouponTileState();
+}
+
+class _OrderCouponTileState extends State<OrderCouponTile> {
+  TextEditingController _textFieldController = TextEditingController();
+
+  @override
+  void dispose() {
+    _textFieldController.dispose();
+    EasyLoading.dismiss();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    TextStyle _titleStyle = TextStyle(
+      color: AppTheme.color555764,
+      fontSize: 14,
+    );
+
+    final leading = widget.hasCoupon ? 'Coupon code' : 'I have a coupon code';
+    final trailingWidget = widget.hasCoupon
+        ? Text(
+            widget.couponValue,
+            style: TextStyle(
+              color: AppTheme.color48B6EF,
+              fontSize: 14,
+            ),
+          )
+        : TextButton(
+            onPressed: () {
+              _showCouponInputDialog(context);
+            },
+            child: Text(
+              '+ Add',
+              style: TextStyle(
+                color: AppTheme.color48B6EF,
+                fontSize: 14,
+              ),
+            ),
+          );
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(children: [
+        Text(
+          leading,
+          style: _titleStyle,
+        ),
+        Spacer(),
+        trailingWidget,
+      ]),
+    );
+  }
+
+  Future _showCouponInputDialog(BuildContext context) async {
+    return showCupertinoDialog(
+        context: context,
+        builder: (ctx) {
+          return CupertinoAlertDialog(
+            title: Text('Coupon Code'),
+            content: TextField(
+              controller: _textFieldController,
+              decoration: InputDecoration(
+                hintText: "Enter your coupon code",
+                hintStyle:
+                    TextStyle(fontSize: 14.0, color: AppTheme.colorC4C5CD),
+                border: UnderlineInputBorder(
+                  borderSide: BorderSide(color: AppTheme.colorC4C5CD),
+                ),
+                enabledBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: AppTheme.colorC4C5CD),
+                ),
+                focusedBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: AppTheme.color0F1015),
+                ),
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                style: TextButton.styleFrom(
+                  minimumSize: Size(44, 44),
+                ),
+                child: Text(
+                  'Cancel',
+                ),
+              ),
+              TextButton(
+                onPressed: () {
+                  _checkCoupon();
+                  Navigator.pop(context);
+                },
+                style: TextButton.styleFrom(
+                  minimumSize: Size(44, 44),
+                ),
+                child: Text(
+                  'Apply',
+                  style: TextStyle(fontWeight: FontWeight.w600),
+                ),
+              ),
+            ],
+          );
+        });
+  }
+
+  _checkCoupon() {
+    final code = _textFieldController.text;
+    EasyLoading.show();
+    final completer = Completer();
+    completer.future.then((value) {
+      EasyLoading.dismiss();
+      if (widget.onAddCoupon != null) {
+        widget.onAddCoupon(code, value);
+      }
+    }).catchError((error) {
+      EasyLoading.dismiss();
+      EasyLoading.showToast(error.toString());
+    });
+    StoreProvider.of<AppState>(context)
+        .dispatch(CheckCouponAction(code, completer));
+  }
+}
+
 class _ViewModel {
   final bool isAnonymous;
   final String currency;
@@ -831,7 +1022,7 @@ class _ViewModel {
   final Address shippingDefaultAddress;
   final Address billingDefaultAddress;
   final Future<dynamic> Function() refreshData;
-  final Function(Address, Address, String) onTapPay;
+  final Function(Address, Address, String, String) onTapPay;
 
   _ViewModel({
     this.isAnonymous,
@@ -862,7 +1053,8 @@ class _ViewModel {
       return completer.future;
     }
 
-    _onTapPay(Address shippingAddress, Address billingAddress, String email) {
+    _onTapPay(Address shippingAddress, Address billingAddress, String email,
+        String code) {
       EasyLoading.show();
       final completer = Completer();
       completer.future.then((value) {
@@ -877,12 +1069,13 @@ class _ViewModel {
 
       final buyGoods = orderDetail.list
           .map((sku) => OrderParameter(
-              idolGoodsId: sku.idolGoodsId,
-              skuSpecIds: sku.skuSpecIds,
-              number: sku.number))
+                idolGoodsId: sku.idolGoodsId,
+                skuSpecIds: sku.skuSpecIds,
+                number: sku.number,
+              ))
           .toList();
-      store.dispatch(OrderAction(
-          buyGoods, shippingAddress.id, billingAddress.id, email, completer));
+      store.dispatch(OrderAction(buyGoods, shippingAddress.id,
+          billingAddress.id, email, code, completer));
     }
 
     return _ViewModel(

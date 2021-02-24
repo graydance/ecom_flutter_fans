@@ -9,9 +9,9 @@ class PayInfo {
   final String cancelUrl;
 
   const PayInfo({
-    this.payLink,
-    this.returnUrl,
-    this.cancelUrl,
+    this.payLink = '',
+    this.returnUrl = '',
+    this.cancelUrl = '',
   });
 
   Map<String, dynamic> toMap() {

@@ -10,10 +10,10 @@ class SpecValues {
   final String updatedAt;
 
   const SpecValues({
-    this.id,
-    this.specValue,
-    this.createdAt,
-    this.updatedAt,
+    this.id = 0,
+    this.specValue = '',
+    this.createdAt = '',
+    this.updatedAt = '',
   });
 
   SpecValues copyWith({

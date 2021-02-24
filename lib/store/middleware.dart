@@ -41,6 +41,7 @@ List<Middleware<AppState>> createStoreMiddleware() {
   final anonymousLogin = _createAnonymousLogin();
   final signin = _createSignin();
   final payCapture = _createPayCapture();
+  final checkCoupon = _createCheckCoupon();
 
   return [
     TypedMiddleware<AppState, VerifyAuthenticationState>(verifyAuthState),
@@ -69,6 +70,7 @@ List<Middleware<AppState>> createStoreMiddleware() {
     TypedMiddleware<AppState, AnonymousLoginAction>(anonymousLogin),
     TypedMiddleware<AppState, SignInAction>(signin),
     TypedMiddleware<AppState, PayCaptureAction>(payCapture),
+    TypedMiddleware<AppState, CheckCouponAction>(checkCoupon),
   ];
 }
 
@@ -389,6 +391,7 @@ Middleware<AppState> _createOrder() {
         action.shippingAddressId,
         action.billingAddressId,
         action.email,
+        action.code,
       )).then(
         (data) {
           final model = data['data'];
@@ -598,6 +601,28 @@ Middleware<AppState> _createPayCapture() {
       Networking.request(PayCaptureAPI(action.payNumber)).then(
         (data) {
           action.completer.complete(data['data']);
+        },
+      ).catchError((err) {
+        action.completer.completeError(err.toString());
+      });
+    }
+    next(action);
+  };
+}
+
+Middleware<AppState> _createCheckCoupon() {
+  return (Store<AppState> store, action, NextDispatcher next) {
+    if (action is CheckCouponAction) {
+      Networking.request(CheckCouponAPI(
+        action.code,
+      )).then(
+        (data) {
+          final model = Coupon.fromMap(data['data']);
+          if (model.canUse) {
+            action.completer.complete(model);
+          } else {
+            action.completer.completeError('Coupon code is invalid.');
+          }
         },
       ).catchError((err) {
         action.completer.completeError(err.toString());

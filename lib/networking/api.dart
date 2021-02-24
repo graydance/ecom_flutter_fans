@@ -223,9 +223,10 @@ class OrderAPI extends API {
   final String shippingAddressId;
   final String billingAddressId;
   final String email;
+  final String code;
 
-  OrderAPI(
-      this.buyGoods, this.shippingAddressId, this.billingAddressId, this.email);
+  OrderAPI(this.buyGoods, this.shippingAddressId, this.billingAddressId,
+      this.email, this.code);
 
   @override
   Map<String, dynamic> get parameters => {
@@ -233,6 +234,7 @@ class OrderAPI extends API {
         'addressId': shippingAddressId,
         'billAddressId': billingAddressId,
         'email': email,
+        'code': code,
       };
 
   @override
@@ -334,4 +336,15 @@ class PayCaptureAPI extends API {
   Map<String, dynamic> get parameters => {'payNumber': payNumber};
 
   String get path => '/user/good/pay_capture';
+}
+
+class CheckCouponAPI extends API {
+  final String code;
+
+  CheckCouponAPI(this.code);
+
+  @override
+  Map<String, dynamic> get parameters => {'code': code};
+
+  String get path => '/user/pub/coupon_validate';
 }

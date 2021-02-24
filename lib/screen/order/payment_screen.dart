@@ -142,7 +142,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                           ),
                           Expanded(
                             child: Text(
-                              'FedEx Group',
+                              'Satndard Express  15 - 30 days',
                               style: TextStyle(
                                 color: AppTheme.color555764,
                                 fontSize: 12,

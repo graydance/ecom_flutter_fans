@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:fans/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 
@@ -44,9 +45,17 @@ class _PaymentResultScreenState extends State<PaymentResultScreen> {
     _confirmPayStatus(widget.arguments.token);
     return Scaffold(
       body: Container(
-          child: _isLoading
-              ? Center(child: CircularProgressIndicator())
-              : Text(_message)),
+        child: _isLoading
+            ? Center(child: CircularProgressIndicator())
+            : Text(
+                _message,
+                style: TextStyle(
+                  fontSize: 14,
+                  color: AppTheme.color979AA9,
+                ),
+                textAlign: TextAlign.center,
+              ),
+      ),
     );
   }
 

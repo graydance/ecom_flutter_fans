@@ -34,6 +34,7 @@ class _CartScreenState extends State<CartScreen> {
   @override
   void dispose() {
     _debouncing.dispose();
+    EasyLoading.dismiss();
     super.dispose();
   }
 
@@ -538,7 +539,7 @@ class CartEmptyView extends StatelessWidget {
                   Keys.navigatorKey.currentState.pop();
                 },
                 child: Text(
-                  'Show now',
+                  'Shop now',
                   style: TextStyle(color: Colors.white),
                 ),
                 style: TextButton.styleFrom(
