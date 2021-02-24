@@ -324,3 +324,14 @@ class AnonymousLoginAPI extends API {
   @override
   String get path => '/user/pub/virtual_login';
 }
+
+class PayCaptureAPI extends API {
+  final String payNumber;
+
+  PayCaptureAPI(this.payNumber);
+
+  @override
+  Map<String, dynamic> get parameters => {'payNumber': payNumber};
+
+  String get path => '/user/good/pay_capture';
+}

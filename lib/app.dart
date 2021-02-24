@@ -1,3 +1,4 @@
+import 'package:fans/screen/order/payment_result_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
@@ -81,6 +82,7 @@ class _ReduxAppState extends State<ReduxApp> {
             Routes.paymentSuccess: (context) => PaymentSuccessScreen(),
             Routes.shop: (context) => ShopScreen(),
             Routes.signin: (context) => SignInScreen(),
+            Routes.paypalResult: (context) => PaymentResultScreen(),
           },
           builder: EasyLoading.init(),
           onGenerateRoute: RouteConfiguration.onGenerateRoute,
@@ -110,18 +112,22 @@ class Routes {
   static final paymentSuccess = '/payment_success';
   static final shopDetail = '/shop_detail';
   static final signin = '/sign_in';
+  static final paypalPayment = '/paypal_payment';
+  static final paypalResult = '/paypal_result';
 }
 
 class Path {
-  const Path(this.pattern, this.builder);
+  const Path(this.pattern, this.useQueryString, this.builder);
 
   /// A RegEx string for route matching.
   final String pattern;
 
+  final bool useQueryString;
+
   /// The builder for the associated pattern route. The first argument is the
   /// [BuildContext] and the second argument is a RegEx match if it is
   /// included inside of the pattern.
-  final Widget Function(BuildContext, String) builder;
+  final Widget Function(BuildContext, dynamic) builder;
 }
 
 class RouteConfiguration {
@@ -133,8 +139,16 @@ class RouteConfiguration {
   static List<Path> paths = [
     Path(
       r'^' + Routes.shop + r'/([\w-]+)$',
+      false,
       (context, match) => ShopScreen(
         userId: match,
+      ),
+    ),
+    Path(
+      Routes.paypalResult,
+      true,
+      (context, args) => PaymentResultScreen(
+        arguments: args,
       ),
     ),
   ];
@@ -145,14 +159,24 @@ class RouteConfiguration {
   /// matching.
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     for (Path path in paths) {
-      final regExpPattern = RegExp(path.pattern);
-      if (regExpPattern.hasMatch(settings.name)) {
-        final firstMatch = regExpPattern.firstMatch(settings.name);
-        final match = (firstMatch.groupCount == 1) ? firstMatch.group(1) : null;
+      if (path.useQueryString && settings.name.startsWith(path.pattern)) {
+        final queryParameters = Uri.parse(settings.name).queryParameters;
         return MaterialPageRoute<void>(
-          builder: (context) => path.builder(context, match),
+          builder: (context) => path.builder(
+              context, PaymentResultArguments.fromMap(queryParameters)),
           settings: settings,
         );
+      } else {
+        final regExpPattern = RegExp(path.pattern);
+        if (regExpPattern.hasMatch(settings.name)) {
+          final firstMatch = regExpPattern.firstMatch(settings.name);
+          final match =
+              (firstMatch.groupCount == 1) ? firstMatch.group(1) : null;
+          return MaterialPageRoute<void>(
+            builder: (context) => path.builder(context, match),
+            settings: settings,
+          );
+        }
       }
     }
 

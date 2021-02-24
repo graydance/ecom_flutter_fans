@@ -40,6 +40,7 @@ List<Middleware<AppState>> createStoreMiddleware() {
   final fetchIdolGoods = _createFetchShopGoods();
   final anonymousLogin = _createAnonymousLogin();
   final signin = _createSignin();
+  final payCapture = _createPayCapture();
 
   return [
     TypedMiddleware<AppState, VerifyAuthenticationState>(verifyAuthState),
@@ -67,6 +68,7 @@ List<Middleware<AppState>> createStoreMiddleware() {
     TypedMiddleware<AppState, FetchIdolGoodsAction>(fetchIdolGoods),
     TypedMiddleware<AppState, AnonymousLoginAction>(anonymousLogin),
     TypedMiddleware<AppState, SignInAction>(signin),
+    TypedMiddleware<AppState, PayCaptureAction>(payCapture),
   ];
 }
 
@@ -78,8 +80,6 @@ Middleware<AppState> _verifyAuthState() {
       if (user.token.isNotEmpty) {
         store.dispatch(LocalUpdateUserAction(user));
         if (kIsWeb) {
-          Keys.navigatorKey.currentState
-              .pushReplacementNamed(Routes.shop + '/eLRGN8Bw');
         } else {
           Keys.navigatorKey.currentState
               .pushReplacementNamed(Routes.shop + '/eLRGN8Bw');
@@ -412,7 +412,8 @@ Middleware<AppState> _createPayment() {
       )).then(
         (data) {
           final response = data['data'];
-          action.completer.complete(response['payInfo']);
+          final payInfo = PayInfo.fromMap(response['payInfo']);
+          action.completer.complete(payInfo);
         },
       ).catchError((err) {
         action.completer.completeError(err.toString());
@@ -582,6 +583,21 @@ Middleware<AppState> _createSignin() {
           store.dispatch(LocalUpdateUserAction(user));
           store.dispatch(OnAuthenticatedAction(user));
           action.completer.complete();
+        },
+      ).catchError((err) {
+        action.completer.completeError(err.toString());
+      });
+    }
+    next(action);
+  };
+}
+
+Middleware<AppState> _createPayCapture() {
+  return (Store<AppState> store, action, NextDispatcher next) {
+    if (action is PayCaptureAction) {
+      Networking.request(PayCaptureAPI(action.payNumber)).then(
+        (data) {
+          action.completer.complete(data['data']);
         },
       ).catchError((err) {
         action.completer.completeError(err.toString());

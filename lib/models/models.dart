@@ -10,3 +10,4 @@ export './cart.dart';
 export './idol_link.dart';
 export './goods_spec.dart';
 export './goods_skus.dart';
+export './pay_info.dart';
