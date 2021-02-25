@@ -84,7 +84,7 @@ Middleware<AppState> _verifyAuthState() {
         if (kIsWeb) {
         } else {
           Keys.navigatorKey.currentState
-              .pushReplacementNamed(Routes.shop + '/eLRGN8Bw');
+              .pushReplacementNamed(Routes.shop + '/username1');
           // Keys.navigatorKey.currentState.pushReplacementNamed(Routes.home);
         }
       } else {
@@ -92,7 +92,7 @@ Middleware<AppState> _verifyAuthState() {
         store.dispatch(AnonymousLoginAction());
         if (kIsWeb) {
           Keys.navigatorKey.currentState
-              .pushReplacementNamed(Routes.shop + '/eLRGN8Bw');
+              .pushReplacementNamed(Routes.shop + '/username1');
         } else {
           Keys.navigatorKey.currentState.pushReplacementNamed(Routes.welcome);
         }
@@ -505,7 +505,7 @@ Middleware<AppState> _createDeleteCart() {
 Middleware<AppState> _createSellerInfo() {
   return (Store<AppState> store, action, NextDispatcher next) {
     if (action is FetchSellerInfoAction) {
-      Networking.request(ShopDetailAPI(action.userId)).then(
+      Networking.request(SellerInfoAPI(action.userName)).then(
         (data) {
           final seller = Feed.fromMap(data['data']);
           action.completer.complete(seller);
@@ -522,7 +522,7 @@ Middleware<AppState> _createSellerInfo() {
 Middleware<AppState> _createIdolLinks() {
   return (Store<AppState> store, action, NextDispatcher next) {
     if (action is FetchIdolLinksAction) {
-      Networking.request(IdolLinksAPI(action.userId)).then(
+      Networking.request(IdolLinksAPI(action.userName)).then(
         (data) {
           final response = data['data'] as List;
           List<IdolLink> models =
@@ -541,8 +541,8 @@ Middleware<AppState> _createIdolLinks() {
 Middleware<AppState> _createFetchShopGoods() {
   return (Store<AppState> store, action, NextDispatcher next) {
     if (action is FetchIdolGoodsAction) {
-      Networking.request(GoodsAPI(
-              userId: action.userId,
+      Networking.request(GoodsListAPI(
+              userName: action.userName,
               type: action.type,
               page: action.page,
               limit: action.limit))

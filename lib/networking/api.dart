@@ -116,6 +116,18 @@ class ShopDetailAPI extends API {
   String get path => '/user/pub/detail';
 }
 
+class SellerInfoAPI extends API {
+  final String userName;
+
+  SellerInfoAPI(this.userName);
+
+  @override
+  Map<String, dynamic> get parameters => {'userName': userName};
+
+  @override
+  String get path => '/user/pub/detail';
+}
+
 class FollowAPI extends API {
   final String userId;
 
@@ -139,6 +151,22 @@ class GoodsAPI extends API {
   @override
   Map<String, dynamic> get parameters =>
       {'userId': userId, 'type': type, 'page': page, 'limit': limit};
+
+  @override
+  String get path => '/user/pub/good_list';
+}
+
+class GoodsListAPI extends API {
+  final int type;
+  final String userName;
+  final int page;
+  final int limit;
+
+  GoodsListAPI({this.type, this.userName, this.page, this.limit});
+
+  @override
+  Map<String, dynamic> get parameters =>
+      {'userName': userName, 'type': type, 'page': page, 'limit': limit};
 
   @override
   String get path => '/user/pub/good_list';
