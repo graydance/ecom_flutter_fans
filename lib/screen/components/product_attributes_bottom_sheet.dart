@@ -8,6 +8,7 @@ import 'package:fans/r.g.dart';
 import 'package:fans/screen/components/quantity_editing_button.dart';
 import 'package:fans/screen/components/radio_grouped_buttons.dart/radio_grouped_buttons.dart';
 import 'package:fans/theme.dart';
+import 'package:photo_view/photo_view.dart';
 
 class ProductAttributesBottomSheet extends StatefulWidget {
   final ProductAttributesViewModel viewModel;
@@ -155,13 +156,28 @@ class _ProductAttributesBottomSheetState
           Positioned(
             top: -30,
             child: GestureDetector(
-              onTap: () => debugPrint('on tap product image'),
+              onTap: () {
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return Dialog(
+                      child: Container(
+                        child: PhotoView(
+                          tightMode: true,
+                          imageProvider: NetworkImage(sku.skuImage),
+                          heroAttributes: PhotoViewHeroAttributes(tag: sku.id),
+                        ),
+                      ),
+                    );
+                  },
+                );
+              },
               child: SizedBox(
                 height: 110,
                 width: 110,
                 child: Stack(
                   children: [
-                    FansImageView(url: sku.skuImage),
+                    Hero(tag: sku.id, child: FansImageView(url: sku.skuImage)),
                     Positioned(
                       right: 4,
                       bottom: 4,
@@ -310,9 +326,12 @@ class FansImageView extends StatelessWidget {
   Widget build(BuildContext context) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(4.0),
-      child: FadeInImage(
-        placeholder: R.image.kol_album_bg(),
-        image: NetworkImage(url),
+      child: Container(
+        color: AppTheme.colorF8F8F8,
+        child: FadeInImage(
+          placeholder: R.image.kol_album_bg(),
+          image: NetworkImage(url),
+        ),
       ),
     );
   }

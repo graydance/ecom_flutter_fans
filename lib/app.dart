@@ -80,7 +80,7 @@ class _ReduxAppState extends State<ReduxApp> {
             Routes.preOrder: (context) => PreOrderScreen(),
             Routes.payment: (context) => PaymentScreen(),
             Routes.paymentSuccess: (context) => PaymentSuccessScreen(),
-            Routes.shop: (context) => ShopInfoScreen(
+            Routes.shop: (context) => ShopScreen(
                   userName: '',
                 ),
             Routes.signin: (context) => SignInScreen(),
@@ -142,7 +142,7 @@ class RouteConfiguration {
     Path(
       r'^' + Routes.shop + r'/([\w-]+)$',
       false,
-      (context, match) => ShopInfoScreen(
+      (context, match) => ShopScreen(
         userName: match,
       ),
     ),
