@@ -81,34 +81,39 @@ class _ProductAttributesBottomSheetState
             SizedBox(
               height: 30,
             ),
-            ListView.separated(
-                shrinkWrap: true,
-                itemBuilder: (ctx, i) {
-                  return SpecItem(
-                    model: widget.viewModel.model.specList[i],
-                    disableIds: _disableSpecIds[i],
-                    valueChanged: (selectedItem) {
-                      _selectionSpecIds[i] = selectedItem.id;
-                      final sku = widget.viewModel.model.goodsSkus.firstWhere(
-                          (element) =>
-                              element.skuSpecIds ==
-                              _selectionSpecIds.join('_'));
+            ConstrainedBox(
+              constraints: BoxConstraints(
+                maxHeight: MediaQuery.of(context).size.height * 0.5,
+              ),
+              child: ListView.separated(
+                  shrinkWrap: true,
+                  itemBuilder: (ctx, i) {
+                    return SpecItem(
+                      model: widget.viewModel.model.specList[i],
+                      disableIds: _disableSpecIds[i],
+                      valueChanged: (selectedItem) {
+                        _selectionSpecIds[i] = selectedItem.id;
+                        final sku = widget.viewModel.model.goodsSkus.firstWhere(
+                            (element) =>
+                                element.skuSpecIds ==
+                                _selectionSpecIds.join('_'));
 
-                      final disableSpecIds =
-                          _getDisableSpecIds(i, selectedItem);
-                      setState(() {
-                        _currentSku = sku;
-                        _disableSpecIds = disableSpecIds;
-                      });
-                    },
-                  );
-                },
-                separatorBuilder: (ctx, index) {
-                  return SizedBox(
-                    height: 20,
-                  );
-                },
-                itemCount: widget.viewModel.model.specList.length),
+                        final disableSpecIds =
+                            _getDisableSpecIds(i, selectedItem);
+                        setState(() {
+                          _currentSku = sku;
+                          _disableSpecIds = disableSpecIds;
+                        });
+                      },
+                    );
+                  },
+                  separatorBuilder: (ctx, index) {
+                    return SizedBox(
+                      height: 20,
+                    );
+                  },
+                  itemCount: widget.viewModel.model.specList.length),
+            ),
             SizedBox(
               height: 20,
             ),
@@ -370,7 +375,7 @@ Future showProductAttributesBottomSheet(
             child: child,
           ),
       expand: false,
-      isDismissible: false);
+      isDismissible: true);
 }
 
 enum ProductAttributesActionType { addToCart, buyNow }

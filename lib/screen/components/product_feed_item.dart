@@ -1,4 +1,3 @@
-import 'package:fans/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
@@ -6,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:fans/models/models.dart';
 import 'package:fans/r.g.dart';
 import 'package:fans/screen/components/media_carousel_widget.dart';
+import 'package:fans/theme.dart';
 
 class ProductFeedItem extends StatelessWidget {
   final String currency;
@@ -83,16 +83,6 @@ class ProductFeedItem extends StatelessWidget {
                           ),
                         ),
                       ),
-                    Positioned(
-                      bottom: 0,
-                      left: 0,
-                      right: 0,
-                      height: 100,
-                      child: Image(
-                        image: R.image.product_mask_bg(),
-                        fit: BoxFit.fill,
-                      ),
-                    ),
                     // 购物车和收藏
                     if (!onlyShowImage)
                       Positioned(
