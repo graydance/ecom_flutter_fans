@@ -1,4 +1,3 @@
-import 'package:fans/screen/order/payment_result_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
@@ -10,8 +9,10 @@ import 'package:redux_logging/redux_logging.dart';
 import 'package:fans/models/appstate.dart';
 import 'package:fans/screen/home/shop_detail_screen.dart';
 import 'package:fans/screen/login/interest_list_screen.dart';
+import 'package:fans/screen/order/payment_result_screen.dart';
 import 'package:fans/screen/order/payment_screen.dart';
 import 'package:fans/screen/order/payment_success_screen.dart';
+import 'package:fans/screen/order/paypal_cancel_screen.dart';
 import 'package:fans/screen/screens.dart';
 import 'package:fans/screen/shop/shop_screen.dart';
 import 'package:fans/store/actions.dart';
@@ -116,6 +117,7 @@ class Routes {
   static final signin = '/sign_in';
   static final paypalPayment = '/paypal_payment';
   static final paypalResult = '/paypal_result';
+  static final paypalCancel = '/paypal_cancel';
 }
 
 class Path {
@@ -150,6 +152,13 @@ class RouteConfiguration {
       Routes.paypalResult,
       true,
       (context, args) => PaymentResultScreen(
+        arguments: args,
+      ),
+    ),
+    Path(
+      Routes.paypalCancel,
+      true,
+      (context, args) => PayPalCancelScreen(
         arguments: args,
       ),
     ),
