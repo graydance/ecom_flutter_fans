@@ -1,14 +1,15 @@
 import 'dart:async';
 
-import 'package:fans/app.dart';
-import 'package:fans/models/address.dart';
-import 'package:fans/screen/components/order_status_image_view.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
+import 'package:url_launcher/url_launcher.dart';
 
+import 'package:fans/models/address.dart';
 import 'package:fans/models/models.dart';
+import 'package:fans/screen/components/order_status_image_view.dart';
 import 'package:fans/screen/order/pre_order_screen.dart';
 import 'package:fans/store/actions.dart';
 import 'package:fans/theme.dart';
@@ -140,7 +141,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                           ),
                           Expanded(
                             child: Text(
-                              'FedEx Group',
+                              'Satndard Express  15 - 30 days',
                               style: TextStyle(
                                 color: AppTheme.color555764,
                                 fontSize: 12,
@@ -252,12 +253,13 @@ class _ViewModel {
   final String orderId;
   final VoidCallback onTapPay;
 
-  _ViewModel(
-      {this.currency,
-      this.orderDetail,
-      this.shippingAddress,
-      this.orderId,
-      this.onTapPay});
+  _ViewModel({
+    this.currency,
+    this.orderDetail,
+    this.shippingAddress,
+    this.orderId,
+    this.onTapPay,
+  });
 
   static _ViewModel fromStore(
       Store<AppState> store, PaymentScreenParams params) {
@@ -267,9 +269,8 @@ class _ViewModel {
       completer.future.then((value) {
         EasyLoading.dismiss();
         debugPrint('push to payment with $value');
-        Keys.navigatorKey.currentState.pushNamedAndRemoveUntil(
-            Routes.paymentSuccess, (route) => route.isFirst,
-            arguments: params.number);
+        final payInfo = value as PayInfo;
+        launch(payInfo.payLink);
       }).catchError((error) {
         EasyLoading.dismiss();
         EasyLoading.showToast(error.toString());

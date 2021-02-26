@@ -116,6 +116,18 @@ class ShopDetailAPI extends API {
   String get path => '/user/pub/detail';
 }
 
+class SellerInfoAPI extends API {
+  final String userName;
+
+  SellerInfoAPI(this.userName);
+
+  @override
+  Map<String, dynamic> get parameters => {'userName': userName};
+
+  @override
+  String get path => '/user/pub/detail';
+}
+
 class FollowAPI extends API {
   final String userId;
 
@@ -139,6 +151,22 @@ class GoodsAPI extends API {
   @override
   Map<String, dynamic> get parameters =>
       {'userId': userId, 'type': type, 'page': page, 'limit': limit};
+
+  @override
+  String get path => '/user/pub/good_list';
+}
+
+class GoodsListAPI extends API {
+  final int type;
+  final String userName;
+  final int page;
+  final int limit;
+
+  GoodsListAPI({this.type, this.userName, this.page, this.limit});
+
+  @override
+  Map<String, dynamic> get parameters =>
+      {'userName': userName, 'type': type, 'page': page, 'limit': limit};
 
   @override
   String get path => '/user/pub/good_list';
@@ -223,9 +251,10 @@ class OrderAPI extends API {
   final String shippingAddressId;
   final String billingAddressId;
   final String email;
+  final String code;
 
-  OrderAPI(
-      this.buyGoods, this.shippingAddressId, this.billingAddressId, this.email);
+  OrderAPI(this.buyGoods, this.shippingAddressId, this.billingAddressId,
+      this.email, this.code);
 
   @override
   Map<String, dynamic> get parameters => {
@@ -233,6 +262,7 @@ class OrderAPI extends API {
         'addressId': shippingAddressId,
         'billAddressId': billingAddressId,
         'email': email,
+        'code': code,
       };
 
   @override
@@ -323,4 +353,26 @@ class IdolLinksAPI extends API {
 class AnonymousLoginAPI extends API {
   @override
   String get path => '/user/pub/virtual_login';
+}
+
+class PayCaptureAPI extends API {
+  final String payNumber;
+
+  PayCaptureAPI(this.payNumber);
+
+  @override
+  Map<String, dynamic> get parameters => {'payNumber': payNumber};
+
+  String get path => '/user/good/pay_capture';
+}
+
+class CheckCouponAPI extends API {
+  final String code;
+
+  CheckCouponAPI(this.code);
+
+  @override
+  Map<String, dynamic> get parameters => {'code': code};
+
+  String get path => '/user/pub/coupon_validate';
 }

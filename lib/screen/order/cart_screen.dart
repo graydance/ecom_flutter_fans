@@ -9,7 +9,6 @@ import 'package:redux/redux.dart';
 
 import 'package:fans/models/models.dart';
 import 'package:fans/r.g.dart';
-import 'package:fans/screen/components/emtpy_view.dart';
 import 'package:fans/screen/components/quantity_editing_button.dart';
 import 'package:fans/screen/order/pre_order_screen.dart';
 import 'package:fans/store/actions.dart';
@@ -35,6 +34,7 @@ class _CartScreenState extends State<CartScreen> {
   @override
   void dispose() {
     _debouncing.dispose();
+    EasyLoading.dismiss();
     super.dispose();
   }
 
@@ -539,7 +539,7 @@ class CartEmptyView extends StatelessWidget {
                   Keys.navigatorKey.currentState.pop();
                 },
                 child: Text(
-                  'Show now',
+                  'Shop now',
                   style: TextStyle(color: Colors.white),
                 ),
                 style: TextButton.styleFrom(

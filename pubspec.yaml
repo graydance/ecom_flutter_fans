@@ -24,11 +24,8 @@ dependencies:
   flutter_staggered_grid_view:
     git:
       url: 'https://github.com/letsar/flutter_staggered_grid_view.git'
-  extended_nested_scroll_view:
-    git:
-      url: 'https://github.com/fluttercandies/extended_nested_scroll_view.git'
-      ref: dev
   url_launcher: ^5.7.10
+  photo_view: ^0.10.3
 dev_dependencies:
   flutter_test:
     sdk: flutter

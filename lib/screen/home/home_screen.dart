@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:fans/app.dart';
 import 'package:fans/screen/components/cart_button.dart';
-import 'package:fans/screen/components/emtpy_view.dart';
+import 'package:fans/screen/components/empty_view.dart';
 import 'package:fans/screen/components/product_feed_item.dart';
 import 'package:fans/screen/components/tag_button.dart';
 import 'package:fans/screen/components/verified_username_view.dart';
@@ -19,7 +19,7 @@ import 'package:fans/models/models.dart';
 import 'package:fans/r.g.dart';
 import 'package:fans/screen/components/avatar_widget.dart';
 import 'package:fans/screen/components/follow_button.dart';
-import 'package:fans/screen/components/meida_carousel_widget.dart';
+import 'package:fans/screen/components/media_carousel_widget.dart';
 
 class HomeScreen extends StatefulWidget {
   HomeScreen({Key key}) : super(key: key);

@@ -144,10 +144,11 @@ class OrderAction {
   final String shippingAddressId;
   final String billingAddressId;
   final String email;
+  final String code;
   final Completer completer;
 
   OrderAction(this.buyGoods, this.shippingAddressId, this.billingAddressId,
-      this.email, this.completer);
+      this.email, this.code, this.completer);
 }
 
 class PayAction {
@@ -189,4 +190,11 @@ class OnUpdateCartAction {
   final Cart cart;
 
   OnUpdateCartAction(this.cart);
+}
+
+class CheckCouponAction {
+  final String code;
+  final Completer completer;
+
+  CheckCouponAction(this.code, this.completer);
 }

@@ -8,3 +8,7 @@ export './order_detail.dart';
 export './order_sku.dart';
 export './cart.dart';
 export './idol_link.dart';
+export './goods_spec.dart';
+export './goods_skus.dart';
+export './pay_info.dart';
+export './coupon.dart';
