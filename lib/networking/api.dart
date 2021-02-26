@@ -1,8 +1,6 @@
-import 'dart:convert';
-import 'dart:math';
+import 'package:flutter/material.dart';
 
 import 'package:fans/models/models.dart';
-import 'package:flutter/material.dart';
 
 enum HttpMethod { GET, POST }
 
@@ -115,7 +113,19 @@ class ShopDetailAPI extends API {
   Map<String, dynamic> get parameters => {'userId': userId};
 
   @override
-  String get path => '/user/detail';
+  String get path => '/user/pub/detail';
+}
+
+class SellerInfoAPI extends API {
+  final String userName;
+
+  SellerInfoAPI(this.userName);
+
+  @override
+  Map<String, dynamic> get parameters => {'userName': userName};
+
+  @override
+  String get path => '/user/pub/detail';
 }
 
 class FollowAPI extends API {
@@ -141,6 +151,22 @@ class GoodsAPI extends API {
   @override
   Map<String, dynamic> get parameters =>
       {'userId': userId, 'type': type, 'page': page, 'limit': limit};
+
+  @override
+  String get path => '/user/pub/good_list';
+}
+
+class GoodsListAPI extends API {
+  final int type;
+  final String userName;
+  final int page;
+  final int limit;
+
+  GoodsListAPI({this.type, this.userName, this.page, this.limit});
+
+  @override
+  Map<String, dynamic> get parameters =>
+      {'userName': userName, 'type': type, 'page': page, 'limit': limit};
 
   @override
   String get path => '/user/pub/good_list';
@@ -224,14 +250,19 @@ class OrderAPI extends API {
   final List<OrderParameter> buyGoods;
   final String shippingAddressId;
   final String billingAddressId;
+  final String email;
+  final String code;
 
-  OrderAPI(this.buyGoods, this.shippingAddressId, this.billingAddressId);
+  OrderAPI(this.buyGoods, this.shippingAddressId, this.billingAddressId,
+      this.email, this.code);
 
   @override
   Map<String, dynamic> get parameters => {
         'buyGoods': buyGoods.map((e) => e.toMap()).toList(),
         'addressId': shippingAddressId,
         'billAddressId': billingAddressId,
+        'email': email,
+        'code': code,
       };
 
   @override
@@ -305,4 +336,43 @@ class DeleteCartAPI extends API {
 
   @override
   String get path => '/user/good/del_cart';
+}
+
+class IdolLinksAPI extends API {
+  final String userId;
+
+  IdolLinksAPI(this.userId);
+
+  @override
+  Map<String, dynamic> get parameters => {'userId': userId};
+
+  @override
+  String get path => '/user/pub/link';
+}
+
+class AnonymousLoginAPI extends API {
+  @override
+  String get path => '/user/pub/virtual_login';
+}
+
+class PayCaptureAPI extends API {
+  final String payNumber;
+
+  PayCaptureAPI(this.payNumber);
+
+  @override
+  Map<String, dynamic> get parameters => {'payNumber': payNumber};
+
+  String get path => '/user/good/pay_capture';
+}
+
+class CheckCouponAPI extends API {
+  final String code;
+
+  CheckCouponAPI(this.code);
+
+  @override
+  Map<String, dynamic> get parameters => {'code': code};
+
+  String get path => '/user/pub/coupon_validate';
 }

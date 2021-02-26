@@ -1,14 +1,15 @@
 import 'dart:async';
 
-import 'package:fans/app.dart';
-import 'package:fans/models/address.dart';
-import 'package:fans/screen/components/order_status_image_view.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
+import 'package:url_launcher/url_launcher.dart';
 
+import 'package:fans/models/address.dart';
 import 'package:fans/models/models.dart';
+import 'package:fans/screen/components/order_status_image_view.dart';
 import 'package:fans/screen/order/pre_order_screen.dart';
 import 'package:fans/store/actions.dart';
 import 'package:fans/theme.dart';
@@ -17,8 +18,9 @@ import 'package:fans/theme.dart';
 class PaymentScreenParams {
   final Address shippAddress;
   final String orderId;
+  final String number;
 
-  PaymentScreenParams(this.shippAddress, this.orderId);
+  PaymentScreenParams(this.shippAddress, this.orderId, this.number);
 }
 
 class PaymentScreen extends StatefulWidget {
@@ -49,6 +51,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 OrderDetailsExpansionTile(
+                  currency: viewModel.currency,
                   context: context,
                   model: viewModel.orderDetail,
                 ),
@@ -138,7 +141,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                           ),
                           Expanded(
                             child: Text(
-                              'FedEx Group',
+                              'Satndard Express  15 - 30 days',
                               style: TextStyle(
                                 color: AppTheme.color555764,
                                 fontSize: 12,
@@ -225,7 +228,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
             child: TextButton(
               onPressed: viewModel.onTapPay,
               child: Text(
-                'Pay \$${viewModel.orderDetail.totalStr}'.toUpperCase(),
+                'Pay ${viewModel.currency}${viewModel.orderDetail.totalStr}'
+                    .toUpperCase(),
                 style: TextStyle(color: Colors.white),
               ),
               style: TextButton.styleFrom(
@@ -243,13 +247,19 @@ class _PaymentScreenState extends State<PaymentScreen> {
 }
 
 class _ViewModel {
+  final String currency;
   final OrderDetail orderDetail;
   final String shippingAddress;
   final String orderId;
   final VoidCallback onTapPay;
 
-  _ViewModel(
-      {this.orderDetail, this.shippingAddress, this.orderId, this.onTapPay});
+  _ViewModel({
+    this.currency,
+    this.orderDetail,
+    this.shippingAddress,
+    this.orderId,
+    this.onTapPay,
+  });
 
   static _ViewModel fromStore(
       Store<AppState> store, PaymentScreenParams params) {
@@ -259,10 +269,8 @@ class _ViewModel {
       completer.future.then((value) {
         EasyLoading.dismiss();
         debugPrint('push to payment with $value');
-        EasyLoading.showToast('Payment successful');
-        Keys.navigatorKey.currentState.pushNamedAndRemoveUntil(
-            Routes.paymentSuccess, ModalRoute.withName(Routes.home),
-            arguments: params.orderId);
+        final payInfo = value as PayInfo;
+        launch(payInfo.payLink);
       }).catchError((error) {
         EasyLoading.dismiss();
         EasyLoading.showToast(error.toString());
@@ -275,6 +283,7 @@ class _ViewModel {
     final address =
         '${_shippAddress.firstName} ${_shippAddress.lastName}, ${_shippAddress.addressLine1} ${_shippAddress.addressLine2}, ${_shippAddress.city}, ${_shippAddress.province}, ${_shippAddress.country}, ${_shippAddress.zipCode}';
     return _ViewModel(
+      currency: store.state.auth.user.monetaryUnit,
       orderDetail: store.state.preOrder.orderDetail,
       shippingAddress: address,
       orderId: params.orderId,

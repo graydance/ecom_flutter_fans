@@ -7,12 +7,16 @@ class APIException implements Exception {
   APIException(this.code, this.message);
 
   factory APIException.fromResponse(Map<String, dynamic> response) {
-    var code = response['code'];
+    int code = response['code'];
     var message = response['msg'];
-    if (code == 401) {
-      return UnauthorisedException(code, "没有权限");
+    switch (code) {
+      case 401:
+      case 402:
+      case 403:
+        return UnauthorisedException(code, "Token is expired");
+      default:
+        return APIException(code, message);
     }
-    return APIException(code, message);
   }
 
   factory APIException.create(DioError error) {
@@ -39,6 +43,9 @@ class APIException implements Exception {
         break;
       case DioErrorType.RESPONSE:
         {
+          if (error.response == null) {
+            return BadRequestException(-1, "Response is empty!");
+          }
           try {
             int errCode = error.response.statusCode;
             switch (errCode) {

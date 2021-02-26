@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:fans/app.dart';
 import 'package:fans/screen/components/order_status_image_view.dart';
 import 'package:fans/screen/order/payment_screen.dart';
+import 'package:fans/utils/validator.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -16,6 +18,7 @@ import 'package:fans/r.g.dart';
 import 'package:fans/screen/components/address_form.dart';
 import 'package:fans/store/actions.dart';
 import 'package:fans/theme.dart';
+import 'package:fans/utils/list_extension.dart';
 
 class PreOrderScreen extends StatefulWidget {
   PreOrderScreen({Key key}) : super(key: key);
@@ -30,19 +33,45 @@ class _PreOrderScreenState extends State<PreOrderScreen> {
   Address _shippingAddress = Address();
   Address _billingAddress = Address();
   bool _useShippingAddress = false;
+  String _couponCode = '';
+
+  final _emailController = TextEditingController();
+
+  @override
+  void dispose() {
+    super.dispose();
+    _emailController.dispose();
+    EasyLoading.dismiss();
+  }
+
+  _bindAddress(OrderDetail orderDetail) {
+    if (_shippingAddress != null && _shippingAddress.id.isNotEmpty) return;
+
+    _shippingAddress = orderDetail.addresses
+        .firstWhere((e) => e.isDefault == 1, orElse: () => null);
+    if (_shippingAddress == null) {
+      _shippingAddress = orderDetail.addresses.firstOrNull() ?? Address();
+    }
+    _billingAddress = orderDetail.addresses
+        .firstWhere((e) => e.isBillDefault == 1, orElse: () => null);
+    if (_billingAddress == null) {
+      _billingAddress = orderDetail.addresses.firstOrNull() ?? Address();
+    }
+    _useShippingAddress =
+        _billingAddress.id.isEmpty || _billingAddress == _shippingAddress;
+  }
 
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _ViewModel>(
       converter: _ViewModel.fromStore,
       onInit: (store) {
-        final orderDetail = store.state.preOrder.orderDetail;
-        _shippingAddress = orderDetail.addresses
-            .firstWhere((e) => e.isDefault == 1, orElse: () => Address());
-        _billingAddress = orderDetail.addresses
-            .firstWhere((e) => e.isBillDefault == 1, orElse: () => Address());
-        _useShippingAddress =
-            _billingAddress.id.isEmpty || _billingAddress == _shippingAddress;
+        _bindAddress(store.state.preOrder.orderDetail);
+      },
+      onDidChange: (viewModel) {
+        _bindAddress(viewModel.orderDetail);
+
+        setState(() {});
       },
       builder: (ctx, viewModel) => Scaffold(
         appBar: AppBar(
@@ -62,7 +91,14 @@ class _PreOrderScreenState extends State<PreOrderScreen> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   OrderDetailsExpansionTile(
-                      context: context, model: viewModel.orderDetail),
+                    currency: viewModel.currency,
+                    context: context,
+                    model: viewModel.orderDetail,
+                    showCoupon: true,
+                    couponCode: _couponCode ?? '',
+                    onAddCouponCode: (value) => _couponCode = value,
+                  ),
+                  if (viewModel.isAnonymous) _buildEmail(),
                   _buildAddressList(viewModel),
                 ],
               ),
@@ -75,11 +111,27 @@ class _PreOrderScreenState extends State<PreOrderScreen> {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: TextButton(
-              onPressed: viewModel.orderDetail.canOrder &&
-                      _shippingAddress.id.isNotEmpty &&
+              onPressed: _shippingAddress.id.isNotEmpty &&
                       _billingAddress.id.isNotEmpty
                   ? () {
-                      viewModel.onTapPay(_shippingAddress, _billingAddress);
+                      if (!viewModel.orderDetail.canOrder) {
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: const Text('Out of stock'),
+                          duration: const Duration(seconds: 2),
+                        ));
+                        return;
+                      }
+                      if (viewModel.isAnonymous &&
+                          !validateEmail(_emailController.text)) {
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: const Text('The email is invalid'),
+                          duration: const Duration(seconds: 2),
+                        ));
+                        return;
+                      }
+
+                      viewModel.onTapPay(_shippingAddress, _billingAddress,
+                          _emailController.text ?? '', _couponCode ?? '');
                     }
                   : null,
               child: Text(
@@ -208,7 +260,8 @@ class _PreOrderScreenState extends State<PreOrderScreen> {
           ),
           _buildAddressTile(
             _shippingAddress,
-            _shippingAddress.id == viewModel.shippingDefaultAddress.id,
+            _shippingAddress.id == viewModel.shippingDefaultAddress.id &&
+                viewModel.shippingDefaultAddress.id.isNotEmpty,
             viewModel,
             (value) {
               setState(() {
@@ -276,7 +329,8 @@ class _PreOrderScreenState extends State<PreOrderScreen> {
           ),
           _buildAddressTile(
             _billingAddress,
-            _billingAddress.id == viewModel.billingDefaultAddress.id,
+            _billingAddress.id == viewModel.billingDefaultAddress.id &&
+                viewModel.billingDefaultAddress.id.isNotEmpty,
             viewModel,
             (value) {
               setState(() {
@@ -373,17 +427,98 @@ class _PreOrderScreenState extends State<PreOrderScreen> {
   }
 
   _buildAddressForm(_ViewModel viewModel, bool isAddShipping) {
-    return AddressForm(
-        isEditShipping: isAddShipping,
-        onAdded: () {
-          FocusScope.of(context).requestFocus(FocusNode());
-          viewModel.refreshData().then((value) {
-            setState(() {
-              _showShippingAddressForm = false;
-              _showBillingAddressForm = false;
-            });
-          });
-        });
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          height: 8,
+        ),
+        Text(
+          'Add Address',
+          style: TextStyle(
+            fontSize: 14,
+            color: AppTheme.color0F1015,
+          ),
+        ),
+        AddressForm(
+            isEditShipping: isAddShipping,
+            onAdded: () {
+              FocusScope.of(context).requestFocus(FocusNode());
+              viewModel.refreshData().then((value) {
+                setState(() {
+                  _showShippingAddressForm = false;
+                  _showBillingAddressForm = false;
+                });
+              });
+            }),
+      ],
+    );
+  }
+
+  _buildEmail() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          height: 20,
+        ),
+        Text(
+          'Email',
+          style: TextStyle(
+            fontSize: 16,
+            color: AppTheme.color0F1015,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        TextFormField(
+          decoration: InputDecoration(
+            hintText: 'Enter your email*',
+            hintStyle: TextStyle(fontSize: 12.0, color: AppTheme.colorC4C5CD),
+            border: UnderlineInputBorder(
+              borderSide: BorderSide(color: AppTheme.colorC4C5CD),
+            ),
+            enabledBorder: UnderlineInputBorder(
+              borderSide: BorderSide(color: AppTheme.colorC4C5CD),
+            ),
+            focusedBorder: UnderlineInputBorder(
+              borderSide: BorderSide(color: AppTheme.color0F1015),
+            ),
+          ),
+          controller: _emailController,
+          validator: (value) =>
+              validateEmail(value) ? null : 'Email is required',
+        ),
+        SizedBox(
+          height: 10,
+        ),
+        GestureDetector(
+          onTap: () {
+            Keys.navigatorKey.currentState.pushNamed(Routes.signin);
+          },
+          child: RichText(
+            text: TextSpan(
+              children: [
+                TextSpan(
+                  text: 'I ready have a account ',
+                  style: TextStyle(
+                    color: AppTheme.color555764,
+                    fontSize: 12,
+                  ),
+                ),
+                TextSpan(
+                  text: 'Login',
+                  style: TextStyle(
+                    decoration: TextDecoration.underline,
+                    color: Colors.blue,
+                    fontSize: 12,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
   }
 }
 
@@ -504,11 +639,19 @@ class OrderDetailsExpansionTile extends StatefulWidget {
   const OrderDetailsExpansionTile({
     Key key,
     @required this.context,
+    @required this.currency,
     @required this.model,
+    this.showCoupon = false,
+    this.couponCode = '',
+    this.onAddCouponCode,
   }) : super(key: key);
 
   final BuildContext context;
+  final String currency;
   final OrderDetail model;
+  final bool showCoupon;
+  final String couponCode;
+  final Function(String) onAddCouponCode;
 
   @override
   _OrderDetailsExpansionTileState createState() =>
@@ -517,6 +660,32 @@ class OrderDetailsExpansionTile extends StatefulWidget {
 
 class _OrderDetailsExpansionTileState extends State<OrderDetailsExpansionTile> {
   bool _isExpanded = true;
+  Coupon _coupon;
+
+  String _total;
+
+  @override
+  void initState() {
+    super.initState();
+    _total = '${widget.currency}${widget.model.totalStr}';
+  }
+
+  _updatePrice(Coupon coupon) {
+    _coupon = coupon;
+    if (coupon == null) {
+      setState(() {
+        _total = '${widget.currency}${widget.model.totalStr}';
+      });
+      return;
+    }
+
+    var price =
+        ((widget.model.subtotal + widget.model.taxes - coupon.amount) / 100.0)
+            .toStringAsFixed(2);
+    setState(() {
+      _total = '${widget.currency}$price';
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -548,7 +717,7 @@ class _OrderDetailsExpansionTileState extends State<OrderDetailsExpansionTile> {
                   size: 20,
                 ),
         ]),
-        trailing: Text('${widget.model.totalStr}'),
+        trailing: Text('${widget.currency}${widget.model.totalStr}'),
         backgroundColor: Colors.white,
         initiallyExpanded: _isExpanded,
         onExpansionChanged: (isExpanded) {
@@ -598,7 +767,7 @@ class _OrderDetailsExpansionTileState extends State<OrderDetailsExpansionTile> {
                           ),
                         ),
                         Text(
-                          item.currentPriceStr,
+                          '${widget.currency}${item.currentPriceStr}',
                           style: TextStyle(
                             color: AppTheme.color0F1015,
                             fontWeight: FontWeight.w600,
@@ -624,7 +793,7 @@ class _OrderDetailsExpansionTileState extends State<OrderDetailsExpansionTile> {
           ),
           OrderPriceTile(
             leading: 'Subtotal',
-            trailing: widget.model.subtotalStr,
+            trailing: '${widget.currency}${widget.model.subtotalStr}',
           ),
           OrderPriceTile(
             leading: 'Shipping',
@@ -632,8 +801,20 @@ class _OrderDetailsExpansionTileState extends State<OrderDetailsExpansionTile> {
           ),
           OrderPriceTile(
             leading: 'Taxes',
-            trailing: widget.model.taxesStr,
+            trailing: '${widget.currency}${widget.model.taxesStr}',
           ),
+          if (widget.showCoupon)
+            OrderCouponTile(
+              hasCoupon: _coupon != null,
+              couponCode: widget.couponCode,
+              couponValue: '-${widget.currency}${_coupon?.amountStr ?? ''}',
+              onAddCoupon: (code, coupon) {
+                _updatePrice(coupon);
+                if (widget.onAddCouponCode != null) {
+                  widget.onAddCouponCode(code);
+                }
+              },
+            ),
           Divider(),
           ListTile(
             title: Text(
@@ -645,7 +826,7 @@ class _OrderDetailsExpansionTileState extends State<OrderDetailsExpansionTile> {
               ),
             ),
             trailing: Text(
-              widget.model.totalStr,
+              '$_total',
               style: TextStyle(
                 color: AppTheme.color0F1015,
                 fontWeight: FontWeight.w600,
@@ -694,14 +875,158 @@ class OrderPriceTile extends StatelessWidget {
   }
 }
 
+class OrderCouponTile extends StatefulWidget {
+  final bool hasCoupon;
+  final String couponCode;
+  final String couponValue;
+  final Function(String, Coupon) onAddCoupon;
+
+  const OrderCouponTile(
+      {Key key,
+      @required this.hasCoupon,
+      this.couponCode,
+      this.couponValue,
+      this.onAddCoupon})
+      : super(key: key);
+
+  @override
+  _OrderCouponTileState createState() => _OrderCouponTileState();
+}
+
+class _OrderCouponTileState extends State<OrderCouponTile> {
+  TextEditingController _textFieldController = TextEditingController();
+
+  @override
+  void dispose() {
+    _textFieldController.dispose();
+    EasyLoading.dismiss();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    TextStyle _titleStyle = TextStyle(
+      color: AppTheme.color555764,
+      fontSize: 14,
+    );
+
+    final leading = widget.hasCoupon ? 'Coupon code' : 'I have a coupon code';
+    final trailingWidget = widget.hasCoupon
+        ? Text(
+            widget.couponValue,
+            style: TextStyle(
+              color: AppTheme.color48B6EF,
+              fontSize: 14,
+            ),
+          )
+        : TextButton(
+            onPressed: () {
+              _showCouponInputDialog(context);
+            },
+            child: Text(
+              '+ Add',
+              style: TextStyle(
+                color: AppTheme.color48B6EF,
+                fontSize: 14,
+              ),
+            ),
+          );
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Row(children: [
+        Text(
+          leading,
+          style: _titleStyle,
+        ),
+        Spacer(),
+        trailingWidget,
+      ]),
+    );
+  }
+
+  Future _showCouponInputDialog(BuildContext context) async {
+    return showCupertinoDialog(
+        context: context,
+        builder: (ctx) {
+          return CupertinoAlertDialog(
+            title: Text('Coupon Code'),
+            content: TextField(
+              controller: _textFieldController,
+              decoration: InputDecoration(
+                hintText: "Enter your coupon code",
+                hintStyle:
+                    TextStyle(fontSize: 14.0, color: AppTheme.colorC4C5CD),
+                border: UnderlineInputBorder(
+                  borderSide: BorderSide(color: AppTheme.colorC4C5CD),
+                ),
+                enabledBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: AppTheme.colorC4C5CD),
+                ),
+                focusedBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: AppTheme.color0F1015),
+                ),
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                style: TextButton.styleFrom(
+                  minimumSize: Size(44, 44),
+                ),
+                child: Text(
+                  'Cancel',
+                ),
+              ),
+              TextButton(
+                onPressed: () {
+                  _checkCoupon();
+                  Navigator.pop(context);
+                },
+                style: TextButton.styleFrom(
+                  minimumSize: Size(44, 44),
+                ),
+                child: Text(
+                  'Apply',
+                  style: TextStyle(fontWeight: FontWeight.w600),
+                ),
+              ),
+            ],
+          );
+        });
+  }
+
+  _checkCoupon() {
+    final code = _textFieldController.text;
+    EasyLoading.show();
+    final completer = Completer();
+    completer.future.then((value) {
+      EasyLoading.dismiss();
+      if (widget.onAddCoupon != null) {
+        widget.onAddCoupon(code, value);
+      }
+    }).catchError((error) {
+      EasyLoading.dismiss();
+      EasyLoading.showToast(error.toString());
+    });
+    StoreProvider.of<AppState>(context)
+        .dispatch(CheckCouponAction(code, completer));
+  }
+}
+
 class _ViewModel {
+  final bool isAnonymous;
+  final String currency;
   final OrderDetail orderDetail;
   final Address shippingDefaultAddress;
   final Address billingDefaultAddress;
   final Future<dynamic> Function() refreshData;
-  final Function(Address, Address) onTapPay;
+  final Function(Address, Address, String, String) onTapPay;
 
   _ViewModel({
+    this.isAnonymous,
+    this.currency,
     this.orderDetail,
     this.shippingDefaultAddress,
     this.billingDefaultAddress,
@@ -728,13 +1053,15 @@ class _ViewModel {
       return completer.future;
     }
 
-    _onTapPay(Address shippingAddress, Address billingAddress) {
+    _onTapPay(Address shippingAddress, Address billingAddress, String email,
+        String code) {
       EasyLoading.show();
       final completer = Completer();
       completer.future.then((value) {
         EasyLoading.dismiss();
         Keys.navigatorKey.currentState.pushNamed(Routes.payment,
-            arguments: PaymentScreenParams(shippingAddress, value['id']));
+            arguments: PaymentScreenParams(
+                shippingAddress, value['id'], value['number']));
       }).catchError((error) {
         EasyLoading.dismiss();
         EasyLoading.showToast(error.toString());
@@ -742,15 +1069,18 @@ class _ViewModel {
 
       final buyGoods = orderDetail.list
           .map((sku) => OrderParameter(
-              idolGoodsId: sku.idolGoodsId,
-              skuSpecIds: sku.skuSpecIds,
-              number: sku.number))
+                idolGoodsId: sku.idolGoodsId,
+                skuSpecIds: sku.skuSpecIds,
+                number: sku.number,
+              ))
           .toList();
-      store.dispatch(OrderAction(
-          buyGoods, shippingAddress.id, billingAddress.id, completer));
+      store.dispatch(OrderAction(buyGoods, shippingAddress.id,
+          billingAddress.id, email, code, completer));
     }
 
     return _ViewModel(
+      isAnonymous: store.state.auth.user.isAnonymous == 1,
+      currency: store.state.auth.user.monetaryUnit,
       orderDetail: orderDetail,
       shippingDefaultAddress: shippingAddress,
       billingDefaultAddress: billingAddress,

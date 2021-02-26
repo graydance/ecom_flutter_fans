@@ -1,14 +1,13 @@
 import 'dart:async';
 
 import 'package:fans/app.dart';
-import 'package:fans/models/goods_skus.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
 
-import 'package:fans/models/feed.dart';
 import 'package:fans/models/models.dart';
 import 'package:fans/r.g.dart';
 import 'package:fans/screen/components/product_attributes_bottom_sheet.dart';
@@ -64,10 +63,13 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     children: [
                       ProductFeedItem(
                         currency: model.currency,
+                        onlyShowImage: true,
                         model: Feed(
                             productName: model.model.productName,
-                            currentPriceStr: '${model.currentPrice}',
-                            originalPriceStr: '${model.originalPrice}',
+                            currentPriceStr:
+                                '${model.firstSku.currentPriceStr}',
+                            originalPriceStr:
+                                '${model.firstSku.originalPriceStr}',
                             tagNormal: [],
                             goodsDescription: model.model.description,
                             goods: model.model.goodsPictures
@@ -89,12 +91,13 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     bottom: MediaQuery.of(context).padding.bottom),
                 child: Row(
                   children: [
-                    Expanded(
-                      flex: 1,
-                      child: FavoriteButton(
-                        isSaved: false,
+                    if (!model.isAnonymous)
+                      Expanded(
+                        flex: 1,
+                        child: FavoriteButton(
+                          isSaved: false,
+                        ),
                       ),
-                    ),
                     Expanded(
                       flex: 2,
                       child: TextButton(
@@ -104,6 +107,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                 await showProductAttributesBottomSheet(
                                   context,
                                   ProductAttributesViewModel(
+                                    currency: model.currency,
                                     model: model.model,
                                     quantity: _quantity,
                                     actionType:
@@ -111,8 +115,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                     onQuantityChange: (newValue) {
                                       _quantity = newValue;
                                     },
-                                    onTapAction: () {
-                                      model.onTapAddToCart(_quantity, context);
+                                    onTapAction: (skuSpecIds) {
+                                      model.onTapAddToCart(
+                                          _quantity, skuSpecIds, context);
                                     },
                                   ),
                                 );
@@ -138,6 +143,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                 await showProductAttributesBottomSheet(
                                   context,
                                   ProductAttributesViewModel(
+                                    currency: model.currency,
                                     model: model.model,
                                     quantity: _quantity,
                                     actionType:
@@ -145,8 +151,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                     onQuantityChange: (newValue) {
                                       _quantity = newValue;
                                     },
-                                    onTapAction: () {
-                                      model.onTapBuyNow(_quantity);
+                                    onTapAction: (skuSpecIds) {
+                                      model.onTapBuyNow(_quantity, skuSpecIds);
                                     },
                                   ),
                                 );
@@ -286,25 +292,25 @@ class _FavoriteButtonState extends State<FavoriteButton> {
 }
 
 class _ViewModel {
+  final bool isAnonymous;
   final Product model;
   final String currency;
-  final String currentPrice;
-  final String originalPrice;
-  final Function(int, BuildContext) onTapAddToCart;
-  final Function(int) onTapBuyNow;
+  final GoodsSkus firstSku;
+  final Function(int, String, BuildContext) onTapAddToCart;
+  final Function(int, String) onTapBuyNow;
 
   _ViewModel({
+    this.isAnonymous,
     this.model,
     this.currency,
-    this.currentPrice,
-    this.originalPrice,
+    this.firstSku,
     this.onTapAddToCart,
     this.onTapBuyNow,
   });
 
   static _ViewModel fromStore(Store<AppState> store, String id) {
     final state = store.state.productDetails.allStates[id];
-    _onTapAddToCart(int quantity, BuildContext context) {
+    _onTapAddToCart(int quantity, String skuSpecIds, BuildContext context) {
       EasyLoading.show();
       final completer = Completer();
       completer.future.then((value) {
@@ -332,7 +338,7 @@ class _ViewModel {
       final action = AddCartAction(
         OrderParameter(
           idolGoodsId: state.model.idolGoodsId,
-          skuSpecIds: state.model.goodsSkus.first.skuSpecIds,
+          skuSpecIds: skuSpecIds,
           number: quantity,
         ),
         completer,
@@ -341,7 +347,7 @@ class _ViewModel {
       store.dispatch(action);
     }
 
-    _onTapBuyNow(int quantity) {
+    _onTapBuyNow(int quantity, String skuSpecIds) {
       EasyLoading.show();
       final completer = Completer();
       completer.future.then((value) {
@@ -357,7 +363,7 @@ class _ViewModel {
         buyGoods: [
           OrderParameter(
             idolGoodsId: state.model.idolGoodsId,
-            skuSpecIds: state.model.goodsSkus.first.skuSpecIds,
+            skuSpecIds: skuSpecIds,
             number: quantity,
           )
         ],
@@ -367,13 +373,20 @@ class _ViewModel {
       store.dispatch(action);
     }
 
+    final selectionSpecIds = List.generate(state.model.specList.length,
+        (index) => state.model.specList[index].specValues.first.id ?? 0);
+
+    List<GoodsSkus> skus = state.model.goodsSkus;
+    final firstSku = skus.firstWhere(
+        (element) => element.skuSpecIds == selectionSpecIds.join('_'),
+        orElse: () => skus.firstOrNull() ?? GoodsSkus());
+
     final currency = store.state.auth.user.monetaryUnit;
-    final first = state.model.goodsSkus.firstOrNull() ?? GoodsSkus();
     return _ViewModel(
+        isAnonymous: store.state.auth.user.isAnonymous == 1,
         model: state.model,
         currency: currency,
-        currentPrice: first.currentPriceStr,
-        originalPrice: first.originalPriceStr,
+        firstSku: firstSku,
         onTapAddToCart: _onTapAddToCart,
         onTapBuyNow: _onTapBuyNow);
   }

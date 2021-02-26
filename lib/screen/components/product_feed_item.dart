@@ -5,17 +5,19 @@ import 'package:intl/intl.dart';
 
 import 'package:fans/models/models.dart';
 import 'package:fans/r.g.dart';
-import 'package:fans/screen/components/meida_carousel_widget.dart';
+import 'package:fans/screen/components/media_carousel_widget.dart';
 
 class ProductFeedItem extends StatelessWidget {
   final String currency;
   final Feed model;
+  final bool onlyShowImage;
   final Function(String) onTap;
 
   const ProductFeedItem({
     Key key,
     @required this.currency,
     @required this.model,
+    this.onlyShowImage = false,
     this.onTap,
   }) : super(key: key);
 
@@ -57,29 +59,30 @@ class ProductFeedItem extends StatelessWidget {
                         );
                       }).toList(),
                     ),
-                    Positioned(
-                      top: 0,
-                      left: 0,
-                      child: Container(
-                        height: 20,
-                        width: 70,
-                        decoration: BoxDecoration(
-                          color: Color(0xffFEAC1B),
-                          borderRadius: BorderRadius.only(
-                            bottomRight: Radius.circular(50),
+                    if (model.discount.isNotEmpty)
+                      Positioned(
+                        top: 0,
+                        left: 0,
+                        child: Container(
+                          height: 20,
+                          width: 70,
+                          decoration: BoxDecoration(
+                            color: Color(0xffFEAC1B),
+                            borderRadius: BorderRadius.only(
+                              bottomRight: Radius.circular(50),
+                            ),
                           ),
-                        ),
-                        child: Center(
-                          child: Text(
-                            '${model.discount} off',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 12,
+                          child: Center(
+                            child: Text(
+                              '${model.discount} off',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    ),
                     Positioned(
                       bottom: 0,
                       left: 0,
@@ -91,38 +94,40 @@ class ProductFeedItem extends StatelessWidget {
                       ),
                     ),
                     // 购物车和收藏
-                    Positioned(
-                      bottom: 8,
-                      right: 8,
-                      child: Column(
-                        children: [
-                          Column(
-                            children: [
-                              Image(image: R.image.add_cart()),
-                              Text(
-                                NumberFormat.compact()
-                                    .format(model.shoppingCar),
-                                style: TextStyle(
-                                    color: Colors.white, fontSize: 12),
-                              ),
-                            ],
-                          ),
-                          SizedBox(
-                            height: 12,
-                          ),
-                          Column(
-                            children: [
-                              Image(image: R.image.favorite()),
-                              Text(
-                                NumberFormat.compact().format(model.collectNum),
-                                style: TextStyle(
-                                    color: Colors.white, fontSize: 12),
-                              ),
-                            ],
-                          ),
-                        ],
+                    if (!onlyShowImage)
+                      Positioned(
+                        bottom: 8,
+                        right: 8,
+                        child: Column(
+                          children: [
+                            Column(
+                              children: [
+                                Image(image: R.image.add_cart()),
+                                Text(
+                                  NumberFormat.compact()
+                                      .format(model.shoppingCar),
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 12),
+                                ),
+                              ],
+                            ),
+                            SizedBox(
+                              height: 12,
+                            ),
+                            Column(
+                              children: [
+                                Image(image: R.image.favorite()),
+                                Text(
+                                  NumberFormat.compact()
+                                      .format(model.collectNum),
+                                  style: TextStyle(
+                                      color: Colors.white, fontSize: 12),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
                   ],
                 ),
               ),

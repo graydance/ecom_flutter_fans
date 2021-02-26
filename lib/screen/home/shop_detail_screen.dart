@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:fans/screen/components/emtpy_view.dart';
+import 'package:fans/screen/components/empty_view.dart';
 import 'package:fans/store/actions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';

@@ -1,5 +1,6 @@
-export 'auth/auth_action.dart';
-export 'product/product_action.dart';
+export './auth/auth_action.dart';
+export './product/product_action.dart';
+export './shop/shop_action.dart';
 
 import 'dart:async';
 
@@ -32,4 +33,11 @@ class SearchByTagSuccessAction {
 
   SearchByTagSuccessAction(
       this.userId, this.tag, this.totalPage, this.currentPage, this.feeds);
+}
+
+class PayCaptureAction {
+  final String payNumber;
+  final Completer completer;
+
+  PayCaptureAction(this.payNumber, this.completer);
 }

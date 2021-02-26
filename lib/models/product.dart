@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 
 import 'package:fans/models/goods.dart';
 import 'package:fans/models/goods_skus.dart';
+import 'package:fans/models/goods_spec.dart';
 
 class Product {
   final String id;
@@ -22,6 +23,7 @@ class Product {
   final String supplierId;
   final List<Goods> goodsPictures;
   final List<GoodsSkus> goodsSkus;
+  final List<GoodsSpec> specList;
   final int idolId;
   final String idolGoodsId;
   final String nickName;
@@ -48,6 +50,7 @@ class Product {
     this.supplierId = '',
     this.goodsPictures = const [],
     this.goodsSkus = const [],
+    this.specList = const [],
     this.idolId = 0,
     this.idolGoodsId = '',
     this.nickName = '',
@@ -75,6 +78,7 @@ class Product {
     String supplierId,
     List<Goods> goodsPictures,
     List<GoodsSkus> goodsSkus,
+    List<GoodsSpec> specList,
     int idolId,
     String idolGoodsId,
     String nickName,
@@ -101,6 +105,7 @@ class Product {
       supplierId: supplierId ?? this.supplierId,
       goodsPictures: goodsPictures ?? this.goodsPictures,
       goodsSkus: goodsSkus ?? this.goodsSkus,
+      specList: specList ?? this.specList,
       idolId: idolId ?? this.idolId,
       idolGoodsId: idolGoodsId ?? this.idolGoodsId,
       nickName: nickName ?? this.nickName,
@@ -133,6 +138,7 @@ class Product {
         o.supplierId == supplierId &&
         listEquals(o.goodsPictures, goodsPictures) &&
         listEquals(o.goodsSkus, goodsSkus) &&
+        listEquals(o.specList, specList) &&
         o.idolId == idolId &&
         o.idolGoodsId == idolGoodsId &&
         o.nickName == nickName &&
@@ -161,6 +167,7 @@ class Product {
         supplierId.hashCode ^
         goodsPictures.hashCode ^
         goodsSkus.hashCode ^
+        specList.hashCode ^
         idolId.hashCode ^
         idolGoodsId.hashCode ^
         nickName.hashCode ^
@@ -173,7 +180,7 @@ class Product {
 
   @override
   String toString() {
-    return 'Product(id: $id, productName: $productName, originalPrice: $originalPrice, currentPrice: $currentPrice, earningPrice: $earningPrice, description: $description, carNumber: $carNumber, collectNumber: $collectNumber, status: $status, originalUrl: $originalUrl, specType: $specType, width: $width, height: $height, supplierId: $supplierId, goodsPictures: $goodsPictures, goodsSkus: $goodsSkus, idolId: $idolId, idolGoodsId: $idolGoodsId, nickName: $nickName, storeName: $storeName, isOfficial: $isOfficial, recommend: $recommend, originalPriceStr: $originalPriceStr, currentPriceStr: $currentPriceStr)';
+    return 'Product(id: $id, productName: $productName, originalPrice: $originalPrice, currentPrice: $currentPrice, earningPrice: $earningPrice, description: $description, carNumber: $carNumber, collectNumber: $collectNumber, status: $status, originalUrl: $originalUrl, specType: $specType, width: $width, height: $height, supplierId: $supplierId, goodsPictures: $goodsPictures, goodsSkus: $goodsSkus, specList: $specList, idolId: $idolId, idolGoodsId: $idolGoodsId, nickName: $nickName, storeName: $storeName, isOfficial: $isOfficial, recommend: $recommend, originalPriceStr: $originalPriceStr, currentPriceStr: $currentPriceStr)';
   }
 
   Map<String, dynamic> toMap() {
@@ -194,6 +201,7 @@ class Product {
       'supplierId': supplierId,
       'goodsPictures': goodsPictures?.map((x) => x?.toMap())?.toList(),
       'goodsSkus': goodsSkus?.map((x) => x?.toMap())?.toList(),
+      'specList': specList?.map((x) => x?.toMap())?.toList(),
       'idolId': idolId,
       'idolGoodsId': idolGoodsId,
       'nickName': nickName,
@@ -227,6 +235,8 @@ class Product {
           List<Goods>.from(map['goodsPictures']?.map((x) => Goods.fromMap(x))),
       goodsSkus: List<GoodsSkus>.from(
           map['goodsSkus']?.map((x) => GoodsSkus.fromMap(x))),
+      specList: List<GoodsSpec>.from(
+          map['specList']?.map((x) => GoodsSpec.fromMap(x))),
       idolId: map['idolId'],
       idolGoodsId: map['idolGoodsId'],
       nickName: map['nickName'],

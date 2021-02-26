@@ -35,6 +35,13 @@ List<Middleware<AppState>> createStoreMiddleware() {
   final fetchCartList = _createFetchCartList();
   final updateCart = _createUpdateCart();
   final deleteCart = _createDeleteCart();
+  final fetchSellerInfo = _createSellerInfo();
+  final fetchIdolLinks = _createIdolLinks();
+  final fetchIdolGoods = _createFetchShopGoods();
+  final anonymousLogin = _createAnonymousLogin();
+  final signin = _createSignin();
+  final payCapture = _createPayCapture();
+  final checkCoupon = _createCheckCoupon();
 
   return [
     TypedMiddleware<AppState, VerifyAuthenticationState>(verifyAuthState),
@@ -57,6 +64,13 @@ List<Middleware<AppState>> createStoreMiddleware() {
     TypedMiddleware<AppState, FetchCartListAction>(fetchCartList),
     TypedMiddleware<AppState, UpdateCartAction>(updateCart),
     TypedMiddleware<AppState, DeleteCartAction>(deleteCart),
+    TypedMiddleware<AppState, FetchSellerInfoAction>(fetchSellerInfo),
+    TypedMiddleware<AppState, FetchIdolLinksAction>(fetchIdolLinks),
+    TypedMiddleware<AppState, FetchIdolGoodsAction>(fetchIdolGoods),
+    TypedMiddleware<AppState, AnonymousLoginAction>(anonymousLogin),
+    TypedMiddleware<AppState, SignInAction>(signin),
+    TypedMiddleware<AppState, PayCaptureAction>(payCapture),
+    TypedMiddleware<AppState, CheckCouponAction>(checkCoupon),
   ];
 }
 
@@ -67,10 +81,21 @@ Middleware<AppState> _verifyAuthState() {
     AuthStorage.getUser().then((user) {
       if (user.token.isNotEmpty) {
         store.dispatch(LocalUpdateUserAction(user));
-        Keys.navigatorKey.currentState.pushReplacementNamed(Routes.home);
+        if (kIsWeb) {
+        } else {
+          Keys.navigatorKey.currentState
+              .pushReplacementNamed(Routes.shop + '/username1');
+          // Keys.navigatorKey.currentState.pushReplacementNamed(Routes.home);
+        }
       } else {
         store.dispatch(LocalUpdateUserAction(User()));
-        Keys.navigatorKey.currentState.pushReplacementNamed(Routes.welcome);
+        store.dispatch(AnonymousLoginAction());
+        if (kIsWeb) {
+          Keys.navigatorKey.currentState
+              .pushReplacementNamed(Routes.shop + '/username1');
+        } else {
+          Keys.navigatorKey.currentState.pushReplacementNamed(Routes.welcome);
+        }
       }
     });
   };
@@ -114,7 +139,7 @@ Middleware<AppState> _createLogin() {
               LoginAPI(email: action.email, password: action.password))
           .then(
         (data) {
-          var user = User.fromMap(data['data']);
+          final user = User.fromMap(data['data']);
           store.dispatch(LocalUpdateUserAction(user));
           store.dispatch(OnAuthenticatedAction(user));
           Keys.navigatorKey.currentState.pushReplacementNamed(Routes.interests);
@@ -210,6 +235,7 @@ Middleware<AppState> _createFetchFeeds() {
       ).catchError((err) {
         action.completer.completeError(err);
         store.dispatch(FetchFeedsFailedAction(action.type, err.toString()));
+        _handleUnauthorisedException(store, err, action);
       });
     }
     next(action);
@@ -228,7 +254,7 @@ Middleware<AppState> _createFetchRecommends() {
           store.dispatch(FetchRecommendSellersSuccessAction(models));
         },
       ).catchError((err) {
-        print(err.toString());
+        _handleUnauthorisedException(store, err, action);
       });
     }
     next(action);
@@ -258,6 +284,7 @@ Middleware<AppState> _createSearchByTag() {
         },
       ).catchError((err) {
         action.completer?.completeError(err?.toString() ?? '');
+        _handleUnauthorisedException(store, err, action);
       });
     }
     next(action);
@@ -274,6 +301,7 @@ Middleware<AppState> _createShopDetail() {
         },
       ).catchError((err) {
         store.dispatch(FetchShopDetailFailedAction(error: err.toString()));
+        _handleUnauthorisedException(store, err, action);
       });
     }
     next(action);
@@ -306,6 +334,7 @@ Middleware<AppState> _createFetchGoods() {
         },
       ).catchError((err) {
         action.completer.completeError(err.toString());
+        _handleUnauthorisedException(store, err, action);
       });
     }
     next(action);
@@ -326,6 +355,7 @@ Middleware<AppState> _createProductDetail() {
         },
       ).catchError((err) {
         action.completer.completeError(err);
+        _handleUnauthorisedException(store, err, action);
       });
     }
     next(action);
@@ -346,6 +376,7 @@ Middleware<AppState> _createPreOrder() {
         },
       ).catchError((err) {
         action.completer.completeError(err.toString());
+        _handleUnauthorisedException(store, err, action);
       });
     }
     next(action);
@@ -359,6 +390,8 @@ Middleware<AppState> _createOrder() {
         action.buyGoods,
         action.shippingAddressId,
         action.billingAddressId,
+        action.email,
+        action.code,
       )).then(
         (data) {
           final model = data['data'];
@@ -366,6 +399,7 @@ Middleware<AppState> _createOrder() {
         },
       ).catchError((err) {
         action.completer.completeError(err.toString());
+        _handleUnauthorisedException(store, err, action);
       });
     }
     next(action);
@@ -381,10 +415,12 @@ Middleware<AppState> _createPayment() {
       )).then(
         (data) {
           final response = data['data'];
-          action.completer.complete(response['payInfo']);
+          final payInfo = PayInfo.fromMap(response['payInfo']);
+          action.completer.complete(payInfo);
         },
       ).catchError((err) {
         action.completer.completeError(err.toString());
+        _handleUnauthorisedException(store, err, action);
       });
     }
     next(action);
@@ -401,6 +437,7 @@ Middleware<AppState> _createAddCart() {
         },
       ).catchError((err) {
         action.completer.completeError(err.toString());
+        _handleUnauthorisedException(store, err, action);
       });
     }
     next(action);
@@ -419,6 +456,7 @@ Middleware<AppState> _createFetchCartList() {
         },
       ).catchError((err) {
         action.completer.completeError(err.toString());
+        _handleUnauthorisedException(store, err, action);
       });
     }
     next(action);
@@ -438,6 +476,7 @@ Middleware<AppState> _createUpdateCart() {
         },
       ).catchError((err) {
         action.completer.completeError(err.toString());
+        _handleUnauthorisedException(store, err, action);
       });
     }
     next(action);
@@ -456,8 +495,153 @@ Middleware<AppState> _createDeleteCart() {
         },
       ).catchError((err) {
         action.completer.completeError(err.toString());
+        _handleUnauthorisedException(store, err, action);
       });
     }
     next(action);
   };
+}
+
+Middleware<AppState> _createSellerInfo() {
+  return (Store<AppState> store, action, NextDispatcher next) {
+    if (action is FetchSellerInfoAction) {
+      Networking.request(SellerInfoAPI(action.userName)).then(
+        (data) {
+          final seller = Feed.fromMap(data['data']);
+          action.completer.complete(seller);
+        },
+      ).catchError((err) {
+        action.completer.completeError(err.toString());
+        _handleUnauthorisedException(store, err, action);
+      });
+    }
+    next(action);
+  };
+}
+
+Middleware<AppState> _createIdolLinks() {
+  return (Store<AppState> store, action, NextDispatcher next) {
+    if (action is FetchIdolLinksAction) {
+      Networking.request(IdolLinksAPI(action.userName)).then(
+        (data) {
+          final response = data['data'] as List;
+          List<IdolLink> models =
+              response.map((e) => IdolLink.fromMap(e)).toList();
+          action.completer.complete(models);
+        },
+      ).catchError((err) {
+        action.completer.completeError(err.toString());
+        _handleUnauthorisedException(store, err, action);
+      });
+    }
+    next(action);
+  };
+}
+
+Middleware<AppState> _createFetchShopGoods() {
+  return (Store<AppState> store, action, NextDispatcher next) {
+    if (action is FetchIdolGoodsAction) {
+      Networking.request(GoodsListAPI(
+              userName: action.userName,
+              type: action.type,
+              page: action.page,
+              limit: action.limit))
+          .then(
+        (data) {
+          final response = data['data'];
+          action.completer.complete(response);
+        },
+      ).catchError((err) {
+        action.completer.completeError(err.toString());
+        _handleUnauthorisedException(store, err, action);
+      });
+    }
+    next(action);
+  };
+}
+
+Middleware<AppState> _createAnonymousLogin() {
+  return (Store<AppState> store, action, NextDispatcher next) {
+    if (action is AnonymousLoginAction) {
+      Networking.request(AnonymousLoginAPI()).then(
+        (data) {
+          final user = User.fromMap(data['data']);
+          store.dispatch(LocalUpdateUserAction(user));
+          store.dispatch(OnAuthenticatedAction(user));
+        },
+      ).catchError((err) {});
+    }
+    next(action);
+  };
+}
+
+Middleware<AppState> _createSignin() {
+  return (Store<AppState> store, action, NextDispatcher next) {
+    if (action is SignInAction) {
+      Networking.request(
+              LoginAPI(email: action.email, password: action.password))
+          .then(
+        (data) {
+          final user = User.fromMap(data['data']);
+          store.dispatch(LocalUpdateUserAction(user));
+          store.dispatch(OnAuthenticatedAction(user));
+          action.completer.complete();
+        },
+      ).catchError((err) {
+        action.completer.completeError(err.toString());
+      });
+    }
+    next(action);
+  };
+}
+
+Middleware<AppState> _createPayCapture() {
+  return (Store<AppState> store, action, NextDispatcher next) {
+    if (action is PayCaptureAction) {
+      Networking.request(PayCaptureAPI(action.payNumber)).then(
+        (data) {
+          action.completer.complete(data['data']);
+        },
+      ).catchError((err) {
+        action.completer.completeError(err.toString());
+      });
+    }
+    next(action);
+  };
+}
+
+Middleware<AppState> _createCheckCoupon() {
+  return (Store<AppState> store, action, NextDispatcher next) {
+    if (action is CheckCouponAction) {
+      Networking.request(CheckCouponAPI(
+        action.code,
+      )).then(
+        (data) {
+          final model = Coupon.fromMap(data['data']);
+          if (model.canUse) {
+            action.completer.complete(model);
+          } else {
+            action.completer.completeError('Coupon code is invalid.');
+          }
+        },
+      ).catchError((err) {
+        action.completer.completeError(err.toString());
+      });
+    }
+    next(action);
+  };
+}
+
+_handleUnauthorisedException(
+    Store<AppState> store, dynamic error, dynamic action) {
+  if (error is UnauthorisedException) {
+    Networking.request(AnonymousLoginAPI()).then(
+      (data) {
+        final user = User.fromMap(data['data']);
+        store.dispatch(LocalUpdateUserAction(user));
+        store.dispatch(OnAuthenticatedAction(user));
+        store.dispatch(action);
+      },
+    ).catchError((err) {});
+  }
 }

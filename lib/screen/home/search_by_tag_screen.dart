@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:fans/app.dart';
-import 'package:fans/screen/components/emtpy_view.dart';
+import 'package:fans/screen/components/empty_view.dart';
 import 'package:fans/screen/components/product_feed_item.dart';
 import 'package:fans/screen/components/verified_username_view.dart';
 import 'package:flutter/material.dart';
