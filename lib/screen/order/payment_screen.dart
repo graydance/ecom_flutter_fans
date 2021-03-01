@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
@@ -226,7 +227,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: TextButton(
-              onPressed: viewModel.onTapPay,
+              onPressed: () {
+                viewModel.onTapPay(context);
+              },
               child: Text(
                 'Pay ${viewModel.currency}${viewModel.orderDetail.totalStr}'
                     .toUpperCase(),
@@ -251,7 +254,7 @@ class _ViewModel {
   final OrderDetail orderDetail;
   final String shippingAddress;
   final String orderId;
-  final VoidCallback onTapPay;
+  final Function(BuildContext) onTapPay;
 
   _ViewModel({
     this.currency,
@@ -263,14 +266,27 @@ class _ViewModel {
 
   static _ViewModel fromStore(
       Store<AppState> store, PaymentScreenParams params) {
-    _onTapPay() {
+    _onTapPay(BuildContext context) {
       EasyLoading.show();
       final completer = Completer();
       completer.future.then((value) {
         EasyLoading.dismiss();
-        debugPrint('push to payment with $value');
+
         final payInfo = value as PayInfo;
         launch(payInfo.payLink);
+
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(
+              'Please copy the payment link and open it manually. ${payInfo.payLink}'),
+          duration: const Duration(hours: 5),
+          action: SnackBarAction(
+            textColor: AppTheme.colorED8514,
+            label: 'Copy>',
+            onPressed: () {
+              Clipboard.setData(ClipboardData(text: payInfo.payLink));
+            },
+          ),
+        ));
       }).catchError((error) {
         EasyLoading.dismiss();
         EasyLoading.showToast(error.toString());
