@@ -54,6 +54,7 @@ class _ShopScreenState extends State<ShopScreen> {
           title: Text(_seller.nickName),
           elevation: 0,
           centerTitle: true,
+          leading: Container(),
           actions: [
             CartButton(
               count: viewModel.cartCount,
@@ -233,6 +234,8 @@ class _Tile extends StatelessWidget {
                       color: AppTheme.color555764,
                       fontSize: 12,
                     ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),

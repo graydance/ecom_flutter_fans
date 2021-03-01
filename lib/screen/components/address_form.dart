@@ -69,7 +69,7 @@ class _AddressFormState extends State<AddressForm> {
                 child: TextFormField(
                   decoration: _commonInputDecoration('Last Name'),
                   controller: _lastNameController,
-                  validator: (value) => value.isEmpty ? '' : null,
+                  validator: null,
                 ),
               )
             ],
@@ -82,7 +82,7 @@ class _AddressFormState extends State<AddressForm> {
           TextFormField(
             decoration: _commonInputDecoration('Address Line 2'),
             controller: _addressLine2Controller,
-            validator: (value) => value.isEmpty ? '' : null,
+            validator: null,
           ),
           Row(
             mainAxisSize: MainAxisSize.min,
@@ -179,9 +179,9 @@ class _AddressFormState extends State<AddressForm> {
     Networking.request(
       AddAddressAPI(
         firstName: _firstNameController.text,
-        lastName: _lastNameController.text,
+        lastName: _lastNameController.text ?? '',
         addressLine1: _addressLine1Controller.text,
-        addressLine2: _addressLine2Controller.text,
+        addressLine2: _addressLine2Controller.text ?? '',
         zipCode: _zipCodeController.text,
         city: _cityController.text,
         province: _provinceController.text,

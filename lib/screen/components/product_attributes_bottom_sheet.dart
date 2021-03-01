@@ -81,6 +81,16 @@ class _ProductAttributesBottomSheetState
             SizedBox(
               height: 30,
             ),
+            Text(
+              'Choose your specifications:',
+              style: TextStyle(
+                color: AppTheme.color979AA9,
+                fontSize: 12,
+              ),
+            ),
+            SizedBox(
+              height: 8,
+            ),
             ConstrainedBox(
               constraints: BoxConstraints(
                 maxHeight: MediaQuery.of(context).size.height * 0.5,
