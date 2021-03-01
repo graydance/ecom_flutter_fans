@@ -44,6 +44,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
         appBar: AppBar(
           title: Text('My Order'),
           elevation: 0,
+          centerTitle: true,
         ),
         body: SingleChildScrollView(
           child: Padding(
