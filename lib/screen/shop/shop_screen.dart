@@ -234,6 +234,8 @@ class _Tile extends StatelessWidget {
                       color: AppTheme.color555764,
                       fontSize: 12,
                     ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 8.0),

@@ -83,8 +83,7 @@ Middleware<AppState> _verifyAuthState() {
         store.dispatch(LocalUpdateUserAction(user));
         if (kIsWeb) {
         } else {
-          Keys.navigatorKey.currentState
-              .pushReplacementNamed(Routes.shop + '/username1');
+          Keys.navigatorKey.currentState.pushReplacementNamed(Routes.home);
         }
       } else {
         store.dispatch(LocalUpdateUserAction(User()));
