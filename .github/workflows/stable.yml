@@ -36,8 +36,8 @@ jobs:
           ECOM_PLATFORM: "web"
       - run: flutter test
       - run: flutter build web
-      - run: uuid=$(uuidgen) && sed -i.bak 's/main.dart.js/'"$uuid"'.main.dart.js/g' build/web/flutter_service_worker.js && sed -i.bak 's/main.dart.js/'"$uuid"'.main.dart.js/g' build/web/index.html && gzip build/web/main.dart.js && mv build/web/main.dart.js.gz build/web/"$uuid.main.dart.js"
+      - run: uuid=$(uuidgen) && sed -i.bak 's/main.dart.js/'"$uuid"'.main.dart.js.gz/g' build/web/flutter_service_worker.js && sed -i.bak 's/main.dart.js/'"$uuid"'.main.dart.js.gz/g' build/web/index.html && gzip build/web/main.dart.js && mv build/web/main.dart.js.gz build/web/"$uuid.main.dart.js.gz"
       - name: Deploy Web
         run: |
           gsutil -m rsync -r -d build/web/ gs://mypik.shop/
-          gcloud compute url-maps invalidate-cdn-cache ecom-producation --async --path "/index.html" --async --host "mypik.shop" --project $GCLOUD_PROJECT
+          gcloud compute url-maps invalidate-cdn-cache ecom-producation --async --path "/" --async --host "mypik.shop" --project $GCLOUD_PROJECT
