@@ -1,0 +1,43 @@
+name: QA
+
+on:
+  push:
+    branches:
+      - stable
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      ECOM_PROD: "fans"
+      ECOM_ENV: "production"
+      VERSION_KEY: ${{ secrets.VERSION_KEY }}
+    steps:
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@master
+        with:
+          service_account_key: ${{ secrets.GOOGLE_KEYFILE }}
+          export_default_credentials: true
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12
+      - uses: actions/setup-java@v1
+        with:
+          java-version: "12.x"
+      - uses: subosito/flutter-action@v1
+        with:
+          channel: dev
+      - run: flutter config --enable-web
+      - run: flutter pub get
+      - run: node -e "$VERSION_KEY" >./lib/env.dart
+        env:
+          ECOM_PLATFORM: "web"
+      - run: flutter test
+      - run: flutter build web
+      - run: uuid=$(uuidgen) && sed -i.bak 's/main.dart.js/'"$uuid"'.main.dart.js/g' build/web/index.html && mv build/web/main.dart.js build/web/"$uuid.main.dart.js"
+      - name: Deploy Web
+        run: |
+          gsutil -m rsync -r -d build/web/ gs://mypik.shop/
+          gcloud compute url-maps invalidate-cdn-cache mypik.shop --async --path "/index.html" --async --host "mypik.shop" --project $GCLOUD_PROJECT
