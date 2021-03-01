@@ -54,6 +54,7 @@ class _ShopScreenState extends State<ShopScreen> {
           title: Text(_seller.nickName),
           elevation: 0,
           centerTitle: true,
+          leading: Container(),
           actions: [
             CartButton(
               count: viewModel.cartCount,
