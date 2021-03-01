@@ -1,4 +1,4 @@
-name: QA
+name: production
 
 on:
   push:
@@ -40,4 +40,4 @@ jobs:
       - name: Deploy Web
         run: |
           gsutil -m rsync -r -d build/web/ gs://mypik.shop/
-          gcloud compute url-maps invalidate-cdn-cache mypik.shop --async --path "/index.html" --async --host "mypik.shop" --project $GCLOUD_PROJECT
+          gcloud compute url-maps invalidate-cdn-cache ecom-producation --async --path "/index.html" --async --host "mypik.shop" --project $GCLOUD_PROJECT
