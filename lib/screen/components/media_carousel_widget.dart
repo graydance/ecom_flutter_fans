@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:fans/r.g.dart';
+
 class MediaCarouselWidget extends StatefulWidget {
   final List<Widget> items;
 
@@ -25,6 +27,16 @@ class _MediaCarouselWidgetState extends State<MediaCarouselWidget> {
                 _currentPage = value;
               });
             },
+          ),
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            height: 100,
+            child: Image(
+              image: R.image.product_mask_bg(),
+              fit: BoxFit.fill,
+            ),
           ),
           Positioned(
             bottom: 10,
