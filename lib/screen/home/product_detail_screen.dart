@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:fans/app.dart';
+import 'package:fans/screen/components/cart_button.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -44,6 +45,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             verified: model.model.isOfficial == 1,
           ),
           elevation: 0,
+          centerTitle: true,
+          actions: [
+            CartButton(
+              count: model.cartCount,
+            ),
+          ],
         ),
         body: Container(
           padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -293,6 +300,7 @@ class _FavoriteButtonState extends State<FavoriteButton> {
 
 class _ViewModel {
   final bool isAnonymous;
+  final int cartCount;
   final Product model;
   final String currency;
   final GoodsSkus firstSku;
@@ -301,6 +309,7 @@ class _ViewModel {
 
   _ViewModel({
     this.isAnonymous,
+    this.cartCount,
     this.model,
     this.currency,
     this.firstSku,
@@ -384,6 +393,7 @@ class _ViewModel {
     final currency = store.state.auth.user.monetaryUnit;
     return _ViewModel(
         isAnonymous: store.state.auth.user.isAnonymous == 1,
+        cartCount: store.state.cart.list.length,
         model: state.model,
         currency: currency,
         firstSku: firstSku,
