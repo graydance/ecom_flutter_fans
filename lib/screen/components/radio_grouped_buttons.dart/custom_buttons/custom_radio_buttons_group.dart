@@ -88,8 +88,10 @@ class _CustomRadioButtonState extends State<CustomRadioButton> {
                 });
               },
         child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 14) *
-              (widget.fontSize / 14),
+          // padding: const EdgeInsets.symmetric(horizontal: 1, vertical: 14) *
+          // (widget.fontSize / 14),
+          padding: EdgeInsets.symmetric(horizontal: 4, vertical: 5),
+          height: 25,
           decoration: BoxDecoration(
             border: Border.all(
                 color: isDisable
@@ -105,7 +107,7 @@ class _CustomRadioButtonState extends State<CustomRadioButton> {
                     ? widget.selectedColor
                     : widget.buttonColor,
           ),
-          constraints: BoxConstraints(minWidth: 40),
+          constraints: BoxConstraints(minWidth: 25),
           child: Text(
             widget.buttonLables[index],
             style: isDisable

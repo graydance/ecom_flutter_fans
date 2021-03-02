@@ -1,5 +1,6 @@
 import 'package:fans/models/goods_skus.dart';
 import 'package:fans/models/spec_values.dart';
+import 'package:fans/screen/components/default_button.dart';
 import 'package:flutter/material.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
@@ -138,22 +139,16 @@ class _ProductAttributesBottomSheetState
             ),
             SizedBox(
               width: double.infinity,
-              height: 50,
-              child: TextButton(
+              height: 44,
+              child: FansButton(
                 onPressed: _currentSku.stock > 0
                     ? () {
                         Navigator.of(context).pop();
                         widget.viewModel.onTapAction(_currentSku.skuSpecIds);
                       }
                     : null,
-                child: Text(widget.viewModel.actionType.displayTitle),
-                style: TextButton.styleFrom(
-                  primary: Colors.white,
-                  backgroundColor: _currentSku.stock > 0
-                      ? AppTheme.colorED8514
-                      : Color(0xFFEDEEF0),
-                  textStyle: TextStyle(fontSize: 16, color: Colors.white),
-                ),
+                title: widget.viewModel.actionType.displayTitle,
+                isDisable: _currentSku.stock == 0,
               ),
             ),
           ],
@@ -168,6 +163,25 @@ class _ProductAttributesBottomSheetState
       child: Stack(
         clipBehavior: Clip.none,
         children: [
+          Positioned(
+            top: 8,
+            right: -14,
+            child: SizedBox(
+              height: 30,
+              width: 30,
+              child: TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                style: TextButton.styleFrom(
+                  primary: AppTheme.colorC4C5CD,
+                  padding: EdgeInsets.all(1),
+                ),
+                child: Icon(
+                  Icons.close,
+                  size: 20,
+                ),
+              ),
+            ),
+          ),
           Positioned(
             top: -30,
             child: GestureDetector(
@@ -206,7 +220,10 @@ class _ProductAttributesBottomSheetState
             ),
           ),
           Container(
-            padding: const EdgeInsets.only(left: 120),
+            padding: const EdgeInsets.only(
+              left: 120,
+              right: 20,
+            ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -220,6 +237,7 @@ class _ProductAttributesBottomSheetState
                         Text(
                           model.productName,
                           maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
@@ -251,21 +269,6 @@ class _ProductAttributesBottomSheetState
                           ],
                         ),
                       ],
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  height: 30,
-                  width: 30,
-                  child: TextButton(
-                    onPressed: () => Navigator.of(context).pop(),
-                    style: TextButton.styleFrom(
-                      primary: AppTheme.colorC4C5CD,
-                      padding: EdgeInsets.all(1),
-                    ),
-                    child: Icon(
-                      Icons.close,
-                      size: 15,
                     ),
                   ),
                 ),
