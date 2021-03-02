@@ -1,3 +1,4 @@
+import 'package:fans/screen/components/default_button.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -63,7 +64,7 @@ class _PaymentSuccessScreenState extends State<PaymentSuccessScreen> {
               ),
               SizedBox(
                 width: double.infinity,
-                child: TextButton(
+                child: FansButton(
                   onPressed: () {
                     if (kIsWeb) {
                       Keys.navigatorKey.currentState.pop();
@@ -72,13 +73,7 @@ class _PaymentSuccessScreenState extends State<PaymentSuccessScreen> {
                           .popUntil((route) => route.isFirst);
                     }
                   },
-                  style: TextButton.styleFrom(
-                      minimumSize: Size(44, 44),
-                      backgroundColor: AppTheme.colorED8514),
-                  child: Text(
-                    'Continue shopping',
-                    style: TextStyle(color: Colors.white),
-                  ),
+                  title: 'Continue shopping',
                 ),
               ),
             ],
