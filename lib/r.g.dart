@@ -220,6 +220,11 @@ class _R_Image_AssetResource {
   // ignore: non_constant_identifier_names
   final cart_empty = const AssetResource("assets/images/product/cart_empty.png", packageName: null);
 
+  /// asset: assets/images/product/common_button_bg.png
+  // ignore: non_constant_identifier_names
+  final common_button_bg =
+      const AssetResource("assets/images/product/common_button_bg.png", packageName: null);
+
   /// asset: assets/images/product/icon_payment.png
   // ignore: non_constant_identifier_names
   final icon_payment =
@@ -464,6 +469,12 @@ class _R_Image {
   // ignore: non_constant_identifier_names
   AssetImage cart_empty() {
     return AssetImage(asset.cart_empty.keyName);
+  }
+
+  /// asset: assets/images/product/common_button_bg.png
+  // ignore: non_constant_identifier_names
+  AssetImage common_button_bg() {
+    return AssetImage(asset.common_button_bg.keyName);
   }
 
   /// asset: assets/images/product/icon_payment.png

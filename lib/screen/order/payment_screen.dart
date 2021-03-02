@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:fans/screen/components/default_button.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -227,21 +228,13 @@ class _PaymentScreenState extends State<PaymentScreen> {
               EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: TextButton(
+            child: FansButton(
               onPressed: () {
                 viewModel.onTapPay(context);
               },
-              child: Text(
-                'Pay ${viewModel.currency}${viewModel.orderDetail.totalStr}'
-                    .toUpperCase(),
-                style: TextStyle(color: Colors.white),
-              ),
-              style: TextButton.styleFrom(
-                minimumSize: Size(44, 44),
-                backgroundColor: viewModel.orderDetail.canOrder
-                    ? AppTheme.colorED8514
-                    : AppTheme.colorED8514.withAlpha(80),
-              ),
+              title:
+                  'Pay ${viewModel.currency}${viewModel.orderDetail.totalStr}'
+                      .toUpperCase(),
             ),
           ),
         ),
