@@ -1,7 +1,5 @@
 import 'dart:async';
 
-import 'package:fans/screen/components/tag_button.dart';
-import 'package:fans/screen/components/tag_view.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
@@ -15,6 +13,7 @@ import 'package:fans/models/models.dart';
 import 'package:fans/r.g.dart';
 import 'package:fans/screen/components/cart_button.dart';
 import 'package:fans/screen/components/empty_view.dart';
+import 'package:fans/screen/components/tag_view.dart';
 import 'package:fans/store/actions.dart';
 import 'package:fans/theme.dart';
 
@@ -291,25 +290,6 @@ class _Tile extends StatelessWidget {
               ),
             )
           ],
-        ),
-      ),
-    );
-  }
-
-  _buildTag(String text) {
-    const double fontSize = 10;
-    return Container(
-      decoration: BoxDecoration(
-        border: Border.all(color: AppTheme.colorED8514, width: 1),
-        borderRadius: BorderRadius.circular(4.0),
-      ),
-      padding:
-          EdgeInsets.symmetric(vertical: 4, horizontal: 8) * (fontSize / 14),
-      child: Text(
-        text.toUpperCase(),
-        style: TextStyle(
-          color: AppTheme.colorED8514,
-          fontSize: fontSize,
         ),
       ),
     );
