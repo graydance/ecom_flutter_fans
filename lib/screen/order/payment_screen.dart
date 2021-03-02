@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:fans/r.g.dart';
 import 'package:fans/screen/components/default_button.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -210,12 +211,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
                         ),
                       ),
                     ),
-                    Text(
-                      '',
-                      style: TextStyle(
-                        color: AppTheme.color555764,
-                        fontSize: 12,
-                      ),
+                    Image(
+                      image: R.image.paypal(),
                     ),
                   ]),
                 )

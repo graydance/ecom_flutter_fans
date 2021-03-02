@@ -240,6 +240,10 @@ class _R_Image_AssetResource {
   final payment_success =
       const AssetResource("assets/images/product/payment_success.png", packageName: null);
 
+  /// asset: assets/images/product/paypal.png
+  // ignore: non_constant_identifier_names
+  final paypal = const AssetResource("assets/images/product/paypal.png", packageName: null);
+
   /// asset: assets/images/product/product_search.png
   // ignore: non_constant_identifier_names
   final product_search =
@@ -493,6 +497,12 @@ class _R_Image {
   // ignore: non_constant_identifier_names
   AssetImage payment_success() {
     return AssetImage(asset.payment_success.keyName);
+  }
+
+  /// asset: assets/images/product/paypal.png
+  // ignore: non_constant_identifier_names
+  AssetImage paypal() {
+    return AssetImage(asset.paypal.keyName);
   }
 
   /// asset: assets/images/product/product_search.png
