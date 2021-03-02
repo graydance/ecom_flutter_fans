@@ -26,8 +26,7 @@ dependencies:
       url: 'https://github.com/letsar/flutter_staggered_grid_view.git'
   url_launcher: ^5.7.10
   photo_view: ^0.10.3
-  flutter_web_plugins:
-    sdk: flutter
+  flutter_widget_from_html_core: ^0.5.2+1
 dev_dependencies:
   flutter_test:
     sdk: flutter

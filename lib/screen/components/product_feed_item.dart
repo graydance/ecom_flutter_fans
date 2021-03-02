@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
 import 'package:intl/intl.dart';
 
 import 'package:fans/models/models.dart';
@@ -172,12 +173,14 @@ class ProductFeedItem extends StatelessWidget {
         ),
         Align(
           alignment: Alignment.centerLeft,
-          child: Text(
+          child: HtmlWidget(
             model.goodsDescription,
-            style: TextStyle(
-              color: Color(0xff555764),
-              fontSize: 12,
-            ),
+            customStylesBuilder: (e) => {
+              'font-size': '12',
+              'line-height': 'normal',
+              'margin': '0',
+              'padding': '0',
+            },
           ),
         ),
       ],
