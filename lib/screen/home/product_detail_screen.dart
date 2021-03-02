@@ -132,7 +132,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         style: TextButton.styleFrom(
                           minimumSize: Size(44, 44),
                           primary: Colors.white,
-                          backgroundColor: Color(0xffEC3644),
+                          backgroundColor: AppTheme.colorFEAC1B,
                           shape: RoundedRectangleBorder(),
                         ),
                         child: Text(
