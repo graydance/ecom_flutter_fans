@@ -1,15 +1,15 @@
-import 'package:fans/models/goods_skus.dart';
-import 'package:fans/models/spec_values.dart';
-import 'package:fans/screen/components/default_button.dart';
 import 'package:flutter/material.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'package:photo_view/photo_view.dart';
 
+import 'package:fans/models/goods_skus.dart';
 import 'package:fans/models/models.dart';
+import 'package:fans/models/spec_values.dart';
 import 'package:fans/r.g.dart';
+import 'package:fans/screen/components/default_button.dart';
 import 'package:fans/screen/components/quantity_editing_button.dart';
 import 'package:fans/screen/components/radio_grouped_buttons.dart/radio_grouped_buttons.dart';
 import 'package:fans/theme.dart';
-import 'package:photo_view/photo_view.dart';
 
 class ProductAttributesBottomSheet extends StatefulWidget {
   final ProductAttributesViewModel viewModel;

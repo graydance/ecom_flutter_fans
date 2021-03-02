@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -12,6 +13,7 @@ import 'package:fans/models/models.dart';
 import 'package:fans/r.g.dart';
 import 'package:fans/screen/components/cart_button.dart';
 import 'package:fans/screen/components/empty_view.dart';
+import 'package:fans/screen/components/tag_view.dart';
 import 'package:fans/store/actions.dart';
 import 'package:fans/theme.dart';
 
@@ -214,6 +216,7 @@ class _Tile extends StatelessWidget {
         clipBehavior: Clip.antiAlias,
         elevation: 0,
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
             Container(
               height: size.height,
@@ -224,10 +227,11 @@ class _Tile extends StatelessWidget {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(8),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // 已知问题：web无法同时支持maxLines和ellipsis，详见 https://github.com/flutter/flutter/issues/44802#issuecomment-555707104
                   Text(
                     '${model.goodsName}',
                     style: TextStyle(
@@ -237,54 +241,51 @@ class _Tile extends StatelessWidget {
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.baseline,
-                      textBaseline: TextBaseline.ideographic,
-                      children: [
-                        Text(
-                          '$currency${model.currentPriceStr}',
-                          style: TextStyle(
-                            color: Color(0xff0F1015),
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        SizedBox(
-                          width: 8,
-                        ),
-                        Text(
-                          '$currency${model.originalPriceStr}',
-                          style: TextStyle(
-                            color: AppTheme.color979AA9,
-                            fontSize: 12,
-                            decoration: TextDecoration.lineThrough,
-                          ),
-                        ),
-                      ],
-                    ),
+                  SizedBox(
+                    height: 8,
                   ),
-                  ...model.tag
-                      .map(
-                        (e) => Container(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 4, horizontal: 8),
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                                color: AppTheme.colorED8514, width: 1),
-                            borderRadius: BorderRadius.circular(4.0),
-                          ),
-                          child: Text(
-                            e.name.toUpperCase(),
-                            style: TextStyle(
-                              color: AppTheme.colorED8514,
-                              fontSize: 10,
-                            ),
-                          ),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.baseline,
+                    textBaseline: TextBaseline.ideographic,
+                    children: [
+                      Text(
+                        '$currency${model.currentPriceStr}',
+                        style: TextStyle(
+                          color: Color(0xff0F1015),
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          textBaseline: TextBaseline.ideographic,
                         ),
-                      )
-                      .toList(),
+                      ),
+                      SizedBox(
+                        width: 8,
+                      ),
+                      Text(
+                        '$currency${model.originalPriceStr}',
+                        style: TextStyle(
+                          color: AppTheme.color979AA9,
+                          fontSize: 14,
+                          decoration: TextDecoration.lineThrough,
+                          textBaseline: TextBaseline.ideographic,
+                        ),
+                      ),
+                    ],
+                  ),
+                  if (model.tag.isNotEmpty)
+                    SizedBox(
+                      height: 8,
+                    ),
+                  Wrap(
+                    spacing: 2,
+                    runSpacing: 2,
+                    children: model.tag
+                        .map(
+                          (e) => TagView(
+                            text: e.name.toUpperCase(),
+                          ),
+                        )
+                        .toList(),
+                  ),
                 ],
               ),
             )
