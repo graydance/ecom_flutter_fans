@@ -82,7 +82,6 @@ Middleware<AppState> _verifyAuthState() {
       if (user.token.isNotEmpty) {
         store.dispatch(LocalUpdateUserAction(user));
         if (kIsWeb) {
-          Keys.navigatorKey.currentState.pushReplacementNamed(Routes.splash);
         } else {
           Keys.navigatorKey.currentState.pushReplacementNamed(Routes.home);
         }
@@ -90,7 +89,6 @@ Middleware<AppState> _verifyAuthState() {
         store.dispatch(LocalUpdateUserAction(User()));
         store.dispatch(AnonymousLoginAction());
         if (kIsWeb) {
-          Keys.navigatorKey.currentState.pushReplacementNamed(Routes.splash);
         } else {
           Keys.navigatorKey.currentState.pushReplacementNamed(Routes.welcome);
         }
