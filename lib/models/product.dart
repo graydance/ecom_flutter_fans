@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:fans/models/goods.dart';
 import 'package:fans/models/goods_skus.dart';
 import 'package:fans/models/goods_spec.dart';
+import 'package:fans/models/tag.dart';
 
 class Product {
   final String id;
@@ -32,6 +33,7 @@ class Product {
   final List<Goods> recommend;
   final String originalPriceStr;
   final String currentPriceStr;
+  final List<Tag> tag;
 
   const Product({
     this.id = '',
@@ -59,6 +61,7 @@ class Product {
     this.recommend = const [],
     this.originalPriceStr = '',
     this.currentPriceStr = '',
+    this.tag = const [],
   });
 
   Product copyWith({
@@ -87,6 +90,7 @@ class Product {
     List<Goods> recommend,
     String originalPriceStr,
     String currentPriceStr,
+    List<Tag> tag,
   }) {
     return Product(
       id: id ?? this.id,
@@ -114,6 +118,7 @@ class Product {
       recommend: recommend ?? this.recommend,
       originalPriceStr: originalPriceStr ?? this.originalPriceStr,
       currentPriceStr: currentPriceStr ?? this.currentPriceStr,
+      tag: tag ?? this.tag,
     );
   }
 
@@ -146,7 +151,8 @@ class Product {
         o.isOfficial == isOfficial &&
         listEquals(o.recommend, recommend) &&
         o.originalPriceStr == originalPriceStr &&
-        o.currentPriceStr == currentPriceStr;
+        o.currentPriceStr == currentPriceStr &&
+        listEquals(o.tag, tag);
   }
 
   @override
@@ -175,12 +181,13 @@ class Product {
         isOfficial.hashCode ^
         recommend.hashCode ^
         originalPriceStr.hashCode ^
-        currentPriceStr.hashCode;
+        currentPriceStr.hashCode ^
+        tag.hashCode;
   }
 
   @override
   String toString() {
-    return 'Product(id: $id, productName: $productName, originalPrice: $originalPrice, currentPrice: $currentPrice, earningPrice: $earningPrice, description: $description, carNumber: $carNumber, collectNumber: $collectNumber, status: $status, originalUrl: $originalUrl, specType: $specType, width: $width, height: $height, supplierId: $supplierId, goodsPictures: $goodsPictures, goodsSkus: $goodsSkus, specList: $specList, idolId: $idolId, idolGoodsId: $idolGoodsId, nickName: $nickName, storeName: $storeName, isOfficial: $isOfficial, recommend: $recommend, originalPriceStr: $originalPriceStr, currentPriceStr: $currentPriceStr)';
+    return 'Product(id: $id, productName: $productName, originalPrice: $originalPrice, currentPrice: $currentPrice, earningPrice: $earningPrice, description: $description, carNumber: $carNumber, collectNumber: $collectNumber, status: $status, originalUrl: $originalUrl, specType: $specType, width: $width, height: $height, supplierId: $supplierId, goodsPictures: $goodsPictures, goodsSkus: $goodsSkus, specList: $specList, idolId: $idolId, idolGoodsId: $idolGoodsId, nickName: $nickName, storeName: $storeName, isOfficial: $isOfficial, recommend: $recommend, originalPriceStr: $originalPriceStr, currentPriceStr: $currentPriceStr, tag: $tag)';
   }
 
   Map<String, dynamic> toMap() {
@@ -210,6 +217,7 @@ class Product {
       'recommend': recommend?.map((x) => x?.toMap())?.toList(),
       'originalPriceStr': originalPriceStr,
       'currentPriceStr': currentPriceStr,
+      'tag': tag?.map((x) => x?.toMap())?.toList(),
     };
   }
 
@@ -246,6 +254,7 @@ class Product {
           List<Goods>.from(map['recommend']?.map((x) => Goods.fromMap(x))),
       originalPriceStr: map['originalPriceStr'],
       currentPriceStr: map['currentPriceStr'],
+      tag: List<Tag>.from(map['tag']?.map((x) => Tag.fromMap(x))),
     );
   }
 
