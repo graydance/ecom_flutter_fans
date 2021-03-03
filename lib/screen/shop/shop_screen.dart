@@ -239,10 +239,6 @@ class _Tile extends StatelessWidget {
                             image: R.image.discount_bg(),
                             fit: BoxFit.fill,
                           ),
-                          // color: Color(0xffFEAC1B),
-                          // borderRadius: BorderRadius.only(
-                          //   bottomRight: Radius.circular(50),
-                          // ),
                         ),
                         child: Center(
                           child: Text(

@@ -77,7 +77,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                 '${model.firstSku.currentPriceStr}',
                             originalPriceStr:
                                 '${model.firstSku.originalPriceStr}',
-                            tagNormal: [],
+                            tagNormal:
+                                model.model.tag.map((e) => e.name).toList(),
                             goodsDescription: model.model.description,
                             goods: model.model.goodsPictures
                                 .map((e) => e.picture)
