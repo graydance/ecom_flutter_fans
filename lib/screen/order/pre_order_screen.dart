@@ -482,35 +482,35 @@ class _PreOrderScreenState extends State<PreOrderScreen> {
           validator: (value) =>
               validateEmail(value) ? null : 'Email is required',
         ),
-        SizedBox(
-          height: 10,
-        ),
-        GestureDetector(
-          onTap: () {
-            Keys.navigatorKey.currentState.pushNamed(Routes.signin);
-          },
-          child: RichText(
-            text: TextSpan(
-              children: [
-                TextSpan(
-                  text: 'I ready have a account ',
-                  style: TextStyle(
-                    color: AppTheme.color555764,
-                    fontSize: 12,
-                  ),
-                ),
-                TextSpan(
-                  text: 'Login',
-                  style: TextStyle(
-                    decoration: TextDecoration.underline,
-                    color: Colors.blue,
-                    fontSize: 12,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
+        // SizedBox(
+        //   height: 10,
+        // ),
+        // GestureDetector(
+        //   onTap: () {
+        //     Keys.navigatorKey.currentState.pushNamed(Routes.signin);
+        //   },
+        //   child: RichText(
+        //     text: TextSpan(
+        //       children: [
+        //         TextSpan(
+        //           text: 'I ready have a account ',
+        //           style: TextStyle(
+        //             color: AppTheme.color555764,
+        //             fontSize: 12,
+        //           ),
+        //         ),
+        //         TextSpan(
+        //           text: 'Login',
+        //           style: TextStyle(
+        //             decoration: TextDecoration.underline,
+        //             color: Colors.blue,
+        //             fontSize: 12,
+        //           ),
+        //         ),
+        //       ],
+        //     ),
+        //   ),
+        // ),
       ],
     );
   }
