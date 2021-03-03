@@ -67,11 +67,10 @@ class _PaymentResultScreenState extends State<PaymentResultScreen> {
       });
 
       int payStatus = data['payStatus'];
-      String orderId = data['id'];
       if (payStatus == 1) {
         Keys.navigatorKey.currentState.pushNamedAndRemoveUntil(
             Routes.paymentSuccess, (route) => route.isFirst,
-            arguments: orderId);
+            arguments: data);
       } else if (payStatus == -1) {
         setState(() {
           _message = 'Payment cancelled';
