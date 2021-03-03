@@ -220,10 +220,42 @@ class _Tile extends StatelessWidget {
           children: [
             Container(
               height: size.height,
-              child: FadeInImage(
-                placeholder: R.image.kol_album_bg(),
-                image: NetworkImage(model.picture),
-                fit: BoxFit.cover,
+              child: Stack(
+                children: [
+                  FadeInImage(
+                    placeholder: R.image.kol_album_bg(),
+                    image: NetworkImage(model.picture),
+                    fit: BoxFit.cover,
+                  ),
+                  if (model.discount.isNotEmpty)
+                    Positioned(
+                      top: 0,
+                      left: 0,
+                      child: Container(
+                        height: 20,
+                        width: 60,
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                            image: R.image.discount_bg(),
+                            fit: BoxFit.fill,
+                          ),
+                          // color: Color(0xffFEAC1B),
+                          // borderRadius: BorderRadius.only(
+                          //   bottomRight: Radius.circular(50),
+                          // ),
+                        ),
+                        child: Center(
+                          child: Text(
+                            '${model.discount} off',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
               ),
             ),
             Padding(
