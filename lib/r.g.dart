@@ -225,6 +225,11 @@ class _R_Image_AssetResource {
   final common_button_bg =
       const AssetResource("assets/images/product/common_button_bg.png", packageName: null);
 
+  /// asset: assets/images/product/discount_bg.png
+  // ignore: non_constant_identifier_names
+  final discount_bg =
+      const AssetResource("assets/images/product/discount_bg.png", packageName: null);
+
   /// asset: assets/images/product/icon_payment.png
   // ignore: non_constant_identifier_names
   final icon_payment =
@@ -479,6 +484,12 @@ class _R_Image {
   // ignore: non_constant_identifier_names
   AssetImage common_button_bg() {
     return AssetImage(asset.common_button_bg.keyName);
+  }
+
+  /// asset: assets/images/product/discount_bg.png
+  // ignore: non_constant_identifier_names
+  AssetImage discount_bg() {
+    return AssetImage(asset.discount_bg.keyName);
   }
 
   /// asset: assets/images/product/icon_payment.png

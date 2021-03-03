@@ -83,17 +83,14 @@ Middleware<AppState> _verifyAuthState() {
         store.dispatch(LocalUpdateUserAction(user));
         if (kIsWeb) {
         } else {
-          // Keys.navigatorKey.currentState.pushReplacementNamed(Routes.home);
-          Keys.navigatorKey.currentState.pushReplacementNamed('/username1');
+          Keys.navigatorKey.currentState.pushReplacementNamed(Routes.home);
         }
       } else {
         store.dispatch(LocalUpdateUserAction(User()));
         store.dispatch(AnonymousLoginAction());
         if (kIsWeb) {
-          Keys.navigatorKey.currentState.pushReplacementNamed('/username1');
         } else {
-          // Keys.navigatorKey.currentState.pushReplacementNamed(Routes.welcome);
-          Keys.navigatorKey.currentState.pushReplacementNamed('/username1');
+          Keys.navigatorKey.currentState.pushReplacementNamed(Routes.welcome);
         }
       }
     });
