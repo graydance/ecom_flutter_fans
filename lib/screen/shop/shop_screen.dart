@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -53,7 +54,7 @@ class _ShopScreenState extends State<ShopScreen> {
       builder: (ctx, viewModel) => Scaffold(
         backgroundColor: AppTheme.colorF8F8F8,
         appBar: AppBar(
-          title: Text(_seller.nickName),
+          title: Text(_seller.userName),
           elevation: 0,
           centerTitle: true,
           leading: Container(),
@@ -130,47 +131,90 @@ class _ShopScreenState extends State<ShopScreen> {
             slivers: [
               SliverToBoxAdapter(
                 child: Container(
-                  color: Colors.white,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.rectangle,
+                    image: DecorationImage(
+                      image: _seller.portrait.isNotEmpty
+                          ? NetworkImage(_seller.portrait)
+                          : R.image.idol_default_bg(),
+                      fit: BoxFit.fitWidth,
+                    ),
+                  ),
                   height: 160,
-                  child: Center(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(80 / 2.0),
-                          child: FadeInImage(
-                            width: 80,
-                            height: 80,
-                            placeholder: R.image.avatar_placeholder(),
-                            image: NetworkImage(_seller.portrait),
-                            fit: BoxFit.cover,
-                          ),
+                  child: ClipRRect(
+                    child: BackdropFilter(
+                      filter: _seller.portrait.isNotEmpty
+                          ? ImageFilter.blur(sigmaX: 15, sigmaY: 15)
+                          : ImageFilter.blur(),
+                      child: Container(
+                        padding: EdgeInsets.only(bottom: 6),
+                        alignment: Alignment.center,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Container(
+                              width: 80,
+                              height: 80,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                image: DecorationImage(
+                                    image: _seller.portrait.isNotEmpty
+                                        ? NetworkImage(_seller.portrait)
+                                        : R.image.idol_avatar_placeholder(),
+                                    fit: BoxFit.cover),
+                                border:
+                                    Border.all(color: Colors.white, width: 1.0),
+                                color: AppTheme.colorF8F8F8,
+                              ),
+                              child: _seller.portrait.isNotEmpty ||
+                                      _seller.userName.isEmpty
+                                  ? null
+                                  : Center(
+                                      child: Text(
+                                        _seller.userName[0].toUpperCase(),
+                                        style: TextStyle(
+                                            fontSize: 50,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white60),
+                                      ),
+                                    ),
+                            ),
+                            SizedBox(
+                              height: 4,
+                            ),
+                            Text(
+                              '@${_seller.userName}',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 14,
+                                shadows: [
+                                  Shadow(
+                                      offset: Offset(1.0, 1.0),
+                                      blurRadius: 2.0,
+                                      color: Color(0xFF575859)),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
-                        SizedBox(
-                          height: 4,
-                        ),
-                        Text(
-                          '@${_seller.nickName}',
-                          style: TextStyle(
-                            color: AppTheme.color555764,
-                            fontSize: 14,
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
                   ),
                 ),
               ),
               SliverPadding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                sliver: SliverStaggeredGrid.countBuilder(
-                  itemCount: _goods.length,
-                  crossAxisCount: 4,
-                  mainAxisSpacing: 4.0,
-                  crossAxisSpacing: 4.0,
-                  itemBuilder: (context, index) => _Tile(viewModel.currency,
-                      _goods[index], _getSize(_goods[index])),
-                  staggeredTileBuilder: (index) => StaggeredTile.fit(2),
+                padding: const EdgeInsets.only(left: 16, right: 16, top: 14),
+                sliver: SliverSafeArea(
+                  bottom: false,
+                  sliver: SliverStaggeredGrid.countBuilder(
+                    itemCount: _goods.length,
+                    crossAxisCount: 4,
+                    mainAxisSpacing: 4.0,
+                    crossAxisSpacing: 4.0,
+                    itemBuilder: (context, index) => _Tile(viewModel.currency,
+                        _goods[index], _getSize(_goods[index])),
+                    staggeredTileBuilder: (index) => StaggeredTile.fit(2),
+                  ),
                 ),
               ),
             ],
@@ -232,21 +276,30 @@ class _Tile extends StatelessWidget {
                       top: 0,
                       left: 0,
                       child: Container(
-                        height: 20,
-                        width: 60,
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                            image: R.image.discount_bg(),
-                            fit: BoxFit.fill,
-                          ),
+                        padding: EdgeInsets.only(
+                          left: 6,
+                          top: 4,
+                          right: 14,
+                          bottom: 4,
                         ),
-                        child: Center(
-                          child: Text(
-                            '${model.discount} off',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 12,
-                            ),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [
+                              Color(0xFFF68A51),
+                              Color(0xFFEA5228),
+                            ],
+                          ),
+                          borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(5),
+                              bottomRight: Radius.circular(100)),
+                        ),
+                        child: Text(
+                          '${model.discount} off',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
                           ),
                         ),
                       ),
