@@ -1,5 +1,7 @@
+import 'package:fans/screen/components/tag_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
 import 'package:intl/intl.dart';
 
 import 'package:fans/models/models.dart';
@@ -133,7 +135,7 @@ class ProductFeedItem extends StatelessWidget {
               Text(
                 '$currency${model.currentPriceStr}',
                 style: TextStyle(
-                    color: Color(0xff0F1015),
+                    color: AppTheme.color0F1015,
                     fontSize: 18,
                     fontWeight: FontWeight.bold),
               ),
@@ -144,40 +146,26 @@ class ProductFeedItem extends StatelessWidget {
                 '$currency${model.originalPriceStr}',
                 style: TextStyle(
                     color: AppTheme.color979AA9,
-                    fontSize: 12,
+                    fontSize: 14,
                     decoration: TextDecoration.lineThrough),
               ),
               Spacer(),
               ...model.tagNormal
-                  .map(
-                    (e) => Container(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 4, horizontal: 8),
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Color(0xffED3544), width: 1),
-                        borderRadius: BorderRadius.circular(4.0),
-                      ),
-                      child: Text(
-                        e.toUpperCase(),
-                        style: TextStyle(
-                          color: Color(0xffED3544),
-                          fontSize: 10,
-                        ),
-                      ),
-                    ),
-                  )
+                  .map((e) => TagView(text: e.toUpperCase()))
                   .toList(),
             ],
           ),
         ),
         Align(
           alignment: Alignment.centerLeft,
-          child: Text(
+          child: HtmlWidget(
             model.goodsDescription,
-            style: TextStyle(
-              color: Color(0xff555764),
-              fontSize: 12,
-            ),
+            customStylesBuilder: (e) => {
+              'font-size': '12',
+              'line-height': 'normal',
+              'margin': '0',
+              'padding': '0',
+            },
           ),
         ),
       ],

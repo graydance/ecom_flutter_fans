@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:fans/app.dart';
+import 'package:fans/screen/components/default_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
@@ -254,22 +255,14 @@ class _CartScreenState extends State<CartScreen> {
                     },
                   ),
                 if (viewModel.cart.list.isNotEmpty && !_controller.isSelecting)
-                  TextButton(
+                  FansButton(
                     onPressed: viewModel.cart.list.isNotEmpty
                         ? () {
                             viewModel.onCheckout(viewModel.cart.list);
                           }
                         : null,
-                    child: Text(
-                      'Check out',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    style: TextButton.styleFrom(
-                      minimumSize: Size(44, 44),
-                      backgroundColor: viewModel.cart.list.isNotEmpty
-                          ? AppTheme.colorED8514
-                          : AppTheme.colorED8514.withAlpha(80),
-                    ),
+                    isDisable: viewModel.cart.list.isEmpty,
+                    title: 'Check out',
                   ),
               ],
             ),

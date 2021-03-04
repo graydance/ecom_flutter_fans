@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'dart:ui';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -12,6 +14,7 @@ import 'package:fans/models/models.dart';
 import 'package:fans/r.g.dart';
 import 'package:fans/screen/components/cart_button.dart';
 import 'package:fans/screen/components/empty_view.dart';
+import 'package:fans/screen/components/tag_view.dart';
 import 'package:fans/store/actions.dart';
 import 'package:fans/theme.dart';
 
@@ -51,7 +54,7 @@ class _ShopScreenState extends State<ShopScreen> {
       builder: (ctx, viewModel) => Scaffold(
         backgroundColor: AppTheme.colorF8F8F8,
         appBar: AppBar(
-          title: Text(_seller.nickName),
+          title: Text(_seller.userName),
           elevation: 0,
           centerTitle: true,
           leading: Container(),
@@ -128,47 +131,90 @@ class _ShopScreenState extends State<ShopScreen> {
             slivers: [
               SliverToBoxAdapter(
                 child: Container(
-                  color: Colors.white,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.rectangle,
+                    image: DecorationImage(
+                      image: _seller.portrait.isNotEmpty
+                          ? NetworkImage(_seller.portrait)
+                          : R.image.idol_default_bg(),
+                      fit: BoxFit.fitWidth,
+                    ),
+                  ),
                   height: 160,
-                  child: Center(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(80 / 2.0),
-                          child: FadeInImage(
-                            width: 80,
-                            height: 80,
-                            placeholder: R.image.avatar_placeholder(),
-                            image: NetworkImage(_seller.portrait),
-                            fit: BoxFit.cover,
-                          ),
+                  child: ClipRRect(
+                    child: BackdropFilter(
+                      filter: _seller.portrait.isNotEmpty
+                          ? ImageFilter.blur(sigmaX: 15, sigmaY: 15)
+                          : ImageFilter.blur(),
+                      child: Container(
+                        padding: EdgeInsets.only(bottom: 6),
+                        alignment: Alignment.center,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Container(
+                              width: 80,
+                              height: 80,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                image: DecorationImage(
+                                    image: _seller.portrait.isNotEmpty
+                                        ? NetworkImage(_seller.portrait)
+                                        : R.image.idol_avatar_placeholder(),
+                                    fit: BoxFit.cover),
+                                border:
+                                    Border.all(color: Colors.white, width: 1.0),
+                                color: AppTheme.colorF8F8F8,
+                              ),
+                              child: _seller.portrait.isNotEmpty ||
+                                      _seller.userName.isEmpty
+                                  ? null
+                                  : Center(
+                                      child: Text(
+                                        _seller.userName[0].toUpperCase(),
+                                        style: TextStyle(
+                                            fontSize: 50,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white60),
+                                      ),
+                                    ),
+                            ),
+                            SizedBox(
+                              height: 4,
+                            ),
+                            Text(
+                              '@${_seller.userName}',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 14,
+                                shadows: [
+                                  Shadow(
+                                      offset: Offset(1.0, 1.0),
+                                      blurRadius: 2.0,
+                                      color: Color(0xFF575859)),
+                                ],
+                              ),
+                            ),
+                          ],
                         ),
-                        SizedBox(
-                          height: 4,
-                        ),
-                        Text(
-                          '@${_seller.nickName}',
-                          style: TextStyle(
-                            color: AppTheme.color555764,
-                            fontSize: 14,
-                          ),
-                        ),
-                      ],
+                      ),
                     ),
                   ),
                 ),
               ),
               SliverPadding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                sliver: SliverStaggeredGrid.countBuilder(
-                  itemCount: _goods.length,
-                  crossAxisCount: 4,
-                  mainAxisSpacing: 4.0,
-                  crossAxisSpacing: 4.0,
-                  itemBuilder: (context, index) => _Tile(viewModel.currency,
-                      _goods[index], _getSize(_goods[index])),
-                  staggeredTileBuilder: (index) => StaggeredTile.fit(2),
+                padding: const EdgeInsets.only(left: 16, right: 16, top: 14),
+                sliver: SliverSafeArea(
+                  bottom: false,
+                  sliver: SliverStaggeredGrid.countBuilder(
+                    itemCount: _goods.length,
+                    crossAxisCount: 4,
+                    mainAxisSpacing: 4.0,
+                    crossAxisSpacing: 4.0,
+                    itemBuilder: (context, index) => _Tile(viewModel.currency,
+                        _goods[index], _getSize(_goods[index])),
+                    staggeredTileBuilder: (index) => StaggeredTile.fit(2),
+                  ),
                 ),
               ),
             ],
@@ -214,20 +260,59 @@ class _Tile extends StatelessWidget {
         clipBehavior: Clip.antiAlias,
         elevation: 0,
         child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
             Container(
               height: size.height,
-              child: FadeInImage(
-                placeholder: R.image.kol_album_bg(),
-                image: NetworkImage(model.picture),
-                fit: BoxFit.cover,
+              child: Stack(
+                children: [
+                  FadeInImage(
+                    placeholder: R.image.kol_album_bg(),
+                    image: NetworkImage(model.picture),
+                    fit: BoxFit.cover,
+                  ),
+                  if (model.discount.isNotEmpty)
+                    Positioned(
+                      top: 0,
+                      left: 0,
+                      child: Container(
+                        padding: EdgeInsets.only(
+                          left: 6,
+                          top: 4,
+                          right: 14,
+                          bottom: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [
+                              Color(0xFFF68A51),
+                              Color(0xFFEA5228),
+                            ],
+                          ),
+                          borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(5),
+                              bottomRight: Radius.circular(100)),
+                        ),
+                        child: Text(
+                          '${model.discount} off',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(8),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // 已知问题：web无法同时支持maxLines和ellipsis，详见 https://github.com/flutter/flutter/issues/44802#issuecomment-555707104
                   Text(
                     '${model.goodsName}',
                     style: TextStyle(
@@ -237,54 +322,51 @@ class _Tile extends StatelessWidget {
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.baseline,
-                      textBaseline: TextBaseline.ideographic,
-                      children: [
-                        Text(
-                          '$currency${model.currentPriceStr}',
-                          style: TextStyle(
-                            color: Color(0xff0F1015),
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        SizedBox(
-                          width: 8,
-                        ),
-                        Text(
-                          '$currency${model.originalPriceStr}',
-                          style: TextStyle(
-                            color: AppTheme.color979AA9,
-                            fontSize: 12,
-                            decoration: TextDecoration.lineThrough,
-                          ),
-                        ),
-                      ],
-                    ),
+                  SizedBox(
+                    height: 8,
                   ),
-                  ...model.tag
-                      .map(
-                        (e) => Container(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 4, horizontal: 8),
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                                color: AppTheme.colorED8514, width: 1),
-                            borderRadius: BorderRadius.circular(4.0),
-                          ),
-                          child: Text(
-                            e.name.toUpperCase(),
-                            style: TextStyle(
-                              color: AppTheme.colorED8514,
-                              fontSize: 10,
-                            ),
-                          ),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.baseline,
+                    textBaseline: TextBaseline.ideographic,
+                    children: [
+                      Text(
+                        '$currency${model.currentPriceStr}',
+                        style: TextStyle(
+                          color: Color(0xff0F1015),
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          textBaseline: TextBaseline.ideographic,
                         ),
-                      )
-                      .toList(),
+                      ),
+                      SizedBox(
+                        width: 8,
+                      ),
+                      Text(
+                        '$currency${model.originalPriceStr}',
+                        style: TextStyle(
+                          color: AppTheme.color979AA9,
+                          fontSize: 14,
+                          decoration: TextDecoration.lineThrough,
+                          textBaseline: TextBaseline.ideographic,
+                        ),
+                      ),
+                    ],
+                  ),
+                  if (model.tag.isNotEmpty)
+                    SizedBox(
+                      height: 8,
+                    ),
+                  Wrap(
+                    spacing: 2,
+                    runSpacing: 2,
+                    children: model.tag
+                        .map(
+                          (e) => TagView(
+                            text: e.name.toUpperCase(),
+                          ),
+                        )
+                        .toList(),
+                  ),
                 ],
               ),
             )

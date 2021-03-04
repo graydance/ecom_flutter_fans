@@ -1,3 +1,4 @@
+import 'package:fans/screen/components/default_button.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -15,7 +16,11 @@ class PaymentSuccessScreen extends StatefulWidget {
 class _PaymentSuccessScreenState extends State<PaymentSuccessScreen> {
   @override
   Widget build(BuildContext context) {
-    final String orderId = ModalRoute.of(context).settings.arguments ?? '';
+    final Map<String, dynamic> arguments =
+        ModalRoute.of(context).settings.arguments;
+
+    final orderId = arguments['number'];
+    final username = arguments['userName'];
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -63,22 +68,17 @@ class _PaymentSuccessScreenState extends State<PaymentSuccessScreen> {
               ),
               SizedBox(
                 width: double.infinity,
-                child: TextButton(
+                child: FansButton(
                   onPressed: () {
                     if (kIsWeb) {
-                      Keys.navigatorKey.currentState.pop();
+                      Keys.navigatorKey.currentState
+                          .pushReplacementNamed('/$username');
                     } else {
                       Keys.navigatorKey.currentState
                           .popUntil((route) => route.isFirst);
                     }
                   },
-                  style: TextButton.styleFrom(
-                      minimumSize: Size(44, 44),
-                      backgroundColor: AppTheme.colorED8514),
-                  child: Text(
-                    'Continue shopping',
-                    style: TextStyle(color: Colors.white),
-                  ),
+                  title: 'Continue shopping',
                 ),
               ),
             ],
