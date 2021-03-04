@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:fans/app.dart';
+import 'package:fans/screen/components/default_button.dart';
 import 'package:fans/screen/components/order_status_image_view.dart';
 import 'package:fans/screen/order/payment_screen.dart';
 import 'package:fans/utils/validator.dart';
@@ -110,7 +111,7 @@ class _PreOrderScreenState extends State<PreOrderScreen> {
               EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: TextButton(
+            child: FansButton(
               onPressed: _shippingAddress.id.isNotEmpty &&
                       _billingAddress.id.isNotEmpty
                   ? () {
@@ -134,16 +135,9 @@ class _PreOrderScreenState extends State<PreOrderScreen> {
                           _emailController.text ?? '', _couponCode ?? '');
                     }
                   : null,
-              child: Text(
-                'Continue to payment',
-                style: TextStyle(color: Colors.white),
-              ),
-              style: TextButton.styleFrom(
-                minimumSize: Size(44, 44),
-                backgroundColor: viewModel.orderDetail.canOrder
-                    ? AppTheme.colorED8514
-                    : AppTheme.colorED8514.withAlpha(80),
-              ),
+              title: 'Continue to payment',
+              isDisable:
+                  _shippingAddress.id.isEmpty || _billingAddress.id.isEmpty,
             ),
           ),
         ),
@@ -488,35 +482,35 @@ class _PreOrderScreenState extends State<PreOrderScreen> {
           validator: (value) =>
               validateEmail(value) ? null : 'Email is required',
         ),
-        SizedBox(
-          height: 10,
-        ),
-        GestureDetector(
-          onTap: () {
-            Keys.navigatorKey.currentState.pushNamed(Routes.signin);
-          },
-          child: RichText(
-            text: TextSpan(
-              children: [
-                TextSpan(
-                  text: 'I ready have a account ',
-                  style: TextStyle(
-                    color: AppTheme.color555764,
-                    fontSize: 12,
-                  ),
-                ),
-                TextSpan(
-                  text: 'Login',
-                  style: TextStyle(
-                    decoration: TextDecoration.underline,
-                    color: Colors.blue,
-                    fontSize: 12,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
+        // SizedBox(
+        //   height: 10,
+        // ),
+        // GestureDetector(
+        //   onTap: () {
+        //     Keys.navigatorKey.currentState.pushNamed(Routes.signin);
+        //   },
+        //   child: RichText(
+        //     text: TextSpan(
+        //       children: [
+        //         TextSpan(
+        //           text: 'I ready have a account ',
+        //           style: TextStyle(
+        //             color: AppTheme.color555764,
+        //             fontSize: 12,
+        //           ),
+        //         ),
+        //         TextSpan(
+        //           text: 'Login',
+        //           style: TextStyle(
+        //             decoration: TextDecoration.underline,
+        //             color: Colors.blue,
+        //             fontSize: 12,
+        //           ),
+        //         ),
+        //       ],
+        //     ),
+        //   ),
+        // ),
       ],
     );
   }
@@ -919,8 +913,8 @@ class _OrderCouponTileState extends State<OrderCouponTile> {
               fontSize: 14,
             ),
           )
-        : TextButton(
-            onPressed: () {
+        : InkWell(
+            onTap: () {
               _showCouponInputDialog(context);
             },
             child: Text(

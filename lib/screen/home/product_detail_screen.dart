@@ -77,7 +77,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                 '${model.firstSku.currentPriceStr}',
                             originalPriceStr:
                                 '${model.firstSku.originalPriceStr}',
-                            tagNormal: [],
+                            tagNormal:
+                                model.model.tag.map((e) => e.name).toList(),
                             goodsDescription: model.model.description,
                             goods: model.model.goodsPictures
                                 .map((e) => e.picture)
@@ -132,7 +133,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         style: TextButton.styleFrom(
                           minimumSize: Size(44, 44),
                           primary: Colors.white,
-                          backgroundColor: Color(0xffEC3644),
+                          backgroundColor: AppTheme.colorFEAC1B,
                           shape: RoundedRectangleBorder(),
                         ),
                         child: Text(

@@ -31,29 +31,6 @@ class PayPalCancelScreen extends StatelessWidget {
               Image(
                 image: R.image.payment_success(),
               ),
-              SizedBox(
-                height: MediaQuery.of(context).size.height * 0.08,
-              ),
-              SizedBox(
-                width: double.infinity,
-                child: TextButton(
-                  onPressed: () {
-                    if (kIsWeb) {
-                      Keys.navigatorKey.currentState.pop();
-                    } else {
-                      Keys.navigatorKey.currentState
-                          .popUntil((route) => route.isFirst);
-                    }
-                  },
-                  style: TextButton.styleFrom(
-                      minimumSize: Size(44, 44),
-                      backgroundColor: AppTheme.colorED8514),
-                  child: Text(
-                    'Continue shopping',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-              ),
             ],
           ),
         ),

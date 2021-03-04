@@ -142,6 +142,13 @@ class RouteConfiguration {
   /// take priority.
   static List<Path> paths = [
     Path(
+      r'^/([\w-]+)$',
+      false,
+      (context, match) => ShopScreen(
+        userName: match,
+      ),
+    ),
+    Path(
       r'^' + Routes.shop + r'/([\w-]+)$',
       false,
       (context, match) => ShopScreen(

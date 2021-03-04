@@ -139,6 +139,16 @@ class _R_Image_AssetResource {
   // ignore: non_constant_identifier_names
   final favorite = const AssetResource("assets/images/feed/favorite.png", packageName: null);
 
+  /// asset: assets/images/feed/idol_avatar_placeholder.png
+  // ignore: non_constant_identifier_names
+  final idol_avatar_placeholder =
+      const AssetResource("assets/images/feed/idol_avatar_placeholder.png", packageName: null);
+
+  /// asset: assets/images/feed/idol_default_bg.png
+  // ignore: non_constant_identifier_names
+  final idol_default_bg =
+      const AssetResource("assets/images/feed/idol_default_bg.png", packageName: null);
+
   /// asset: assets/images/feed/more_vert.png
   // ignore: non_constant_identifier_names
   final more_vert = const AssetResource("assets/images/feed/more_vert.png", packageName: null);
@@ -220,6 +230,11 @@ class _R_Image_AssetResource {
   // ignore: non_constant_identifier_names
   final cart_empty = const AssetResource("assets/images/product/cart_empty.png", packageName: null);
 
+  /// asset: assets/images/product/common_button_bg.png
+  // ignore: non_constant_identifier_names
+  final common_button_bg =
+      const AssetResource("assets/images/product/common_button_bg.png", packageName: null);
+
   /// asset: assets/images/product/icon_payment.png
   // ignore: non_constant_identifier_names
   final icon_payment =
@@ -234,6 +249,10 @@ class _R_Image_AssetResource {
   // ignore: non_constant_identifier_names
   final payment_success =
       const AssetResource("assets/images/product/payment_success.png", packageName: null);
+
+  /// asset: assets/images/product/paypal.png
+  // ignore: non_constant_identifier_names
+  final paypal = const AssetResource("assets/images/product/paypal.png", packageName: null);
 
   /// asset: assets/images/product/product_search.png
   // ignore: non_constant_identifier_names
@@ -358,6 +377,18 @@ class _R_Image {
     return AssetImage(asset.favorite.keyName);
   }
 
+  /// asset: assets/images/feed/idol_avatar_placeholder.png
+  // ignore: non_constant_identifier_names
+  AssetImage idol_avatar_placeholder() {
+    return AssetImage(asset.idol_avatar_placeholder.keyName);
+  }
+
+  /// asset: assets/images/feed/idol_default_bg.png
+  // ignore: non_constant_identifier_names
+  AssetImage idol_default_bg() {
+    return AssetImage(asset.idol_default_bg.keyName);
+  }
+
   /// asset: assets/images/feed/more_vert.png
   // ignore: non_constant_identifier_names
   AssetImage more_vert() {
@@ -466,6 +497,12 @@ class _R_Image {
     return AssetImage(asset.cart_empty.keyName);
   }
 
+  /// asset: assets/images/product/common_button_bg.png
+  // ignore: non_constant_identifier_names
+  AssetImage common_button_bg() {
+    return AssetImage(asset.common_button_bg.keyName);
+  }
+
   /// asset: assets/images/product/icon_payment.png
   // ignore: non_constant_identifier_names
   AssetImage icon_payment() {
@@ -482,6 +519,12 @@ class _R_Image {
   // ignore: non_constant_identifier_names
   AssetImage payment_success() {
     return AssetImage(asset.payment_success.keyName);
+  }
+
+  /// asset: assets/images/product/paypal.png
+  // ignore: non_constant_identifier_names
+  AssetImage paypal() {
+    return AssetImage(asset.paypal.keyName);
   }
 
   /// asset: assets/images/product/product_search.png
