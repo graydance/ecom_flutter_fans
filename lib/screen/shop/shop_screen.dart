@@ -53,7 +53,7 @@ class _ShopScreenState extends State<ShopScreen> {
       builder: (ctx, viewModel) => Scaffold(
         backgroundColor: AppTheme.colorF8F8F8,
         appBar: AppBar(
-          title: Text(_seller.nickName),
+          title: Text(_seller.userName),
           elevation: 0,
           centerTitle: true,
           leading: Container(),
@@ -150,7 +150,7 @@ class _ShopScreenState extends State<ShopScreen> {
                           height: 4,
                         ),
                         Text(
-                          '@${_seller.nickName}',
+                          '@${_seller.userName}',
                           style: TextStyle(
                             color: AppTheme.color555764,
                             fontSize: 14,
