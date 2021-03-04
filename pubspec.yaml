@@ -46,6 +46,8 @@ flutter:
   - assets/images/feed/avatar_placeholder.png
   - assets/images/feed/cart.png
   - assets/images/feed/favorite.png
+  - assets/images/feed/idol_avatar_placeholder.png
+  - assets/images/feed/idol_default_bg.png
   - assets/images/feed/more_vert.png
   - assets/images/feed/new_msg_tip_bg.png
   - assets/images/feed/pause.png
@@ -65,7 +67,6 @@ flutter:
   - assets/images/logo.png
   - assets/images/product/cart_empty.png
   - assets/images/product/common_button_bg.png
-  - assets/images/product/discount_bg.png
   - assets/images/product/icon_payment.png
   - assets/images/product/icon_shipping.png
   - assets/images/product/payment_success.png
