@@ -232,21 +232,30 @@ class _Tile extends StatelessWidget {
                       top: 0,
                       left: 0,
                       child: Container(
-                        height: 20,
-                        width: 60,
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                            image: R.image.discount_bg(),
-                            fit: BoxFit.fill,
-                          ),
+                        padding: EdgeInsets.only(
+                          left: 6,
+                          top: 4,
+                          right: 14,
+                          bottom: 4,
                         ),
-                        child: Center(
-                          child: Text(
-                            '${model.discount} off',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 12,
-                            ),
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [
+                              Color(0xFFF68A51),
+                              Color(0xFFEA5228),
+                            ],
+                          ),
+                          borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(5),
+                              bottomRight: Radius.circular(100)),
+                        ),
+                        child: Text(
+                          '${model.discount} off',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 12,
                           ),
                         ),
                       ),
