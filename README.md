@@ -1,4 +1,4 @@
-# idol
+# Fans
 
 A new Flutter project.
 
