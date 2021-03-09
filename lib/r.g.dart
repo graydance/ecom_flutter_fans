@@ -135,6 +135,10 @@ class _R_Image_AssetResource {
   // ignore: non_constant_identifier_names
   final cart = const AssetResource("assets/images/feed/cart.png", packageName: null);
 
+  /// asset: assets/images/feed/cart_white.png
+  // ignore: non_constant_identifier_names
+  final cart_white = const AssetResource("assets/images/feed/cart_white.png", packageName: null);
+
   /// asset: assets/images/feed/favorite.png
   // ignore: non_constant_identifier_names
   final favorite = const AssetResource("assets/images/feed/favorite.png", packageName: null);
@@ -369,6 +373,12 @@ class _R_Image {
   // ignore: non_constant_identifier_names
   AssetImage cart() {
     return AssetImage(asset.cart.keyName);
+  }
+
+  /// asset: assets/images/feed/cart_white.png
+  // ignore: non_constant_identifier_names
+  AssetImage cart_white() {
+    return AssetImage(asset.cart_white.keyName);
   }
 
   /// asset: assets/images/feed/favorite.png
