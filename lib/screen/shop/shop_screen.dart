@@ -53,17 +53,6 @@ class _ShopScreenState extends State<ShopScreen> {
       },
       builder: (ctx, viewModel) => Scaffold(
         backgroundColor: AppTheme.colorF8F8F8,
-        appBar: AppBar(
-          title: Text(_seller.userName),
-          elevation: 0,
-          centerTitle: true,
-          leading: Container(),
-          actions: [
-            CartButton(
-              count: viewModel.cartCount,
-            ),
-          ],
-        ),
         body: EasyRefresh(
           firstRefresh: true,
           controller: _refreshGoodsController,
@@ -130,76 +119,88 @@ class _ShopScreenState extends State<ShopScreen> {
           child: CustomScrollView(
             slivers: [
               SliverToBoxAdapter(
-                child: Container(
-                  decoration: BoxDecoration(
-                    shape: BoxShape.rectangle,
-                    image: DecorationImage(
-                      image: _seller.portrait.isNotEmpty
-                          ? NetworkImage(_seller.portrait)
-                          : R.image.idol_default_bg(),
-                      fit: BoxFit.fitWidth,
-                    ),
-                  ),
-                  height: 160,
-                  child: ClipRRect(
-                    child: BackdropFilter(
-                      filter: _seller.portrait.isNotEmpty
-                          ? ImageFilter.blur(sigmaX: 15, sigmaY: 15)
-                          : ImageFilter.blur(),
-                      child: Container(
-                        padding: EdgeInsets.only(bottom: 6),
-                        alignment: Alignment.center,
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Container(
-                              width: 80,
-                              height: 80,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                image: DecorationImage(
-                                    image: _seller.portrait.isNotEmpty
-                                        ? NetworkImage(_seller.portrait)
-                                        : R.image.idol_avatar_placeholder(),
-                                    fit: BoxFit.cover),
-                                border:
-                                    Border.all(color: Colors.white, width: 1.0),
-                                color: AppTheme.colorF8F8F8,
-                              ),
-                              child: _seller.portrait.isNotEmpty ||
-                                      _seller.userName.isEmpty
-                                  ? null
-                                  : Center(
-                                      child: Text(
-                                        _seller.userName[0].toUpperCase(),
-                                        style: TextStyle(
-                                            fontSize: 50,
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white60),
-                                      ),
-                                    ),
+                child: Stack(
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.rectangle,
+                        image: DecorationImage(
+                          image: _seller.portrait.isNotEmpty
+                              ? NetworkImage(_seller.portrait)
+                              : R.image.idol_default_bg(),
+                          fit: BoxFit.fitWidth,
+                        ),
+                      ),
+                      height: 160 + MediaQuery.of(context).padding.top,
+                      child: ClipRRect(
+                        child: BackdropFilter(
+                          filter: _seller.portrait.isNotEmpty
+                              ? ImageFilter.blur(sigmaX: 15, sigmaY: 15)
+                              : ImageFilter.blur(),
+                          child: Container(
+                            padding: EdgeInsets.only(bottom: 6),
+                            alignment: Alignment.center,
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Container(
+                                  width: 80,
+                                  height: 80,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    image: DecorationImage(
+                                        image: _seller.portrait.isNotEmpty
+                                            ? NetworkImage(_seller.portrait)
+                                            : R.image.idol_avatar_placeholder(),
+                                        fit: BoxFit.cover),
+                                    border: Border.all(
+                                        color: Colors.white, width: 1.0),
+                                    color: AppTheme.colorF8F8F8,
+                                  ),
+                                  child: _seller.portrait.isNotEmpty ||
+                                          _seller.userName.isEmpty
+                                      ? null
+                                      : Center(
+                                          child: Text(
+                                            _seller.userName[0].toUpperCase(),
+                                            style: TextStyle(
+                                                fontSize: 50,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.white60),
+                                          ),
+                                        ),
+                                ),
+                                SizedBox(
+                                  height: 4,
+                                ),
+                                Text(
+                                  '@${_seller.userName}',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 14,
+                                    shadows: [
+                                      Shadow(
+                                          offset: Offset(1.0, 1.0),
+                                          blurRadius: 2.0,
+                                          color: Color(0xFF575859)),
+                                    ],
+                                  ),
+                                ),
+                              ],
                             ),
-                            SizedBox(
-                              height: 4,
-                            ),
-                            Text(
-                              '@${_seller.userName}',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 14,
-                                shadows: [
-                                  Shadow(
-                                      offset: Offset(1.0, 1.0),
-                                      blurRadius: 2.0,
-                                      color: Color(0xFF575859)),
-                                ],
-                              ),
-                            ),
-                          ],
+                          ),
                         ),
                       ),
                     ),
-                  ),
+                    Positioned(
+                      top: MediaQuery.of(context).padding.top + 8,
+                      right: 8,
+                      child: CartButton(
+                        count: viewModel.cartCount,
+                        isDark: false,
+                      ),
+                    ),
+                  ],
                 ),
               ),
               SliverPadding(
