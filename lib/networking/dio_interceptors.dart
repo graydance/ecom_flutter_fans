@@ -1,10 +1,11 @@
+import 'dart:convert';
+
+import 'package:crypto/crypto.dart';
 import 'package:dio/dio.dart';
-import 'package:fans/storage/auth_storage.dart';
 import 'package:fans/env.dart';
+import 'package:fans/storage/auth_storage.dart';
 import 'package:uuid/uuid.dart';
 import 'api_exceptions.dart';
-import 'dart:convert';
-import 'package:crypto/crypto.dart';
 
 /// 错误处理拦截器
 class ErrorInterceptor extends Interceptor {
@@ -26,7 +27,7 @@ class TokenInterceptor extends Interceptor {
         'x-token': token,
       });
     }
-
+    // Generate a v4 (random) id
     var nonce = Uuid().v4();
     var sign = _generateMd5(nonce + signKey);
     options.headers.addAll({
