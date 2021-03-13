@@ -107,12 +107,12 @@ class _AddressFormState extends State<AddressForm> {
             ],
           ),
           TextFormField(
-            decoration: _commonInputDecoration('Province'),
+            decoration: _commonInputDecoration('State*'),
             controller: _provinceController,
             validator: (value) => value.isEmpty ? '' : null,
           ),
           TextFormField(
-            decoration: _commonInputDecoration('Country'),
+            decoration: _commonInputDecoration('Country*'),
             controller: _countryController,
             validator: (value) => value.isEmpty ? '' : null,
           ),
