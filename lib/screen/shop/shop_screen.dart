@@ -121,7 +121,6 @@ class _ShopScreenState extends State<ShopScreen> {
                     _refreshGoodsController.finishLoad(success: false);
                   }
                 },
-          emptyWidget: _goods.isEmpty ? EmptyView() : null,
           child: CustomScrollView(
             slivers: [
               SliverToBoxAdapter(
@@ -247,15 +246,23 @@ class _ShopScreenState extends State<ShopScreen> {
                 padding: const EdgeInsets.only(left: 16, right: 16, top: 14),
                 sliver: SliverSafeArea(
                   bottom: false,
-                  sliver: SliverStaggeredGrid.countBuilder(
-                    itemCount: _goods.length,
-                    crossAxisCount: 4,
-                    mainAxisSpacing: 4.0,
-                    crossAxisSpacing: 4.0,
-                    itemBuilder: (context, index) => _Tile(viewModel.currency,
-                        _goods[index], _getSize(_goods[index])),
-                    staggeredTileBuilder: (index) => StaggeredTile.fit(2),
-                  ),
+                  sliver: _goods.isEmpty
+                      ? SliverToBoxAdapter(
+                          child: Center(
+                            child: Text('No Goods'),
+                          ),
+                        )
+                      : SliverStaggeredGrid.countBuilder(
+                          itemCount: _goods.length,
+                          crossAxisCount: 4,
+                          mainAxisSpacing: 4.0,
+                          crossAxisSpacing: 4.0,
+                          itemBuilder: (context, index) => _Tile(
+                              viewModel.currency,
+                              _goods[index],
+                              _getSize(_goods[index])),
+                          staggeredTileBuilder: (index) => StaggeredTile.fit(2),
+                        ),
                 ),
               ),
             ],
