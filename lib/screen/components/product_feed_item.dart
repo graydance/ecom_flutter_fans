@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fans/screen/components/tag_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -9,7 +10,7 @@ import 'package:fans/r.g.dart';
 import 'package:fans/screen/components/media_carousel_widget.dart';
 import 'package:fans/theme.dart';
 
-class ProductFeedItem extends StatelessWidget {
+class ProductFeedItem extends StatefulWidget {
   final String currency;
   final Feed model;
   final bool onlyShowImage;
@@ -24,6 +25,22 @@ class ProductFeedItem extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  _ProductFeedItemState createState() => _ProductFeedItemState();
+}
+
+class _ProductFeedItemState extends State<ProductFeedItem> {
+  @override
+  void initState() {
+    super.initState();
+    widget.model.goods.forEach((e) {
+      precacheImage(
+        CachedNetworkImageProvider(e),
+        context,
+      );
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Column(
       children: [
@@ -32,7 +49,7 @@ class ProductFeedItem extends StatelessWidget {
           child: Align(
             alignment: Alignment.centerLeft,
             child: Text(
-              model.productName,
+              widget.model.productName,
               style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 14,
@@ -42,8 +59,8 @@ class ProductFeedItem extends StatelessWidget {
         ),
         GestureDetector(
           onTap: () {
-            debugPrint('GestureDetector ${model.idolGoodsId}');
-            if (onTap != null) onTap(model.id);
+            debugPrint('GestureDetector ${widget.model.idolGoodsId}');
+            if (widget.onTap != null) widget.onTap(widget.model.id);
           },
           child: SizedBox(
             height: 300,
@@ -54,14 +71,18 @@ class ProductFeedItem extends StatelessWidget {
                 child: Stack(
                   children: [
                     MediaCarouselWidget(
-                      items: model.goods.map((url) {
-                        return Image(
+                      items: widget.model.goods.map((url) {
+                        return CachedNetworkImage(
+                          placeholder: (context, _) => Image(
+                            image: R.image.kol_album_bg(),
+                            fit: BoxFit.cover,
+                          ),
+                          imageUrl: url,
                           fit: BoxFit.cover,
-                          image: NetworkImage(url),
                         );
                       }).toList(),
                     ),
-                    if (model.discount.isNotEmpty)
+                    if (widget.model.discount.isNotEmpty)
                       Positioned(
                         top: 0,
                         left: 0,
@@ -76,7 +97,7 @@ class ProductFeedItem extends StatelessWidget {
                           ),
                           child: Center(
                             child: Text(
-                              '${model.discount} off',
+                              '${widget.model.discount} off',
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 12,
@@ -86,7 +107,7 @@ class ProductFeedItem extends StatelessWidget {
                         ),
                       ),
                     // 购物车和收藏
-                    if (!onlyShowImage)
+                    if (!widget.onlyShowImage)
                       Positioned(
                         bottom: 8,
                         right: 8,
@@ -97,7 +118,7 @@ class ProductFeedItem extends StatelessWidget {
                                 Image(image: R.image.add_cart()),
                                 Text(
                                   NumberFormat.compact()
-                                      .format(model.shoppingCar),
+                                      .format(widget.model.shoppingCar),
                                   style: TextStyle(
                                       color: Colors.white, fontSize: 12),
                                 ),
@@ -111,7 +132,7 @@ class ProductFeedItem extends StatelessWidget {
                                 Image(image: R.image.favorite()),
                                 Text(
                                   NumberFormat.compact()
-                                      .format(model.collectNum),
+                                      .format(widget.model.collectNum),
                                   style: TextStyle(
                                       color: Colors.white, fontSize: 12),
                                 ),
@@ -133,7 +154,7 @@ class ProductFeedItem extends StatelessWidget {
             textBaseline: TextBaseline.ideographic,
             children: [
               Text(
-                '$currency${model.currentPriceStr}',
+                '${widget.currency}${widget.model.currentPriceStr}',
                 style: TextStyle(
                     color: AppTheme.color0F1015,
                     fontSize: 18,
@@ -143,14 +164,14 @@ class ProductFeedItem extends StatelessWidget {
                 width: 8,
               ),
               Text(
-                '$currency${model.originalPriceStr}',
+                '${widget.currency}${widget.model.originalPriceStr}',
                 style: TextStyle(
                     color: AppTheme.color979AA9,
                     fontSize: 14,
                     decoration: TextDecoration.lineThrough),
               ),
               Spacer(),
-              ...model.tagNormal
+              ...widget.model.tagNormal
                   .map((e) => TagView(text: e.toUpperCase()))
                   .toList(),
             ],
@@ -159,7 +180,7 @@ class ProductFeedItem extends StatelessWidget {
         Align(
           alignment: Alignment.centerLeft,
           child: HtmlWidget(
-            model.goodsDescription,
+            widget.model.goodsDescription,
             customStylesBuilder: (e) => {
               'font-size': '12',
               'line-height': 'normal',

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:ui';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
@@ -267,9 +268,12 @@ class _Tile extends StatelessWidget {
               height: size.height,
               child: Stack(
                 children: [
-                  FadeInImage(
-                    placeholder: R.image.kol_album_bg(),
-                    image: NetworkImage(model.picture),
+                  CachedNetworkImage(
+                    placeholder: (context, _) => Image(
+                      image: R.image.kol_album_bg(),
+                      fit: BoxFit.cover,
+                    ),
+                    imageUrl: model.picture,
                     fit: BoxFit.cover,
                   ),
                   if (model.discount.isNotEmpty)
