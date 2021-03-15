@@ -50,6 +50,7 @@ flutter:
   - assets/images/feed/avatar_placeholder.png
   - assets/images/feed/cart.png
   - assets/images/feed/cart_white.png
+  - assets/images/feed/coupon_discount.png
   - assets/images/feed/favorite.png
   - assets/images/feed/idol_avatar_placeholder.png
   - assets/images/feed/idol_default_bg.png

@@ -42,6 +42,7 @@ List<Middleware<AppState>> createStoreMiddleware() {
   final signin = _createSignin();
   final payCapture = _createPayCapture();
   final checkCoupon = _createCheckCoupon();
+  final showCoupon = _createShowCoupon();
 
   return [
     TypedMiddleware<AppState, VerifyAuthenticationState>(verifyAuthState),
@@ -71,6 +72,7 @@ List<Middleware<AppState>> createStoreMiddleware() {
     TypedMiddleware<AppState, SignInAction>(signin),
     TypedMiddleware<AppState, PayCaptureAction>(payCapture),
     TypedMiddleware<AppState, CheckCouponAction>(checkCoupon),
+    TypedMiddleware<AppState, ShowCouponAction>(showCoupon),
   ];
 }
 
@@ -640,4 +642,20 @@ _handleUnauthorisedException(
       },
     ).catchError((err) {});
   }
+}
+
+Middleware<AppState> _createShowCoupon() {
+  return (Store<AppState> store, action, NextDispatcher next) {
+    if (action is ShowCouponAction) {
+      Networking.request(ShowCouponAPI()).then(
+        (data) {
+          final info = CouponInfo.fromMap(data['data']['couponInfo']);
+          action.completer.complete(info);
+        },
+      ).catchError((err) {
+        action.completer.completeError(err.toString());
+      });
+    }
+    next(action);
+  };
 }

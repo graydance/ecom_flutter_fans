@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:fans/models/coupon_info.dart';
+import 'package:fans/screen/components/alert_view.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
@@ -51,6 +53,8 @@ class _ShopScreenState extends State<ShopScreen> {
         setState(() {
           _seller = seller;
         });
+
+        _showCoupon(viewModel.currency);
       },
       builder: (ctx, viewModel) => Scaffold(
         backgroundColor: AppTheme.colorF8F8F8,
@@ -230,6 +234,55 @@ class _ShopScreenState extends State<ShopScreen> {
     var screenWidth = (MediaQuery.of(context).size.width - 16 * 2 - 4 * 4) / 2;
     var height = item.height / item.width * screenWidth;
     return _Size(screenWidth, height);
+  }
+
+  _showCoupon(String currency) async {
+    final completer = Completer();
+    StoreProvider.of<AppState>(context).dispatch(ShowCouponAction(completer));
+
+    try {
+      final CouponInfo info = await completer.future;
+      if (info.status != 1) {
+        return;
+      }
+
+      showDialog(
+          context: context,
+          builder: (ctx) {
+            return AlertView(
+              content: Column(
+                children: [
+                  Image(
+                    image: R.image.coupon_discount(),
+                    fit: BoxFit.contain,
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Text(
+                    'Code: ${info.code}',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w600,
+                      color: AppTheme.color0F1015,
+                    ),
+                  ),
+                  SizedBox(
+                    height: 4,
+                  ),
+                  Text(
+                    'On order of $currency${(info.min / 100.0).toStringAsFixed(0)}+',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: AppTheme.color0F1015,
+                    ),
+                  ),
+                ],
+              ),
+              buttonText: 'Shop now'.toUpperCase(),
+            );
+          });
+    } catch (e) {}
   }
 }
 
