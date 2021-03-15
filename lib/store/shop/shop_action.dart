@@ -31,3 +31,9 @@ class FetchIdolGoodsAction {
   FetchIdolGoodsAction(
       {this.type = 0, this.userName, this.page, this.limit, this.completer});
 }
+
+class ShowCouponAction {
+  final Completer completer;
+
+  ShowCouponAction(this.completer);
+}

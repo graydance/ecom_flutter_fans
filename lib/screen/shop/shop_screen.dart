@@ -1,6 +1,9 @@
 import 'dart:async';
 import 'dart:ui';
 
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:fans/models/coupon_info.dart';
+import 'package:fans/screen/components/alert_view.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
@@ -28,6 +31,7 @@ class ShopScreen extends StatefulWidget {
 
 class _ShopScreenState extends State<ShopScreen> {
   Feed _seller = Feed();
+  String _expressInfo = '';
 
   final _refreshGoodsController = EasyRefreshController();
   int _page = 1;
@@ -50,6 +54,8 @@ class _ShopScreenState extends State<ShopScreen> {
         setState(() {
           _seller = seller;
         });
+
+        _showCoupon(viewModel.currency);
       },
       builder: (ctx, viewModel) => Scaffold(
         backgroundColor: AppTheme.colorF8F8F8,
@@ -203,6 +209,40 @@ class _ShopScreenState extends State<ShopScreen> {
                   ],
                 ),
               ),
+              if (_expressInfo.isNotEmpty)
+                SliverToBoxAdapter(
+                  child: Container(
+                    constraints: BoxConstraints(
+                      minHeight: 32,
+                    ),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          Color(0xFFF68A51),
+                          Color(0xFFEA5228),
+                        ],
+                      ),
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                    ),
+                    child: Center(
+                      child: FittedBox(
+                        fit: BoxFit.fitWidth,
+                        child: Text(
+                          _expressInfo,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
               SliverPadding(
                 padding: const EdgeInsets.only(left: 16, right: 16, top: 14),
                 sliver: SliverSafeArea(
@@ -229,6 +269,62 @@ class _ShopScreenState extends State<ShopScreen> {
     var screenWidth = (MediaQuery.of(context).size.width - 16 * 2 - 4 * 4) / 2;
     var height = item.height / item.width * screenWidth;
     return _Size(screenWidth, height);
+  }
+
+  _showCoupon(String currency) async {
+    final completer = Completer();
+    StoreProvider.of<AppState>(context).dispatch(ShowCouponAction(completer));
+
+    try {
+      final data = await completer.future;
+      final String expressInfo = data['expressInfo'];
+      setState(() {
+        _expressInfo = expressInfo;
+      });
+
+      final CouponInfo info = CouponInfo.fromMap(data['couponInfo']);
+
+      if (info.status != 1) {
+        return;
+      }
+
+      showDialog(
+          context: context,
+          builder: (ctx) {
+            return AlertView(
+              content: Column(
+                children: [
+                  Image(
+                    image: R.image.coupon_discount(),
+                    fit: BoxFit.contain,
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Text(
+                    'Code: ${info.code}',
+                    style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w600,
+                      color: AppTheme.color0F1015,
+                    ),
+                  ),
+                  SizedBox(
+                    height: 4,
+                  ),
+                  Text(
+                    'On order of $currency${(info.min / 100.0).toStringAsFixed(0)}+',
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: AppTheme.color0F1015,
+                    ),
+                  ),
+                ],
+              ),
+              buttonText: 'Shop now'.toUpperCase(),
+            );
+          });
+    } catch (e) {}
   }
 }
 
@@ -267,9 +363,12 @@ class _Tile extends StatelessWidget {
               height: size.height,
               child: Stack(
                 children: [
-                  FadeInImage(
-                    placeholder: R.image.kol_album_bg(),
-                    image: NetworkImage(model.picture),
+                  CachedNetworkImage(
+                    placeholder: (context, _) => Image(
+                      image: R.image.kol_album_bg(),
+                      fit: BoxFit.cover,
+                    ),
+                    imageUrl: model.picture,
                     fit: BoxFit.cover,
                   ),
                   if (model.discount.isNotEmpty)
