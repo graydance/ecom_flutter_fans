@@ -31,6 +31,7 @@ class ShopScreen extends StatefulWidget {
 
 class _ShopScreenState extends State<ShopScreen> {
   Feed _seller = Feed();
+  String _expressInfo = '';
 
   final _refreshGoodsController = EasyRefreshController();
   int _page = 1;
@@ -208,6 +209,40 @@ class _ShopScreenState extends State<ShopScreen> {
                   ],
                 ),
               ),
+              if (_expressInfo.isNotEmpty)
+                SliverToBoxAdapter(
+                  child: Container(
+                    constraints: BoxConstraints(
+                      minHeight: 32,
+                    ),
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          Color(0xFFF68A51),
+                          Color(0xFFEA5228),
+                        ],
+                      ),
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 20,
+                    ),
+                    child: Center(
+                      child: FittedBox(
+                        fit: BoxFit.fitWidth,
+                        child: Text(
+                          _expressInfo,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
               SliverPadding(
                 padding: const EdgeInsets.only(left: 16, right: 16, top: 14),
                 sliver: SliverSafeArea(
@@ -241,7 +276,14 @@ class _ShopScreenState extends State<ShopScreen> {
     StoreProvider.of<AppState>(context).dispatch(ShowCouponAction(completer));
 
     try {
-      final CouponInfo info = await completer.future;
+      final data = await completer.future;
+      final String expressInfo = data['expressInfo'];
+      setState(() {
+        _expressInfo = expressInfo;
+      });
+
+      final CouponInfo info = CouponInfo.fromMap(data['couponInfo']);
+
       if (info.status != 1) {
         return;
       }

@@ -649,8 +649,7 @@ Middleware<AppState> _createShowCoupon() {
     if (action is ShowCouponAction) {
       Networking.request(ShowCouponAPI()).then(
         (data) {
-          final info = CouponInfo.fromMap(data['data']['couponInfo']);
-          action.completer.complete(info);
+          action.completer.complete(data['data']);
         },
       ).catchError((err) {
         action.completer.completeError(err.toString());
