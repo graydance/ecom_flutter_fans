@@ -30,14 +30,14 @@ class ProductFeedItem extends StatefulWidget {
 
 class _ProductFeedItemState extends State<ProductFeedItem> {
   @override
-  void initState() {
-    super.initState();
+  void didChangeDependencies() {
     widget.model.goods.forEach((e) {
       precacheImage(
         CachedNetworkImageProvider(e),
         context,
       );
     });
+    super.didChangeDependencies();
   }
 
   @override
