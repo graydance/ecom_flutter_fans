@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fans/app.dart';
 import 'package:fans/screen/components/default_button.dart';
 import 'package:flutter/material.dart';
@@ -339,10 +340,12 @@ class CartItemTile extends StatelessWidget {
         SizedBox(
           height: 110,
           width: 110,
-          child: FadeInImage(
-            placeholder: R.image.kol_album_bg(),
+          child: CachedNetworkImage(
+            placeholder: (context, _) => Container(
+              color: AppTheme.colorEDEEF0,
+            ),
+            imageUrl: item.skuImage,
             fit: BoxFit.cover,
-            image: NetworkImage(item.skuImage),
           ),
         ),
         SizedBox(

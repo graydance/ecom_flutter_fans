@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fans/app.dart';
 import 'package:fans/screen/components/default_button.dart';
 import 'package:fans/screen/components/order_status_image_view.dart';
@@ -737,9 +738,11 @@ class _OrderDetailsExpansionTileState extends State<OrderDetailsExpansionTile> {
                   SizedBox(
                     height: 110,
                     width: 110,
-                    child: FadeInImage(
-                      placeholder: R.image.kol_album_bg(),
-                      image: NetworkImage(item.skuImage),
+                    child: CachedNetworkImage(
+                      placeholder: (context, _) => Container(
+                        color: AppTheme.colorEDEEF0,
+                      ),
+                      imageUrl: item.skuImage,
                       fit: BoxFit.cover,
                     ),
                   ),

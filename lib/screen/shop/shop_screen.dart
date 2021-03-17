@@ -371,9 +371,8 @@ class _Tile extends StatelessWidget {
               child: Stack(
                 children: [
                   CachedNetworkImage(
-                    placeholder: (context, _) => Image(
-                      image: R.image.kol_album_bg(),
-                      fit: BoxFit.cover,
+                    placeholder: (context, _) => Container(
+                      color: AppTheme.colorEDEEF0,
                     ),
                     imageUrl: model.picture,
                     fit: BoxFit.cover,
