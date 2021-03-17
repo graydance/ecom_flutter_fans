@@ -17,17 +17,17 @@ class CouponInfo {
   final String updatedAt;
 
   const CouponInfo({
-    this.id,
-    this.code,
-    this.status,
-    this.type,
-    this.min,
-    this.desc,
-    this.amount,
-    this.startTime,
-    this.endTime,
-    this.createdAt,
-    this.updatedAt,
+    this.id = 0,
+    this.code = '',
+    this.status = 0,
+    this.type = 0,
+    this.min = 0,
+    this.desc = '',
+    this.amount = 0,
+    this.startTime = '',
+    this.endTime = '',
+    this.createdAt = '',
+    this.updatedAt = '',
   });
 
   CouponInfo copyWith({
