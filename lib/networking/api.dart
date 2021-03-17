@@ -376,3 +376,7 @@ class CheckCouponAPI extends API {
 
   String get path => '/user/pub/coupon_validate';
 }
+
+class ShowCouponAPI extends API {
+  String get path => '/user/pub/show_coupon';
+}

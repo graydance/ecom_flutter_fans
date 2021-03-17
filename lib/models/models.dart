@@ -12,3 +12,4 @@ export './goods_spec.dart';
 export './goods_skus.dart';
 export './pay_info.dart';
 export './coupon.dart';
+export './coupon_info.dart';
