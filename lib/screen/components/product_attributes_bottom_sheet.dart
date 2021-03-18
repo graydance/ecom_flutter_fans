@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:photo_view/photo_view.dart';
@@ -346,9 +347,12 @@ class FansImageView extends StatelessWidget {
       borderRadius: BorderRadius.circular(4.0),
       child: Container(
         color: AppTheme.colorF8F8F8,
-        child: FadeInImage(
-          placeholder: R.image.kol_album_bg(),
-          image: NetworkImage(url),
+        child: CachedNetworkImage(
+          placeholder: (context, _) => Container(
+            color: AppTheme.colorEDEEF0,
+          ),
+          imageUrl: url,
+          fit: BoxFit.cover,
         ),
       ),
     );

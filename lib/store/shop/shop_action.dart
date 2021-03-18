@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:fans/models/models.dart';
+
 class FetchSellerInfoAction {
   final String userName;
   final Completer completer;
@@ -30,4 +32,18 @@ class FetchIdolGoodsAction {
 
   FetchIdolGoodsAction(
       {this.type = 0, this.userName, this.page, this.limit, this.completer});
+}
+
+class ShowCouponAction {
+  final Completer completer;
+
+  ShowCouponAction(this.completer);
+}
+
+class FetchConfigAction {}
+
+class OnUpdateConfigAction {
+  final Config config;
+
+  OnUpdateConfigAction(this.config);
 }

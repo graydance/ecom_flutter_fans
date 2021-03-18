@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fans/app.dart';
 import 'package:fans/screen/components/cart_button.dart';
 import 'package:flutter/foundation.dart';
@@ -225,9 +226,11 @@ class SimilarProducts extends StatelessWidget {
                   },
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(4.0),
-                    child: FadeInImage(
-                      placeholder: R.image.kol_album_bg(),
-                      image: NetworkImage(e.picture),
+                    child: CachedNetworkImage(
+                      placeholder: (context, _) => Container(
+                        color: AppTheme.colorEDEEF0,
+                      ),
+                      imageUrl: e.picture,
                       fit: BoxFit.cover,
                     ),
                   ),

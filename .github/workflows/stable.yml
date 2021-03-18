@@ -35,7 +35,7 @@ jobs:
         env:
           ECOM_PLATFORM: "web"
       - run: flutter test
-      - run: flutter build web
+      - run: flutter build web --web-renderer canvaskit
       - run: uuid=$(uuidgen) && sed -i.bak 's/main.dart.js/'"$uuid"'.main.dart.js/g' build/web/flutter_service_worker.js && sed -i.bak 's/main.dart.js/'"$uuid"'.main.dart.js/g' build/web/index.html && mv build/web/main.dart.js build/web/"$uuid.main.dart.js"
       - run: rm -f build/web/*.bak
       - name: Deploy Web

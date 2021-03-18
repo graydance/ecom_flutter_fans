@@ -28,8 +28,10 @@ dependencies:
   photo_view: ^0.10.3
   flutter_widget_from_html_core: ^0.5.2+1
   badges: ^1.2.0
-  uuid: 3.0.1
+  uuid: ^3.0.1
   crypto: ^3.0.0
+  cached_network_image: ^2.5.1
+  flutter_picker: ^2.0.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -49,6 +51,7 @@ flutter:
   - assets/images/feed/avatar_placeholder.png
   - assets/images/feed/cart.png
   - assets/images/feed/cart_white.png
+  - assets/images/feed/coupon_discount.png
   - assets/images/feed/favorite.png
   - assets/images/feed/idol_avatar_placeholder.png
   - assets/images/feed/idol_default_bg.png

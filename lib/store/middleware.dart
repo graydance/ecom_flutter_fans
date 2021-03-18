@@ -42,6 +42,8 @@ List<Middleware<AppState>> createStoreMiddleware() {
   final signin = _createSignin();
   final payCapture = _createPayCapture();
   final checkCoupon = _createCheckCoupon();
+  final showCoupon = _createShowCoupon();
+  final fetchConfig = _createFetchConfig();
 
   return [
     TypedMiddleware<AppState, VerifyAuthenticationState>(verifyAuthState),
@@ -71,6 +73,8 @@ List<Middleware<AppState>> createStoreMiddleware() {
     TypedMiddleware<AppState, SignInAction>(signin),
     TypedMiddleware<AppState, PayCaptureAction>(payCapture),
     TypedMiddleware<AppState, CheckCouponAction>(checkCoupon),
+    TypedMiddleware<AppState, ShowCouponAction>(showCoupon),
+    TypedMiddleware<AppState, FetchConfigAction>(fetchConfig),
   ];
 }
 
@@ -83,14 +87,16 @@ Middleware<AppState> _verifyAuthState() {
         store.dispatch(LocalUpdateUserAction(user));
         if (kIsWeb) {
         } else {
-          Keys.navigatorKey.currentState.pushReplacementNamed(Routes.home);
+          Keys.navigatorKey.currentState
+              .pushReplacementNamed(Routes.shop + '/username1');
         }
       } else {
         store.dispatch(LocalUpdateUserAction(User()));
         store.dispatch(AnonymousLoginAction());
         if (kIsWeb) {
         } else {
-          Keys.navigatorKey.currentState.pushReplacementNamed(Routes.welcome);
+          Keys.navigatorKey.currentState
+              .pushReplacementNamed(Routes.shop + '/username1');
         }
       }
     });
@@ -640,4 +646,33 @@ _handleUnauthorisedException(
       },
     ).catchError((err) {});
   }
+}
+
+Middleware<AppState> _createShowCoupon() {
+  return (Store<AppState> store, action, NextDispatcher next) {
+    if (action is ShowCouponAction) {
+      Networking.request(ShowCouponAPI()).then(
+        (data) {
+          action.completer.complete(data['data']);
+        },
+      ).catchError((err) {
+        action.completer.completeError(err.toString());
+      });
+    }
+    next(action);
+  };
+}
+
+Middleware<AppState> _createFetchConfig() {
+  return (Store<AppState> store, action, NextDispatcher next) {
+    if (action is FetchConfigAction) {
+      Networking.request(ConfigAPI()).then(
+        (data) {
+          final config = Config.fromMap(data['data']);
+          store.dispatch(OnUpdateConfigAction(config));
+        },
+      ).catchError((err) {});
+    }
+    next(action);
+  };
 }
