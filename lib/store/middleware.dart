@@ -88,7 +88,7 @@ Middleware<AppState> _verifyAuthState() {
         if (kIsWeb) {
         } else {
           Keys.navigatorKey.currentState
-              .pushReplacementNamed(Routes.shop + '/username1');
+              .pushReplacementNamed(Routes.shop + '/liuchen');
         }
       } else {
         store.dispatch(LocalUpdateUserAction(User()));
@@ -96,7 +96,7 @@ Middleware<AppState> _verifyAuthState() {
         if (kIsWeb) {
         } else {
           Keys.navigatorKey.currentState
-              .pushReplacementNamed(Routes.shop + '/username1');
+              .pushReplacementNamed(Routes.shop + '/liuchen');
         }
       }
     });
