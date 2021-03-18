@@ -15,6 +15,7 @@ class AppState {
   final ProductDetailsOnScreen productDetails;
   final PreOrderState preOrder;
   final Cart cart;
+  final Config config;
 
   AppState({
     this.verifyEmail = const VerifyEmailState(),
@@ -26,6 +27,7 @@ class AppState {
     this.productDetails = const ProductDetailsOnScreen(),
     this.preOrder = const PreOrderState(),
     this.cart = const Cart(),
+    this.config = const Config(),
   });
 
   factory AppState.init() => AppState();
@@ -40,6 +42,7 @@ class AppState {
     ProductDetailsOnScreen productDetails,
     PreOrderState preOrder,
     Cart cart,
+    Config config,
   }) {
     return AppState(
       verifyEmail: verifyEmail ?? this.verifyEmail,
@@ -51,23 +54,25 @@ class AppState {
       productDetails: productDetails ?? this.productDetails,
       preOrder: preOrder ?? this.preOrder,
       cart: cart ?? this.cart,
+      config: config ?? this.config,
     );
   }
 
   @override
-  bool operator ==(Object o) {
-    if (identical(this, o)) return true;
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
 
-    return o is AppState &&
-        o.verifyEmail == verifyEmail &&
-        o.auth == auth &&
-        o.interests == interests &&
-        o.feeds == feeds &&
-        o.tagSearch == tagSearch &&
-        o.shopDetail == shopDetail &&
-        o.productDetails == productDetails &&
-        o.preOrder == preOrder &&
-        o.cart == cart;
+    return other is AppState &&
+        other.verifyEmail == verifyEmail &&
+        other.auth == auth &&
+        other.interests == interests &&
+        other.feeds == feeds &&
+        other.tagSearch == tagSearch &&
+        other.shopDetail == shopDetail &&
+        other.productDetails == productDetails &&
+        other.preOrder == preOrder &&
+        other.cart == cart &&
+        other.config == config;
   }
 
   @override
@@ -80,11 +85,12 @@ class AppState {
         shopDetail.hashCode ^
         productDetails.hashCode ^
         preOrder.hashCode ^
-        cart.hashCode;
+        cart.hashCode ^
+        config.hashCode;
   }
 
   @override
   String toString() {
-    return 'AppState(verifyEmail: $verifyEmail, auth: $auth, interests: $interests, feeds: $feeds, tagSearch: $tagSearch, shopDetail: $shopDetail, productDetails: $productDetails, preOrder: $preOrder, cart: $cart)';
+    return 'AppState(verifyEmail: $verifyEmail, auth: $auth, interests: $interests, feeds: $feeds, tagSearch: $tagSearch, shopDetail: $shopDetail, productDetails: $productDetails, preOrder: $preOrder, cart: $cart, config: $config)';
   }
 }

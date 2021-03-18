@@ -56,6 +56,9 @@ class _ShopScreenState extends State<ShopScreen> {
         });
 
         _showCoupon(viewModel.currency);
+
+        // 获取配置
+        StoreProvider.of<AppState>(context).dispatch(FetchConfigAction());
       },
       builder: (ctx, viewModel) => Scaffold(
         backgroundColor: AppTheme.colorF8F8F8,
