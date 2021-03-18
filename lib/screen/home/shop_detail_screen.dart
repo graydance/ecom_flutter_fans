@@ -1,7 +1,9 @@
 import 'dart:async';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fans/screen/components/empty_view.dart';
 import 'package:fans/store/actions.dart';
+import 'package:fans/theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
@@ -241,9 +243,11 @@ class PhotoItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(4.0),
-      child: FadeInImage(
-        placeholder: R.image.kol_album_bg(),
-        image: NetworkImage(url),
+      child: CachedNetworkImage(
+        placeholder: (context, _) => Container(
+          color: AppTheme.colorEDEEF0,
+        ),
+        imageUrl: url,
         fit: BoxFit.cover,
       ),
     );
