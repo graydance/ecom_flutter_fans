@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fans/app.dart';
 import 'package:fans/screen/components/default_button.dart';
 import 'package:fans/screen/components/order_status_image_view.dart';
@@ -436,6 +437,7 @@ class _PreOrderScreenState extends State<PreOrderScreen> {
         ),
         AddressForm(
             isEditShipping: isAddShipping,
+            countries: viewModel.config.country,
             onAdded: () {
               FocusScope.of(context).requestFocus(FocusNode());
               viewModel.refreshData().then((value) {
@@ -737,9 +739,11 @@ class _OrderDetailsExpansionTileState extends State<OrderDetailsExpansionTile> {
                   SizedBox(
                     height: 110,
                     width: 110,
-                    child: FadeInImage(
-                      placeholder: R.image.kol_album_bg(),
-                      image: NetworkImage(item.skuImage),
+                    child: CachedNetworkImage(
+                      placeholder: (context, _) => Container(
+                        color: AppTheme.colorEDEEF0,
+                      ),
+                      imageUrl: item.skuImage,
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -1015,6 +1019,7 @@ class _ViewModel {
   final OrderDetail orderDetail;
   final Address shippingDefaultAddress;
   final Address billingDefaultAddress;
+  final Config config;
   final Future<dynamic> Function() refreshData;
   final Function(Address, Address, String, String) onTapPay;
 
@@ -1024,6 +1029,7 @@ class _ViewModel {
     this.orderDetail,
     this.shippingDefaultAddress,
     this.billingDefaultAddress,
+    this.config,
     this.refreshData,
     this.onTapPay,
   });
@@ -1072,12 +1078,17 @@ class _ViewModel {
           billingAddress.id, email, code, completer));
     }
 
+    if (store.state.config.country.isEmpty) {
+      store.dispatch(FetchConfigAction());
+    }
+
     return _ViewModel(
       isAnonymous: store.state.auth.user.isAnonymous == 1,
       currency: store.state.auth.user.monetaryUnit,
       orderDetail: orderDetail,
       shippingDefaultAddress: shippingAddress,
       billingDefaultAddress: billingAddress,
+      config: store.state.config,
       refreshData: _refreshData,
       onTapPay: _onTapPay,
     );

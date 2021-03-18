@@ -380,3 +380,31 @@ class CheckCouponAPI extends API {
 class ShowCouponAPI extends API {
   String get path => '/user/pub/show_coupon';
 }
+
+class ConfigAPI extends API {
+  String get path => '/user/pub/config';
+}
+
+class ProvinceAPI extends API {
+  final String country;
+
+  ProvinceAPI(this.country);
+
+  @override
+  Map<String, dynamic> get parameters => {'country': country};
+
+  String get path => '/user/pub/province';
+}
+
+class CityAPI extends API {
+  final String country;
+  final String province;
+
+  CityAPI(this.country, this.province);
+
+  @override
+  Map<String, dynamic> get parameters =>
+      {'country': country, 'province': province};
+
+  String get path => '/user/pub/city';
+}

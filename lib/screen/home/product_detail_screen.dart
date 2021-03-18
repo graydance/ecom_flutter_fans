@@ -227,9 +227,8 @@ class SimilarProducts extends StatelessWidget {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(4.0),
                     child: CachedNetworkImage(
-                      placeholder: (context, _) => Image(
-                        image: R.image.kol_album_bg(),
-                        fit: BoxFit.cover,
+                      placeholder: (context, _) => Container(
+                        color: AppTheme.colorEDEEF0,
                       ),
                       imageUrl: e.picture,
                       fit: BoxFit.cover,

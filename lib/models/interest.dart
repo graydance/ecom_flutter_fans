@@ -8,7 +8,11 @@ class Interest {
   final String interestPortrait;
   final String interestName;
 
-  const Interest({this.id, this.interestPortrait, this.interestName});
+  const Interest({
+    this.id = '',
+    this.interestPortrait = '',
+    this.interestName = '',
+  });
 
   Interest copyWith({
     String id,

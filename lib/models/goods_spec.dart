@@ -13,11 +13,11 @@ class GoodsSpec {
   final List<SpecValues> specValues;
 
   const GoodsSpec({
-    this.id,
-    this.specName,
-    this.createdAt,
-    this.updatedAt,
-    this.specValues,
+    this.id = 0,
+    this.specName = '',
+    this.createdAt = '',
+    this.updatedAt = '',
+    this.specValues = const [],
   });
 
   GoodsSpec copyWith({

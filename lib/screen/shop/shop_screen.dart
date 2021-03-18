@@ -56,6 +56,9 @@ class _ShopScreenState extends State<ShopScreen> {
         });
 
         _showCoupon(viewModel.currency);
+
+        // 获取配置
+        StoreProvider.of<AppState>(context).dispatch(FetchConfigAction());
       },
       builder: (ctx, viewModel) => Scaffold(
         backgroundColor: AppTheme.colorF8F8F8,
@@ -371,9 +374,8 @@ class _Tile extends StatelessWidget {
               child: Stack(
                 children: [
                   CachedNetworkImage(
-                    placeholder: (context, _) => Image(
-                      image: R.image.kol_album_bg(),
-                      fit: BoxFit.cover,
+                    placeholder: (context, _) => Container(
+                      color: AppTheme.colorEDEEF0,
                     ),
                     imageUrl: model.picture,
                     fit: BoxFit.cover,

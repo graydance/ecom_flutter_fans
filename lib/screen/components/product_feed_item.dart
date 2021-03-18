@@ -73,9 +73,8 @@ class _ProductFeedItemState extends State<ProductFeedItem> {
                     MediaCarouselWidget(
                       items: widget.model.goods.map((url) {
                         return CachedNetworkImage(
-                          placeholder: (context, _) => Image(
-                            image: R.image.kol_album_bg(),
-                            fit: BoxFit.cover,
+                          placeholder: (context, _) => Container(
+                            color: AppTheme.colorEDEEF0,
                           ),
                           imageUrl: url,
                           fit: BoxFit.cover,
