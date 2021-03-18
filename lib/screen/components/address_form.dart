@@ -247,7 +247,8 @@ class _AddressFormState extends State<AddressForm> {
         city: _cityController.text,
         province: _provinceController.text,
         country: _countryController.text,
-        phoneNumber: _phoneNumberController.text,
+        phoneNumber:
+            _selectedCountry.phoneCode + ' ' + _phoneNumberController.text,
         isDefault: widget.isEditShipping ? isDefault : false,
         isBillDefault: widget.isEditShipping ? false : isDefault,
       ),
