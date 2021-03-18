@@ -48,18 +48,24 @@ class _AddressFormState extends State<AddressForm> {
         hintStyle: TextStyle(fontSize: 14.0, color: AppTheme.colorC4C5CD),
         labelText: hintText,
         labelStyle: TextStyle(fontSize: 14.0, color: AppTheme.color555764),
-        border: UnderlineInputBorder(
+        border: OutlineInputBorder(
           borderSide: BorderSide(color: AppTheme.colorC4C5CD),
+          borderRadius: BorderRadius.circular(0),
         ),
-        enabledBorder: UnderlineInputBorder(
-          borderSide: BorderSide(color: AppTheme.color0F1015),
+        enabledBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: AppTheme.colorC4C5CD),
+          borderRadius: BorderRadius.circular(0),
         ),
-        focusedBorder: UnderlineInputBorder(
-          borderSide: BorderSide(color: AppTheme.color0F1015),
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: AppTheme.colorC4C5CD),
+          borderRadius: BorderRadius.circular(0),
         ),
-        disabledBorder: UnderlineInputBorder(
-          borderSide: BorderSide(color: AppTheme.color0F1015),
+        disabledBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: AppTheme.colorC4C5CD),
+          borderRadius: BorderRadius.circular(0),
         ),
+        contentPadding: const EdgeInsets.all(10.0),
+        isDense: true,
       );
     }
 
@@ -71,12 +77,15 @@ class _AddressFormState extends State<AddressForm> {
       key: _formKey,
       child: Column(
         children: [
+          SizedBox(
+            height: 12,
+          ),
           Row(
             mainAxisSize: MainAxisSize.min,
             children: [
               Expanded(
                 child: TextFormField(
-                  decoration: _commonInputDecoration('First Name*'),
+                  decoration: _commonInputDecoration('First Name'),
                   controller: _firstNameController,
                   validator: (value) => value.isEmpty ? '' : null,
                   style: _textStyle,
@@ -87,7 +96,7 @@ class _AddressFormState extends State<AddressForm> {
               ),
               Expanded(
                 child: TextFormField(
-                  decoration: _commonInputDecoration('Last Name'),
+                  decoration: _commonInputDecoration('Last Name (optional)'),
                   controller: _lastNameController,
                   validator: null,
                   style: _textStyle,
@@ -95,41 +104,35 @@ class _AddressFormState extends State<AddressForm> {
               )
             ],
           ),
+          SizedBox(
+            height: 12,
+          ),
           TextFormField(
-            decoration: _commonInputDecoration('Address Line 1*'),
+            decoration: _commonInputDecoration('Address Line 1'),
             controller: _addressLine1Controller,
             validator: (value) => value.isEmpty ? '' : null,
             style: _textStyle,
           ),
+          SizedBox(
+            height: 12,
+          ),
           TextFormField(
-            decoration: _commonInputDecoration('Address Line 2'),
+            decoration: _commonInputDecoration('Address LIne 2 (optional)'),
             controller: _addressLine2Controller,
             validator: null,
             style: _textStyle,
           ),
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Expanded(
-                child: TextFormField(
-                  decoration: _commonInputDecoration('Zip Code*'),
-                  controller: _zipCodeController,
-                  validator: (value) => value.isEmpty ? '' : null,
-                  style: _textStyle,
-                ),
-              ),
-              SizedBox(
-                width: 8,
-              ),
-              Expanded(
-                child: TextFormField(
-                  decoration: _commonInputDecoration('City*'),
-                  controller: _cityController,
-                  validator: (value) => value.isEmpty ? '' : null,
-                  style: _textStyle,
-                ),
-              )
-            ],
+          SizedBox(
+            height: 12,
+          ),
+          TextFormField(
+            decoration: _commonInputDecoration('City'),
+            controller: _cityController,
+            validator: (value) => value.isEmpty ? '' : null,
+            style: _textStyle,
+          ),
+          SizedBox(
+            height: 12,
           ),
           GestureDetector(
             onTap: () {
@@ -137,15 +140,18 @@ class _AddressFormState extends State<AddressForm> {
             },
             child: TextField(
               controller: _countryController,
-              decoration: _commonInputDecoration('Country*').copyWith(
+              decoration: _commonInputDecoration('Country').copyWith(
                 suffixIcon: Icon(
-                  Icons.arrow_drop_down_sharp,
-                  color: AppTheme.color0F1015,
+                  Icons.keyboard_arrow_down,
+                  color: AppTheme.colorC4C5CD,
                 ),
               ),
               enabled: false,
               style: _textStyle,
             ),
+          ),
+          SizedBox(
+            height: 12,
           ),
           if (_states.isNotEmpty)
             GestureDetector(
@@ -154,18 +160,31 @@ class _AddressFormState extends State<AddressForm> {
               },
               child: TextField(
                 controller: _provinceController,
-                decoration: _commonInputDecoration('State*').copyWith(
+                decoration: _commonInputDecoration('State').copyWith(
                   suffixIcon: Icon(
-                    Icons.arrow_drop_down_sharp,
-                    color: AppTheme.color0F1015,
+                    Icons.keyboard_arrow_down,
+                    color: AppTheme.colorC4C5CD,
                   ),
                 ),
                 enabled: false,
                 style: _textStyle,
               ),
             ),
+          if (_states.isNotEmpty)
+            SizedBox(
+              height: 12,
+            ),
           TextFormField(
-            decoration: _commonInputDecoration('Phone Number*').copyWith(
+            decoration: _commonInputDecoration('Zip Code'),
+            controller: _zipCodeController,
+            validator: (value) => value.isEmpty ? '' : null,
+            style: _textStyle,
+          ),
+          SizedBox(
+            height: 12,
+          ),
+          TextFormField(
+            decoration: _commonInputDecoration('Phone Number').copyWith(
               prefix: Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 8,
