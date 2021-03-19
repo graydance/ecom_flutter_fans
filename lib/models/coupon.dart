@@ -7,22 +7,26 @@ class Coupon {
   final bool canUse;
   final int amount;
   final String amountStr;
+  final String msg;
 
   const Coupon({
     this.canUse = false,
     this.amount = 0,
     this.amountStr = '',
+    this.msg = '',
   });
 
   Coupon copyWith({
     bool canUse,
     int amount,
     String amountStr,
+    String msg,
   }) {
     return Coupon(
       canUse: canUse ?? this.canUse,
       amount: amount ?? this.amount,
       amountStr: amountStr ?? this.amountStr,
+      msg: msg ?? this.msg,
     );
   }
 
@@ -31,16 +35,16 @@ class Coupon {
       'canUse': canUse,
       'amount': amount,
       'amountStr': amountStr,
+      'msg': msg,
     };
   }
 
   factory Coupon.fromMap(Map<String, dynamic> map) {
-    if (map == null) return null;
-
     return Coupon(
-      canUse: map['canUse'] ?? false,
-      amount: map['amount'] ?? 0,
-      amountStr: map['amountStr'] ?? '',
+      canUse: map['canUse'],
+      amount: map['amount'],
+      amountStr: map['amountStr'],
+      msg: map['msg'],
     );
   }
 
@@ -49,19 +53,26 @@ class Coupon {
   factory Coupon.fromJson(String source) => Coupon.fromMap(json.decode(source));
 
   @override
-  String toString() =>
-      'Coupon(canUse: $canUse, amount: $amount, amountStr: $amountStr)';
-
-  @override
-  bool operator ==(Object o) {
-    if (identical(this, o)) return true;
-
-    return o is Coupon &&
-        o.canUse == canUse &&
-        o.amount == amount &&
-        o.amountStr == amountStr;
+  String toString() {
+    return 'Coupon(canUse: $canUse, amount: $amount, amountStr: $amountStr, msg: $msg)';
   }
 
   @override
-  int get hashCode => canUse.hashCode ^ amount.hashCode ^ amountStr.hashCode;
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is Coupon &&
+        other.canUse == canUse &&
+        other.amount == amount &&
+        other.amountStr == amountStr &&
+        other.msg == msg;
+  }
+
+  @override
+  int get hashCode {
+    return canUse.hashCode ^
+        amount.hashCode ^
+        amountStr.hashCode ^
+        msg.hashCode;
+  }
 }
