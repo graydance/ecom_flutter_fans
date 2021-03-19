@@ -1,26 +1,25 @@
 import 'dart:async';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:fans/app.dart';
-import 'package:fans/screen/components/default_button.dart';
-import 'package:fans/screen/components/order_status_image_view.dart';
-import 'package:fans/screen/order/payment_screen.dart';
-import 'package:fans/utils/validator.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
 
+import 'package:fans/app.dart';
 import 'package:fans/models/address.dart';
 import 'package:fans/models/models.dart';
 import 'package:fans/models/order_detail.dart';
 import 'package:fans/models/order_sku.dart';
-import 'package:fans/r.g.dart';
 import 'package:fans/screen/components/address_form.dart';
+import 'package:fans/screen/components/default_button.dart';
+import 'package:fans/screen/components/order_status_image_view.dart';
+import 'package:fans/screen/order/payment_screen.dart';
 import 'package:fans/store/actions.dart';
 import 'package:fans/theme.dart';
 import 'package:fans/utils/list_extension.dart';
+import 'package:fans/utils/validator.dart';
 
 class PreOrderScreen extends StatefulWidget {
   PreOrderScreen({Key key}) : super(key: key);
@@ -38,6 +37,7 @@ class _PreOrderScreenState extends State<PreOrderScreen> {
   String _couponCode = '';
 
   final _emailController = TextEditingController();
+  final _scrollController = ScrollController();
 
   @override
   void dispose() {
@@ -87,6 +87,7 @@ class _PreOrderScreenState extends State<PreOrderScreen> {
             FocusScope.of(context).requestFocus(FocusNode());
           },
           child: SingleChildScrollView(
+            controller: _scrollController,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Column(
@@ -181,6 +182,7 @@ class _PreOrderScreenState extends State<PreOrderScreen> {
                         _billingAddress = _shippingAddress;
                       } else {
                         _billingAddress = viewModel.billingDefaultAddress;
+                        _scrollToBottom();
                       }
                     });
                   }),
@@ -236,6 +238,7 @@ class _PreOrderScreenState extends State<PreOrderScreen> {
                           _showShippingAddressForm = !_showShippingAddressForm;
                           if (_showShippingAddressForm) {
                             _showBillingAddressForm = false;
+                            _scrollToBottom();
                           }
                         });
                       },
@@ -289,6 +292,7 @@ class _PreOrderScreenState extends State<PreOrderScreen> {
                     _showBillingAddressForm = !_showBillingAddressForm;
                     if (_showBillingAddressForm) {
                       _showShippingAddressForm = false;
+                      _scrollToBottom();
                     }
                   });
                 },
@@ -337,6 +341,16 @@ class _PreOrderScreenState extends State<PreOrderScreen> {
         ],
       ),
     );
+  }
+
+  _scrollToBottom() {
+    Timer(
+        Duration(milliseconds: 100),
+        () => _scrollController.animateTo(
+              _scrollController.position.maxScrollExtent,
+              curve: Curves.easeOut,
+              duration: const Duration(milliseconds: 300),
+            ));
   }
 
   _buildAddressTile(Address address, isDefault, _ViewModel viewModel,

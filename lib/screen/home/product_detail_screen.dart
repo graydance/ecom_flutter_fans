@@ -200,7 +200,7 @@ class SimilarProducts extends StatelessWidget {
         Container(
           padding: const EdgeInsets.only(top: 20),
           child: Text(
-            'Similar items from Desiperkins',
+            'Similar items',
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.bold,
