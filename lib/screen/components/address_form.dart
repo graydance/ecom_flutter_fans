@@ -132,7 +132,7 @@ class _AddressFormState extends State<AddressForm> {
             decoration: _commonInputDecoration('City'),
             controller: _cityController,
             validator: (value) =>
-                value.isEmpty || value.length < 64 ? 'Invalid City' : null,
+                value.isEmpty || value.length > 64 ? 'Invalid City' : null,
             style: _textStyle,
           ),
           SizedBox(
