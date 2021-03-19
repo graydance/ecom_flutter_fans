@@ -617,13 +617,14 @@ Middleware<AppState> _createCheckCoupon() {
     if (action is CheckCouponAction) {
       Networking.request(CheckCouponAPI(
         action.code,
+        action.total,
       )).then(
         (data) {
           final model = Coupon.fromMap(data['data']);
           if (model.canUse) {
             action.completer.complete(model);
           } else {
-            action.completer.completeError('Coupon code is invalid.');
+            action.completer.completeError(model.msg);
           }
         },
       ).catchError((err) {
