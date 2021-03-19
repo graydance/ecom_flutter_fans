@@ -30,6 +30,15 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   String _productId;
   int _quantity = 1;
 
+  _precacheSkuImages(Product model) {
+    model.goodsSkus.forEach((e) {
+      precacheImage(
+        CachedNetworkImageProvider(e.skuImage),
+        context,
+      );
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _ViewModel>(
@@ -59,7 +68,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             onRefresh: () async {
               final action = FetchProductDetailAction(_productId, Completer());
               StoreProvider.of<AppState>(context).dispatch(action);
-              await action.completer.future;
+              final model = await action.completer.future;
+              _precacheSkuImages(model);
             },
             firstRefresh: true,
             firstRefreshWidget: Center(
