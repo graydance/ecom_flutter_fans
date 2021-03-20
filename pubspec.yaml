@@ -32,6 +32,10 @@ dependencies:
   crypto: ^3.0.0
   cached_network_image: ^2.5.1
   flutter_picker: ^2.0.0
+  intl_phone_number_input:
+    git:
+      url: 'https://github.com/graydance/intl_phone_number_input.git'
+      ret: 1ea45e10409cc10476e8208fa08b7c82d4f800ff
 dev_dependencies:
   flutter_test:
     sdk: flutter

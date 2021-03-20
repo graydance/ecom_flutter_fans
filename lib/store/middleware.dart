@@ -88,7 +88,7 @@ Middleware<AppState> _verifyAuthState() {
         if (kIsWeb) {
         } else {
           Keys.navigatorKey.currentState
-              .pushReplacementNamed(Routes.shop + '/username1');
+              .pushReplacementNamed(Routes.shop + '/liuchen');
         }
       } else {
         store.dispatch(LocalUpdateUserAction(User()));
@@ -96,7 +96,7 @@ Middleware<AppState> _verifyAuthState() {
         if (kIsWeb) {
         } else {
           Keys.navigatorKey.currentState
-              .pushReplacementNamed(Routes.shop + '/username1');
+              .pushReplacementNamed(Routes.shop + '/liuchen');
         }
       }
     });
@@ -352,7 +352,7 @@ Middleware<AppState> _createProductDetail() {
         (data) {
           var response = data['data'];
           var model = Product.fromMap(response);
-          action.completer.complete();
+          action.completer.complete(model);
           store.dispatch(FetchProductDetailSuccessAction(model));
         },
       ).catchError((err) {
@@ -617,13 +617,14 @@ Middleware<AppState> _createCheckCoupon() {
     if (action is CheckCouponAction) {
       Networking.request(CheckCouponAPI(
         action.code,
+        action.total,
       )).then(
         (data) {
           final model = Coupon.fromMap(data['data']);
           if (model.canUse) {
             action.completer.complete(model);
           } else {
-            action.completer.completeError('Coupon code is invalid.');
+            action.completer.completeError(model.msg);
           }
         },
       ).catchError((err) {

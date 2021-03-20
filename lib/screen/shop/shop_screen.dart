@@ -90,6 +90,7 @@ class _ShopScreenState extends State<ShopScreen> {
 
               final isNoMore = currentPage == totalPage;
               _refreshGoodsController.finishRefresh(noMore: isNoMore);
+              _refreshGoodsController.finishLoad(noMore: isNoMore);
               _refreshGoodsController.resetRefreshState();
             } catch (error) {
               _refreshGoodsController.finishRefresh(success: false);
@@ -118,7 +119,7 @@ class _ShopScreenState extends State<ShopScreen> {
                       _goods.addAll(models);
                     });
 
-                    final isNoMore = currentPage == totalPage;
+                    final isNoMore = currentPage >= totalPage;
                     _refreshGoodsController.finishLoad(noMore: isNoMore);
                   } catch (error) {
                     _refreshGoodsController.finishLoad(success: false);
@@ -248,6 +249,7 @@ class _ShopScreenState extends State<ShopScreen> {
               SliverPadding(
                 padding: const EdgeInsets.only(left: 16, right: 16, top: 14),
                 sliver: SliverSafeArea(
+                  top: false,
                   bottom: false,
                   sliver: _goods.isEmpty
                       ? SliverToBoxAdapter(

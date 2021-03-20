@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:fans/theme.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_picker/flutter_picker.dart';
+import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 
 class AddressForm extends StatefulWidget {
   final bool isEditShipping;
@@ -39,6 +40,8 @@ class _AddressFormState extends State<AddressForm> {
   Country _selectedCountry = Country();
   String _selectedState = '';
   List<String> _states = [];
+  String _phoneNumber = '';
+  bool _phoneNumberIsValid = false;
 
   @override
   Widget build(BuildContext context) {
@@ -48,18 +51,28 @@ class _AddressFormState extends State<AddressForm> {
         hintStyle: TextStyle(fontSize: 14.0, color: AppTheme.colorC4C5CD),
         labelText: hintText,
         labelStyle: TextStyle(fontSize: 14.0, color: AppTheme.color555764),
-        border: UnderlineInputBorder(
+        border: OutlineInputBorder(
           borderSide: BorderSide(color: AppTheme.colorC4C5CD),
+          borderRadius: BorderRadius.circular(0),
         ),
-        enabledBorder: UnderlineInputBorder(
-          borderSide: BorderSide(color: AppTheme.color0F1015),
+        enabledBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: AppTheme.colorC4C5CD),
+          borderRadius: BorderRadius.circular(0),
         ),
-        focusedBorder: UnderlineInputBorder(
-          borderSide: BorderSide(color: AppTheme.color0F1015),
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: AppTheme.colorC4C5CD),
+          borderRadius: BorderRadius.circular(0),
         ),
-        disabledBorder: UnderlineInputBorder(
-          borderSide: BorderSide(color: AppTheme.color0F1015),
+        disabledBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: AppTheme.colorC4C5CD),
+          borderRadius: BorderRadius.circular(0),
         ),
+        errorBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: AppTheme.colorED3544),
+          borderRadius: BorderRadius.circular(0),
+        ),
+        contentPadding: const EdgeInsets.all(12.0),
+        isDense: true,
       );
     }
 
@@ -71,115 +84,150 @@ class _AddressFormState extends State<AddressForm> {
       key: _formKey,
       child: Column(
         children: [
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Expanded(
-                child: TextFormField(
-                  decoration: _commonInputDecoration('First Name*'),
-                  controller: _firstNameController,
-                  validator: (value) => value.isEmpty ? '' : null,
-                  style: _textStyle,
-                ),
-              ),
-              SizedBox(
-                width: 8,
-              ),
-              Expanded(
-                child: TextFormField(
-                  decoration: _commonInputDecoration('Last Name'),
-                  controller: _lastNameController,
-                  validator: null,
-                  style: _textStyle,
-                ),
-              )
-            ],
+          SizedBox(
+            height: 12,
           ),
           TextFormField(
-            decoration: _commonInputDecoration('Address Line 1*'),
+            decoration: _commonInputDecoration('First Name'),
+            controller: _firstNameController,
+            validator: (value) => value.isEmpty || value.length > 64
+                ? 'Invalid First Name'
+                : null,
+            style: _textStyle,
+          ),
+          SizedBox(
+            height: 12,
+          ),
+          TextFormField(
+            decoration: _commonInputDecoration('Last Name (optional)'),
+            controller: _lastNameController,
+            validator: (value) =>
+                value.length > 64 ? 'Invalid Last Name' : null,
+            style: _textStyle,
+          ),
+          SizedBox(
+            height: 12,
+          ),
+          TextFormField(
+            decoration: _commonInputDecoration('Address Line 1'),
             controller: _addressLine1Controller,
-            validator: (value) => value.isEmpty ? '' : null,
+            validator: (value) => value.length < 10 || value.length > 256
+                ? 'Invalid Address'
+                : null,
             style: _textStyle,
+          ),
+          SizedBox(
+            height: 12,
           ),
           TextFormField(
-            decoration: _commonInputDecoration('Address Line 2'),
+            decoration: _commonInputDecoration('Address Line 2 (optional)'),
             controller: _addressLine2Controller,
-            validator: null,
+            validator: (value) => value.length > 256 ? 'Invalid Address' : null,
             style: _textStyle,
           ),
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Expanded(
-                child: TextFormField(
-                  decoration: _commonInputDecoration('Zip Code*'),
-                  controller: _zipCodeController,
-                  validator: (value) => value.isEmpty ? '' : null,
-                  style: _textStyle,
-                ),
-              ),
-              SizedBox(
-                width: 8,
-              ),
-              Expanded(
-                child: TextFormField(
-                  decoration: _commonInputDecoration('City*'),
-                  controller: _cityController,
-                  validator: (value) => value.isEmpty ? '' : null,
-                  style: _textStyle,
-                ),
-              )
-            ],
+          SizedBox(
+            height: 12,
+          ),
+          TextFormField(
+            decoration: _commonInputDecoration('City'),
+            controller: _cityController,
+            validator: (value) =>
+                value.isEmpty || value.length > 64 ? 'Invalid City' : null,
+            style: _textStyle,
+          ),
+          SizedBox(
+            height: 12,
           ),
           GestureDetector(
             onTap: () {
               _showPickerModal(context);
             },
-            child: TextField(
+            child: TextFormField(
               controller: _countryController,
-              decoration: _commonInputDecoration('Country*').copyWith(
+              decoration: _commonInputDecoration('Country').copyWith(
                 suffixIcon: Icon(
-                  Icons.arrow_drop_down_sharp,
-                  color: AppTheme.color0F1015,
+                  Icons.keyboard_arrow_down,
+                  color: AppTheme.colorC4C5CD,
                 ),
               ),
               enabled: false,
               style: _textStyle,
+              validator: (value) => value.isEmpty ? 'Invalid Country' : null,
             ),
+          ),
+          SizedBox(
+            height: 12,
           ),
           if (_states.isNotEmpty)
             GestureDetector(
               onTap: () {
                 _showStatesPickerModal(context);
               },
-              child: TextField(
+              child: TextFormField(
                 controller: _provinceController,
-                decoration: _commonInputDecoration('State*').copyWith(
+                decoration: _commonInputDecoration('State').copyWith(
                   suffixIcon: Icon(
-                    Icons.arrow_drop_down_sharp,
-                    color: AppTheme.color0F1015,
+                    Icons.keyboard_arrow_down,
+                    color: AppTheme.colorC4C5CD,
                   ),
                 ),
                 enabled: false,
                 style: _textStyle,
+                validator: (value) => value.isEmpty && _states.isNotEmpty
+                    ? 'Invalid State'
+                    : null,
               ),
+            ),
+          if (_states.isNotEmpty)
+            SizedBox(
+              height: 12,
             ),
           TextFormField(
-            decoration: _commonInputDecoration('Phone Number*').copyWith(
-              prefix: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 8,
-                ),
-                child: Text(
-                  _selectedCountry.phoneCode ?? '',
-                  style: _textStyle.copyWith(color: AppTheme.color555764),
+            decoration: _commonInputDecoration('Zip Code'),
+            controller: _zipCodeController,
+            validator: (value) =>
+                value.isEmpty || value.length > 10 ? 'Invalid Zip Code' : null,
+            style: _textStyle,
+          ),
+          SizedBox(
+            height: 12,
+          ),
+          InternationalPhoneNumberInput(
+            onInputChanged: (PhoneNumber value) {
+              _phoneNumber = value.dialCode + ' ' + value.parseNumber();
+              print(_phoneNumber);
+            },
+            initialValue: PhoneNumber(
+                isoCode: _selectedCountry.countryCode.isNotEmpty
+                    ? _selectedCountry.countryCode
+                    : 'US'),
+            selectorConfig: SelectorConfig(
+              showFlags: false,
+              setSelectorButtonAsPrefixIcon: false,
+              selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
+              boxDecoration: BoxDecoration(
+                border: Border.all(
+                  color: AppTheme.colorC4C5CD,
                 ),
               ),
+              padding: EdgeInsets.all(11.0),
             ),
-            controller: _phoneNumberController,
-            validator: (value) => value.isEmpty ? '' : null,
+            ignoreBlank: false,
+            textFieldController: _phoneNumberController,
             keyboardType: TextInputType.phone,
-            style: _textStyle,
+            inputDecoration: _commonInputDecoration('Phone Number'),
+            onInputValidated: (bool value) {
+              setState(() {
+                _phoneNumberIsValid = value;
+              });
+
+              print('_phoneNumberIsValid: $value');
+            },
+            validator: (value) => value.isEmpty ? 'Invalid Phone Number' : null,
+            spaceBetweenSelectorAndTextField: 0,
+            countries: widget.countries.map((e) => e.countryCode).toList(),
+            selectorTextStyle: _textStyle,
+            textStyle: _textStyle,
           ),
           SizedBox(
             height: 20,
@@ -231,7 +279,7 @@ class _AddressFormState extends State<AddressForm> {
   }
 
   _uploadAddress(bool isDefault) {
-    if (!_formKey.currentState.validate()) {
+    if (!_formKey.currentState.validate() || !_phoneNumberIsValid) {
       return;
     }
     setState(() {

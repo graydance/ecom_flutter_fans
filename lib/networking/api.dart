@@ -368,11 +368,12 @@ class PayCaptureAPI extends API {
 
 class CheckCouponAPI extends API {
   final String code;
+  final int total;
 
-  CheckCouponAPI(this.code);
+  CheckCouponAPI(this.code, this.total);
 
   @override
-  Map<String, dynamic> get parameters => {'code': code};
+  Map<String, dynamic> get parameters => {'code': code, 'total': total};
 
   String get path => '/user/pub/coupon_validate';
 }

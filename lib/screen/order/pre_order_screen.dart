@@ -1,26 +1,25 @@
 import 'dart:async';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:fans/app.dart';
-import 'package:fans/screen/components/default_button.dart';
-import 'package:fans/screen/components/order_status_image_view.dart';
-import 'package:fans/screen/order/payment_screen.dart';
-import 'package:fans/utils/validator.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
 
+import 'package:fans/app.dart';
 import 'package:fans/models/address.dart';
 import 'package:fans/models/models.dart';
 import 'package:fans/models/order_detail.dart';
 import 'package:fans/models/order_sku.dart';
-import 'package:fans/r.g.dart';
 import 'package:fans/screen/components/address_form.dart';
+import 'package:fans/screen/components/default_button.dart';
+import 'package:fans/screen/components/order_status_image_view.dart';
+import 'package:fans/screen/order/payment_screen.dart';
 import 'package:fans/store/actions.dart';
 import 'package:fans/theme.dart';
 import 'package:fans/utils/list_extension.dart';
+import 'package:fans/utils/validator.dart';
 
 class PreOrderScreen extends StatefulWidget {
   PreOrderScreen({Key key}) : super(key: key);
@@ -38,6 +37,7 @@ class _PreOrderScreenState extends State<PreOrderScreen> {
   String _couponCode = '';
 
   final _emailController = TextEditingController();
+  final _scrollController = ScrollController();
 
   @override
   void dispose() {
@@ -87,6 +87,7 @@ class _PreOrderScreenState extends State<PreOrderScreen> {
             FocusScope.of(context).requestFocus(FocusNode());
           },
           child: SingleChildScrollView(
+            controller: _scrollController,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Column(
@@ -181,6 +182,7 @@ class _PreOrderScreenState extends State<PreOrderScreen> {
                         _billingAddress = _shippingAddress;
                       } else {
                         _billingAddress = viewModel.billingDefaultAddress;
+                        _scrollToBottom();
                       }
                     });
                   }),
@@ -236,6 +238,7 @@ class _PreOrderScreenState extends State<PreOrderScreen> {
                           _showShippingAddressForm = !_showShippingAddressForm;
                           if (_showShippingAddressForm) {
                             _showBillingAddressForm = false;
+                            _scrollToBottom();
                           }
                         });
                       },
@@ -289,6 +292,7 @@ class _PreOrderScreenState extends State<PreOrderScreen> {
                     _showBillingAddressForm = !_showBillingAddressForm;
                     if (_showBillingAddressForm) {
                       _showShippingAddressForm = false;
+                      _scrollToBottom();
                     }
                   });
                 },
@@ -337,6 +341,16 @@ class _PreOrderScreenState extends State<PreOrderScreen> {
         ],
       ),
     );
+  }
+
+  _scrollToBottom() {
+    Timer(
+        Duration(milliseconds: 100),
+        () => _scrollController.animateTo(
+              _scrollController.position.maxScrollExtent,
+              curve: Curves.easeOut,
+              duration: const Duration(milliseconds: 300),
+            ));
   }
 
   _buildAddressTile(Address address, isDefault, _ViewModel viewModel,
@@ -803,6 +817,7 @@ class _OrderDetailsExpansionTileState extends State<OrderDetailsExpansionTile> {
           ),
           if (widget.showCoupon)
             OrderCouponTile(
+              model: widget.model,
               hasCoupon: _coupon != null,
               couponCode: widget.couponCode,
               couponValue: '-${widget.currency}${_coupon?.amountStr ?? ''}',
@@ -874,6 +889,7 @@ class OrderPriceTile extends StatelessWidget {
 }
 
 class OrderCouponTile extends StatefulWidget {
+  final OrderDetail model;
   final bool hasCoupon;
   final String couponCode;
   final String couponValue;
@@ -881,6 +897,7 @@ class OrderCouponTile extends StatefulWidget {
 
   const OrderCouponTile(
       {Key key,
+      @required this.model,
       @required this.hasCoupon,
       this.couponCode,
       this.couponValue,
@@ -909,26 +926,19 @@ class _OrderCouponTileState extends State<OrderCouponTile> {
     );
 
     final leading = widget.hasCoupon ? 'Coupon code' : 'I have a coupon code';
-    final trailingWidget = widget.hasCoupon
-        ? Text(
-            widget.couponValue,
-            style: TextStyle(
-              color: AppTheme.color48B6EF,
-              fontSize: 14,
-            ),
-          )
-        : InkWell(
-            onTap: () {
-              _showCouponInputDialog(context);
-            },
-            child: Text(
-              '+ Add',
-              style: TextStyle(
-                color: AppTheme.color48B6EF,
-                fontSize: 14,
-              ),
-            ),
-          );
+    final trailingWidget = InkWell(
+      onTap: () {
+        _showCouponInputDialog(context, widget.model);
+      },
+      child: Text(
+        widget.hasCoupon ? widget.couponValue : '+ Add',
+        style: TextStyle(
+          color: AppTheme.color48B6EF,
+          fontSize: 14,
+        ),
+      ),
+    );
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(children: [
@@ -942,7 +952,7 @@ class _OrderCouponTileState extends State<OrderCouponTile> {
     );
   }
 
-  Future _showCouponInputDialog(BuildContext context) async {
+  Future _showCouponInputDialog(BuildContext context, OrderDetail model) async {
     return showCupertinoDialog(
         context: context,
         builder: (ctx) {
@@ -979,7 +989,7 @@ class _OrderCouponTileState extends State<OrderCouponTile> {
               ),
               TextButton(
                 onPressed: () {
-                  _checkCoupon();
+                  _checkCoupon(model.subtotal + model.taxes);
                   Navigator.pop(context);
                 },
                 style: TextButton.styleFrom(
@@ -995,7 +1005,7 @@ class _OrderCouponTileState extends State<OrderCouponTile> {
         });
   }
 
-  _checkCoupon() {
+  _checkCoupon(int total) {
     final code = _textFieldController.text;
     EasyLoading.show();
     final completer = Completer();
@@ -1009,7 +1019,7 @@ class _OrderCouponTileState extends State<OrderCouponTile> {
       EasyLoading.showToast(error.toString());
     });
     StoreProvider.of<AppState>(context)
-        .dispatch(CheckCouponAction(code, completer));
+        .dispatch(CheckCouponAction(code, total, completer));
   }
 }
 
