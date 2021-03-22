@@ -817,6 +817,7 @@ class _OrderDetailsExpansionTileState extends State<OrderDetailsExpansionTile> {
           ),
           if (widget.showCoupon)
             OrderCouponTile(
+              model: widget.model,
               hasCoupon: _coupon != null,
               couponCode: widget.couponCode,
               couponValue: '-${widget.currency}${_coupon?.amountStr ?? ''}',
@@ -888,6 +889,7 @@ class OrderPriceTile extends StatelessWidget {
 }
 
 class OrderCouponTile extends StatefulWidget {
+  final OrderDetail model;
   final bool hasCoupon;
   final String couponCode;
   final String couponValue;
@@ -895,6 +897,7 @@ class OrderCouponTile extends StatefulWidget {
 
   const OrderCouponTile(
       {Key key,
+      @required this.model,
       @required this.hasCoupon,
       this.couponCode,
       this.couponValue,
@@ -923,26 +926,19 @@ class _OrderCouponTileState extends State<OrderCouponTile> {
     );
 
     final leading = widget.hasCoupon ? 'Coupon code' : 'I have a coupon code';
-    final trailingWidget = widget.hasCoupon
-        ? Text(
-            widget.couponValue,
-            style: TextStyle(
-              color: AppTheme.color48B6EF,
-              fontSize: 14,
-            ),
-          )
-        : InkWell(
-            onTap: () {
-              _showCouponInputDialog(context);
-            },
-            child: Text(
-              '+ Add',
-              style: TextStyle(
-                color: AppTheme.color48B6EF,
-                fontSize: 14,
-              ),
-            ),
-          );
+    final trailingWidget = InkWell(
+      onTap: () {
+        _showCouponInputDialog(context, widget.model);
+      },
+      child: Text(
+        widget.hasCoupon ? widget.couponValue : '+ Add',
+        style: TextStyle(
+          color: AppTheme.color48B6EF,
+          fontSize: 14,
+        ),
+      ),
+    );
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Row(children: [
@@ -956,7 +952,7 @@ class _OrderCouponTileState extends State<OrderCouponTile> {
     );
   }
 
-  Future _showCouponInputDialog(BuildContext context) async {
+  Future _showCouponInputDialog(BuildContext context, OrderDetail model) async {
     return showCupertinoDialog(
         context: context,
         builder: (ctx) {
@@ -993,7 +989,7 @@ class _OrderCouponTileState extends State<OrderCouponTile> {
               ),
               TextButton(
                 onPressed: () {
-                  _checkCoupon();
+                  _checkCoupon(model.subtotal + model.taxes);
                   Navigator.pop(context);
                 },
                 style: TextButton.styleFrom(
@@ -1009,7 +1005,7 @@ class _OrderCouponTileState extends State<OrderCouponTile> {
         });
   }
 
-  _checkCoupon() {
+  _checkCoupon(int total) {
     final code = _textFieldController.text;
     EasyLoading.show();
     final completer = Completer();
@@ -1023,7 +1019,7 @@ class _OrderCouponTileState extends State<OrderCouponTile> {
       EasyLoading.showToast(error.toString());
     });
     StoreProvider.of<AppState>(context)
-        .dispatch(CheckCouponAction(code, completer));
+        .dispatch(CheckCouponAction(code, total, completer));
   }
 }
 

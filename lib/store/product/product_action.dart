@@ -194,7 +194,8 @@ class OnUpdateCartAction {
 
 class CheckCouponAction {
   final String code;
+  final int total;
   final Completer completer;
 
-  CheckCouponAction(this.code, this.completer);
+  CheckCouponAction(this.code, this.total, this.completer);
 }

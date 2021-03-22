@@ -223,6 +223,7 @@ class _AddressFormState extends State<AddressForm> {
 
               print('_phoneNumberIsValid: $value');
             },
+            validator: (value) => value.isEmpty ? 'Invalid Phone Number' : null,
             spaceBetweenSelectorAndTextField: 0,
             countries: widget.countries.map((e) => e.countryCode).toList(),
             selectorTextStyle: _textStyle,
