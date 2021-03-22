@@ -41,7 +41,6 @@ class _AddressFormState extends State<AddressForm> {
   String _selectedState = '';
   List<String> _states = [];
   String _phoneNumber = '';
-  bool _phoneNumberIsValid = false;
 
   @override
   Widget build(BuildContext context) {
@@ -217,10 +216,6 @@ class _AddressFormState extends State<AddressForm> {
             keyboardType: TextInputType.phone,
             inputDecoration: _commonInputDecoration('Phone Number'),
             onInputValidated: (bool value) {
-              setState(() {
-                _phoneNumberIsValid = value;
-              });
-
               print('_phoneNumberIsValid: $value');
             },
             validator: (value) => value.isEmpty ? 'Invalid Phone Number' : null,
@@ -279,7 +274,7 @@ class _AddressFormState extends State<AddressForm> {
   }
 
   _uploadAddress(bool isDefault) {
-    if (!_formKey.currentState.validate() || !_phoneNumberIsValid) {
+    if (!_formKey.currentState.validate()) {
       return;
     }
     setState(() {
