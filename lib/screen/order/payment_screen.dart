@@ -1,7 +1,5 @@
 import 'dart:async';
 
-import 'package:fans/r.g.dart';
-import 'package:fans/screen/components/default_button.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -12,6 +10,8 @@ import 'package:url_launcher/url_launcher.dart';
 
 import 'package:fans/models/address.dart';
 import 'package:fans/models/models.dart';
+import 'package:fans/r.g.dart';
+import 'package:fans/screen/components/default_button.dart';
 import 'package:fans/screen/components/order_status_image_view.dart';
 import 'package:fans/screen/order/pre_order_screen.dart';
 import 'package:fans/store/actions.dart';
@@ -22,8 +22,16 @@ class PaymentScreenParams {
   final Address shippAddress;
   final String orderId;
   final String number;
+  final Coupon coupon;
+  final String totalStr;
 
-  PaymentScreenParams(this.shippAddress, this.orderId, this.number);
+  PaymentScreenParams(
+    this.shippAddress,
+    this.orderId,
+    this.number,
+    this.coupon,
+    this.totalStr,
+  );
 }
 
 class PaymentScreen extends StatefulWidget {
@@ -58,6 +66,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   currency: viewModel.currency,
                   context: context,
                   model: viewModel.orderDetail,
+                  canAddCoupon: false,
+                  coupon: viewModel.coupon,
                 ),
                 SizedBox(
                   height: 10,
@@ -221,8 +231,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
           ),
         ),
         bottomNavigationBar: Container(
-          padding:
-              EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
+          padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).padding.bottom + 20, top: 10),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: FansButton(
@@ -245,6 +255,8 @@ class _ViewModel {
   final OrderDetail orderDetail;
   final String shippingAddress;
   final String orderId;
+  final Coupon coupon;
+  final String totalStr;
   final Function(BuildContext) onTapPay;
 
   _ViewModel({
@@ -252,6 +264,8 @@ class _ViewModel {
     this.orderDetail,
     this.shippingAddress,
     this.orderId,
+    this.coupon,
+    this.totalStr,
     this.onTapPay,
   });
 
@@ -269,7 +283,7 @@ class _ViewModel {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(
               'Please copy the payment link and open it manually. ${payInfo.payLink}'),
-          duration: const Duration(hours: 5),
+          duration: const Duration(minutes: 2),
           action: SnackBarAction(
             textColor: AppTheme.colorED8514,
             label: 'Copy>',
@@ -294,6 +308,8 @@ class _ViewModel {
       orderDetail: store.state.preOrder.orderDetail,
       shippingAddress: address,
       orderId: params.orderId,
+      totalStr: params.totalStr,
+      coupon: params.coupon,
       onTapPay: _onTapPay,
     );
   }
