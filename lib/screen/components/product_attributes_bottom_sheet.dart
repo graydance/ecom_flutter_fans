@@ -152,6 +152,9 @@ class _ProductAttributesBottomSheetState
                 isDisable: _currentSku.stock == 0,
               ),
             ),
+            SizedBox(
+              height: 20,
+            ),
           ],
         ),
       ),
@@ -375,7 +378,10 @@ class FloatingModal extends StatelessWidget {
         child: Material(
           color: backgroundColor,
           clipBehavior: Clip.none,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(12),
+            topRight: Radius.circular(12),
+          ),
           child: child,
         ),
       ),

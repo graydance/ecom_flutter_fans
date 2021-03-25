@@ -103,43 +103,49 @@ class _PreOrderScreenState extends State<PreOrderScreen> {
                   ),
                   if (viewModel.isAnonymous) _buildEmail(),
                   _buildAddressList(viewModel),
+                  Container(
+                    padding: EdgeInsets.only(
+                        top: 20,
+                        bottom: MediaQuery.of(context).padding.bottom + 20),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: FansButton(
+                        onPressed: _shippingAddress.id.isNotEmpty &&
+                                _billingAddress.id.isNotEmpty
+                            ? () {
+                                if (!viewModel.orderDetail.canOrder) {
+                                  ScaffoldMessenger.of(context)
+                                      .showSnackBar(SnackBar(
+                                    content: const Text('Out of stock'),
+                                    duration: const Duration(seconds: 2),
+                                  ));
+                                  return;
+                                }
+                                if (viewModel.isAnonymous &&
+                                    !validateEmail(_emailController.text)) {
+                                  ScaffoldMessenger.of(context)
+                                      .showSnackBar(SnackBar(
+                                    content: const Text('The email is invalid'),
+                                    duration: const Duration(seconds: 2),
+                                  ));
+                                  return;
+                                }
+
+                                viewModel.onTapPay(
+                                    _shippingAddress,
+                                    _billingAddress,
+                                    _emailController.text ?? '',
+                                    _couponCode ?? '');
+                              }
+                            : null,
+                        title: 'Continue to payment',
+                        isDisable: _shippingAddress.id.isEmpty ||
+                            _billingAddress.id.isEmpty,
+                      ),
+                    ),
+                  ),
                 ],
               ),
-            ),
-          ),
-        ),
-        bottomNavigationBar: Container(
-          padding:
-              EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: FansButton(
-              onPressed: _shippingAddress.id.isNotEmpty &&
-                      _billingAddress.id.isNotEmpty
-                  ? () {
-                      if (!viewModel.orderDetail.canOrder) {
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          content: const Text('Out of stock'),
-                          duration: const Duration(seconds: 2),
-                        ));
-                        return;
-                      }
-                      if (viewModel.isAnonymous &&
-                          !validateEmail(_emailController.text)) {
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          content: const Text('The email is invalid'),
-                          duration: const Duration(seconds: 2),
-                        ));
-                        return;
-                      }
-
-                      viewModel.onTapPay(_shippingAddress, _billingAddress,
-                          _emailController.text ?? '', _couponCode ?? '');
-                    }
-                  : null,
-              title: 'Continue to payment',
-              isDisable:
-                  _shippingAddress.id.isEmpty || _billingAddress.id.isEmpty,
             ),
           ),
         ),
@@ -443,10 +449,11 @@ class _PreOrderScreenState extends State<PreOrderScreen> {
           height: 8,
         ),
         Text(
-          'Add Address',
+          isAddShipping ? 'Shipping Address' : 'Billing Address',
           style: TextStyle(
-            fontSize: 14,
+            fontSize: 16,
             color: AppTheme.color0F1015,
+            fontWeight: FontWeight.w600,
           ),
         ),
         AddressForm(
