@@ -788,7 +788,7 @@ class _OrderDetailsExpansionTileState extends State<OrderDetailsExpansionTile> {
             itemBuilder: (ctx, i) {
               final item = widget.model.list[i];
               return Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SizedBox(
                     height: 110,
@@ -809,6 +809,9 @@ class _OrderDetailsExpansionTileState extends State<OrderDetailsExpansionTile> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        SizedBox(
+                          height: 8,
+                        ),
                         Text(
                           item.goodsName,
                           maxLines: 3,
@@ -818,6 +821,9 @@ class _OrderDetailsExpansionTileState extends State<OrderDetailsExpansionTile> {
                             fontSize: 14,
                           ),
                         ),
+                        SizedBox(
+                          height: 6,
+                        ),
                         Text(
                           '${widget.currency}${item.currentPriceStr}',
                           style: TextStyle(
@@ -825,6 +831,9 @@ class _OrderDetailsExpansionTileState extends State<OrderDetailsExpansionTile> {
                             fontWeight: FontWeight.w600,
                             fontSize: 14,
                           ),
+                        ),
+                        SizedBox(
+                          height: 6,
                         ),
                         Text(
                           'Quantity:${item.number}',

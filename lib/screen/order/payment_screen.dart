@@ -239,9 +239,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
               onPressed: () {
                 viewModel.onTapPay(context);
               },
-              title:
-                  'Pay ${viewModel.currency}${viewModel.orderDetail.totalStr}'
-                      .toUpperCase(),
+              title: 'Pay ${viewModel.currency}${viewModel.totalStr}'
+                  .toUpperCase(),
             ),
           ),
         ),
@@ -297,7 +296,7 @@ class _ViewModel {
         EasyLoading.showToast(error.toString());
       });
 
-      store.dispatch(PayAction(params.orderId, 'payName', completer));
+      store.dispatch(PayAction(params.orderId, 'PayPal', completer));
     }
 
     final _shippAddress = params.shippAddress;
