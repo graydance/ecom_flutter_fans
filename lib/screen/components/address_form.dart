@@ -87,6 +87,7 @@ class _AddressFormState extends State<AddressForm> {
             height: 12,
           ),
           TextFormField(
+            autovalidateMode: AutovalidateMode.onUserInteraction,
             decoration: _commonInputDecoration('First Name'),
             controller: _firstNameController,
             validator: (value) => value.isEmpty || value.length > 64
@@ -98,6 +99,7 @@ class _AddressFormState extends State<AddressForm> {
             height: 12,
           ),
           TextFormField(
+            autovalidateMode: AutovalidateMode.onUserInteraction,
             decoration: _commonInputDecoration('Last Name (optional)'),
             controller: _lastNameController,
             validator: (value) =>
@@ -108,6 +110,7 @@ class _AddressFormState extends State<AddressForm> {
             height: 12,
           ),
           TextFormField(
+            autovalidateMode: AutovalidateMode.onUserInteraction,
             decoration: _commonInputDecoration('Address Line 1'),
             controller: _addressLine1Controller,
             validator: (value) => value.length < 10 || value.length > 256
@@ -119,6 +122,7 @@ class _AddressFormState extends State<AddressForm> {
             height: 12,
           ),
           TextFormField(
+            autovalidateMode: AutovalidateMode.onUserInteraction,
             decoration: _commonInputDecoration('Address Line 2 (optional)'),
             controller: _addressLine2Controller,
             validator: (value) => value.length > 256 ? 'Invalid Address' : null,
@@ -128,6 +132,7 @@ class _AddressFormState extends State<AddressForm> {
             height: 12,
           ),
           TextFormField(
+            autovalidateMode: AutovalidateMode.onUserInteraction,
             decoration: _commonInputDecoration('City'),
             controller: _cityController,
             validator: (value) =>
@@ -142,6 +147,7 @@ class _AddressFormState extends State<AddressForm> {
               _showPickerModal(context);
             },
             child: TextFormField(
+              autovalidateMode: AutovalidateMode.onUserInteraction,
               controller: _countryController,
               decoration: _commonInputDecoration('Country').copyWith(
                 suffixIcon: Icon(
@@ -163,6 +169,7 @@ class _AddressFormState extends State<AddressForm> {
                 _showStatesPickerModal(context);
               },
               child: TextFormField(
+                autovalidateMode: AutovalidateMode.onUserInteraction,
                 controller: _provinceController,
                 decoration: _commonInputDecoration('State').copyWith(
                   suffixIcon: Icon(
@@ -182,6 +189,7 @@ class _AddressFormState extends State<AddressForm> {
               height: 12,
             ),
           TextFormField(
+            autovalidateMode: AutovalidateMode.onUserInteraction,
             decoration: _commonInputDecoration('Zip Code'),
             controller: _zipCodeController,
             validator: (value) =>
@@ -192,6 +200,7 @@ class _AddressFormState extends State<AddressForm> {
             height: 12,
           ),
           InternationalPhoneNumberInput(
+            autoValidateMode: AutovalidateMode.onUserInteraction,
             onInputChanged: (PhoneNumber value) {
               _phoneNumber = value.dialCode + ' ' + value.parseNumber();
               print(_phoneNumber);

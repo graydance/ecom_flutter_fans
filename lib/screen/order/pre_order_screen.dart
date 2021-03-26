@@ -35,6 +35,7 @@ class _PreOrderScreenState extends State<PreOrderScreen> {
   Address _billingAddress = Address();
   bool _useShippingAddress = false;
   String _couponCode = '';
+  Coupon _coupon;
 
   final _emailController = TextEditingController();
   final _scrollController = ScrollController();
@@ -97,49 +98,62 @@ class _PreOrderScreenState extends State<PreOrderScreen> {
                     currency: viewModel.currency,
                     context: context,
                     model: viewModel.orderDetail,
-                    showCoupon: true,
+                    canAddCoupon: true,
+                    coupon: _coupon,
                     couponCode: _couponCode ?? '',
-                    onAddCouponCode: (value) => _couponCode = value,
+                    onAddCouponCode: (code, coupon) {
+                      setState(() {
+                        _couponCode = code;
+                        _coupon = coupon;
+                      });
+                    },
                   ),
                   if (viewModel.isAnonymous) _buildEmail(),
                   _buildAddressList(viewModel),
+                  Container(
+                    padding: EdgeInsets.only(
+                        top: 20,
+                        bottom: MediaQuery.of(context).padding.bottom + 20),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: FansButton(
+                        onPressed: _shippingAddress.id.isNotEmpty &&
+                                _billingAddress.id.isNotEmpty
+                            ? () {
+                                if (!viewModel.orderDetail.canOrder) {
+                                  ScaffoldMessenger.of(context)
+                                      .showSnackBar(SnackBar(
+                                    content: const Text('Out of stock'),
+                                    duration: const Duration(seconds: 2),
+                                  ));
+                                  return;
+                                }
+                                if (viewModel.isAnonymous &&
+                                    !validateEmail(_emailController.text)) {
+                                  ScaffoldMessenger.of(context)
+                                      .showSnackBar(SnackBar(
+                                    content: const Text('The email is invalid'),
+                                    duration: const Duration(seconds: 2),
+                                  ));
+                                  return;
+                                }
+
+                                viewModel.onTapPay(
+                                    _shippingAddress,
+                                    _billingAddress,
+                                    _emailController.text ?? '',
+                                    _couponCode ?? '',
+                                    _coupon);
+                              }
+                            : null,
+                        title: 'Continue to payment',
+                        isDisable: _shippingAddress.id.isEmpty ||
+                            _billingAddress.id.isEmpty,
+                      ),
+                    ),
+                  ),
                 ],
               ),
-            ),
-          ),
-        ),
-        bottomNavigationBar: Container(
-          padding:
-              EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: FansButton(
-              onPressed: _shippingAddress.id.isNotEmpty &&
-                      _billingAddress.id.isNotEmpty
-                  ? () {
-                      if (!viewModel.orderDetail.canOrder) {
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          content: const Text('Out of stock'),
-                          duration: const Duration(seconds: 2),
-                        ));
-                        return;
-                      }
-                      if (viewModel.isAnonymous &&
-                          !validateEmail(_emailController.text)) {
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          content: const Text('The email is invalid'),
-                          duration: const Duration(seconds: 2),
-                        ));
-                        return;
-                      }
-
-                      viewModel.onTapPay(_shippingAddress, _billingAddress,
-                          _emailController.text ?? '', _couponCode ?? '');
-                    }
-                  : null,
-              title: 'Continue to payment',
-              isDisable:
-                  _shippingAddress.id.isEmpty || _billingAddress.id.isEmpty,
             ),
           ),
         ),
@@ -443,10 +457,11 @@ class _PreOrderScreenState extends State<PreOrderScreen> {
           height: 8,
         ),
         Text(
-          'Add Address',
+          isAddShipping ? 'Shipping Address' : 'Billing Address',
           style: TextStyle(
-            fontSize: 14,
+            fontSize: 16,
             color: AppTheme.color0F1015,
+            fontWeight: FontWeight.w600,
           ),
         ),
         AddressForm(
@@ -480,23 +495,40 @@ class _PreOrderScreenState extends State<PreOrderScreen> {
             fontWeight: FontWeight.w600,
           ),
         ),
+        SizedBox(
+          height: 8,
+        ),
         TextFormField(
+          autovalidateMode: AutovalidateMode.onUserInteraction,
           decoration: InputDecoration(
             hintText: 'Enter your email*',
-            hintStyle: TextStyle(fontSize: 12.0, color: AppTheme.colorC4C5CD),
-            border: UnderlineInputBorder(
+            hintStyle: TextStyle(fontSize: 14.0, color: AppTheme.colorC4C5CD),
+            labelStyle: TextStyle(fontSize: 14.0, color: AppTheme.color555764),
+            border: OutlineInputBorder(
               borderSide: BorderSide(color: AppTheme.colorC4C5CD),
+              borderRadius: BorderRadius.circular(0),
             ),
-            enabledBorder: UnderlineInputBorder(
+            enabledBorder: OutlineInputBorder(
               borderSide: BorderSide(color: AppTheme.colorC4C5CD),
+              borderRadius: BorderRadius.circular(0),
             ),
-            focusedBorder: UnderlineInputBorder(
-              borderSide: BorderSide(color: AppTheme.color0F1015),
+            focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: AppTheme.colorC4C5CD),
+              borderRadius: BorderRadius.circular(0),
             ),
+            disabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: AppTheme.colorC4C5CD),
+              borderRadius: BorderRadius.circular(0),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: AppTheme.colorED3544),
+              borderRadius: BorderRadius.circular(0),
+            ),
+            contentPadding: const EdgeInsets.all(12.0),
+            isDense: true,
           ),
           controller: _emailController,
-          validator: (value) =>
-              validateEmail(value) ? null : 'Email is required',
+          validator: (value) => validateEmail(value) ? null : 'Invalid email',
         ),
         // SizedBox(
         //   height: 10,
@@ -646,22 +678,24 @@ class _AddressRadioListState extends State<AddressRadioList> {
 }
 
 class OrderDetailsExpansionTile extends StatefulWidget {
+  final BuildContext context;
+  final String currency;
+  final OrderDetail model;
+  final bool canAddCoupon;
+  final Coupon coupon;
+  final String couponCode;
+  final Function(String, Coupon) onAddCouponCode;
+
   const OrderDetailsExpansionTile({
     Key key,
     @required this.context,
     @required this.currency,
     @required this.model,
-    this.showCoupon = false,
+    this.canAddCoupon = false,
+    this.coupon,
     this.couponCode = '',
     this.onAddCouponCode,
   }) : super(key: key);
-
-  final BuildContext context;
-  final String currency;
-  final OrderDetail model;
-  final bool showCoupon;
-  final String couponCode;
-  final Function(String) onAddCouponCode;
 
   @override
   _OrderDetailsExpansionTileState createState() =>
@@ -670,18 +704,24 @@ class OrderDetailsExpansionTile extends StatefulWidget {
 
 class _OrderDetailsExpansionTileState extends State<OrderDetailsExpansionTile> {
   bool _isExpanded = true;
-  Coupon _coupon;
 
   String _total;
 
   @override
   void initState() {
     super.initState();
-    _total = '${widget.currency}${widget.model.totalStr}';
+    if (widget.coupon != null) {
+      var price =
+          ((widget.model.subtotal + widget.model.taxes - widget.coupon.amount) /
+                  100.0)
+              .toStringAsFixed(2);
+      _total = '${widget.currency}$price';
+    } else {
+      _total = '${widget.currency}${widget.model.totalStr}';
+    }
   }
 
   _updatePrice(Coupon coupon) {
-    _coupon = coupon;
     if (coupon == null) {
       setState(() {
         _total = '${widget.currency}${widget.model.totalStr}';
@@ -815,18 +855,22 @@ class _OrderDetailsExpansionTileState extends State<OrderDetailsExpansionTile> {
             leading: 'Taxes',
             trailing: '${widget.currency}${widget.model.taxesStr}',
           ),
-          if (widget.showCoupon)
+          if (widget.canAddCoupon ||
+              (widget.canAddCoupon == false && widget.coupon != null))
             OrderCouponTile(
               model: widget.model,
-              hasCoupon: _coupon != null,
+              hasCoupon: widget.coupon != null,
               couponCode: widget.couponCode,
-              couponValue: '-${widget.currency}${_coupon?.amountStr ?? ''}',
-              onAddCoupon: (code, coupon) {
-                _updatePrice(coupon);
-                if (widget.onAddCouponCode != null) {
-                  widget.onAddCouponCode(code);
-                }
-              },
+              couponValue:
+                  '-${widget.currency}${widget.coupon?.amountStr ?? ''}',
+              onAddCoupon: widget.canAddCoupon
+                  ? (code, coupon) {
+                      _updatePrice(coupon);
+                      if (widget.onAddCouponCode != null) {
+                        widget.onAddCouponCode(code, coupon);
+                      }
+                    }
+                  : null,
             ),
           Divider(),
           ListTile(
@@ -927,9 +971,11 @@ class _OrderCouponTileState extends State<OrderCouponTile> {
 
     final leading = widget.hasCoupon ? 'Coupon code' : 'I have a coupon code';
     final trailingWidget = InkWell(
-      onTap: () {
-        _showCouponInputDialog(context, widget.model);
-      },
+      onTap: widget.onAddCoupon != null
+          ? () {
+              _showCouponInputDialog(context, widget.model);
+            }
+          : null,
       child: Text(
         widget.hasCoupon ? widget.couponValue : '+ Add',
         style: TextStyle(
@@ -1031,7 +1077,7 @@ class _ViewModel {
   final Address billingDefaultAddress;
   final Config config;
   final Future<dynamic> Function() refreshData;
-  final Function(Address, Address, String, String) onTapPay;
+  final Function(Address, Address, String, String, Coupon) onTapPay;
 
   _ViewModel({
     this.isAnonymous,
@@ -1064,14 +1110,19 @@ class _ViewModel {
     }
 
     _onTapPay(Address shippingAddress, Address billingAddress, String email,
-        String code) {
+        String code, Coupon coupon) {
       EasyLoading.show();
       final completer = Completer();
       completer.future.then((value) {
         EasyLoading.dismiss();
         Keys.navigatorKey.currentState.pushNamed(Routes.payment,
             arguments: PaymentScreenParams(
-                shippingAddress, value['id'], value['number']));
+              shippingAddress,
+              value['id'],
+              value['number'],
+              coupon,
+              value['totalStr'],
+            ));
       }).catchError((error) {
         EasyLoading.dismiss();
         EasyLoading.showToast(error.toString());
