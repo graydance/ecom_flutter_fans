@@ -495,23 +495,40 @@ class _PreOrderScreenState extends State<PreOrderScreen> {
             fontWeight: FontWeight.w600,
           ),
         ),
+        SizedBox(
+          height: 8,
+        ),
         TextFormField(
+          autovalidateMode: AutovalidateMode.onUserInteraction,
           decoration: InputDecoration(
             hintText: 'Enter your email*',
-            hintStyle: TextStyle(fontSize: 12.0, color: AppTheme.colorC4C5CD),
-            border: UnderlineInputBorder(
+            hintStyle: TextStyle(fontSize: 14.0, color: AppTheme.colorC4C5CD),
+            labelStyle: TextStyle(fontSize: 14.0, color: AppTheme.color555764),
+            border: OutlineInputBorder(
               borderSide: BorderSide(color: AppTheme.colorC4C5CD),
+              borderRadius: BorderRadius.circular(0),
             ),
-            enabledBorder: UnderlineInputBorder(
+            enabledBorder: OutlineInputBorder(
               borderSide: BorderSide(color: AppTheme.colorC4C5CD),
+              borderRadius: BorderRadius.circular(0),
             ),
-            focusedBorder: UnderlineInputBorder(
-              borderSide: BorderSide(color: AppTheme.color0F1015),
+            focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: AppTheme.colorC4C5CD),
+              borderRadius: BorderRadius.circular(0),
             ),
+            disabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: AppTheme.colorC4C5CD),
+              borderRadius: BorderRadius.circular(0),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: AppTheme.colorED3544),
+              borderRadius: BorderRadius.circular(0),
+            ),
+            contentPadding: const EdgeInsets.all(12.0),
+            isDense: true,
           ),
           controller: _emailController,
-          validator: (value) =>
-              validateEmail(value) ? null : 'Email is required',
+          validator: (value) => validateEmail(value) ? null : 'Invalid email',
         ),
         // SizedBox(
         //   height: 10,
