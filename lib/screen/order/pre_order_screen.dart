@@ -168,7 +168,7 @@ class _PreOrderScreenState extends State<PreOrderScreen> {
         padding: const EdgeInsets.symmetric(
           vertical: 20,
         ),
-        child: _buildAddressForm(viewModel, true),
+        child: _buildAddressForm(viewModel, true, true),
       );
     }
 
@@ -281,7 +281,8 @@ class _PreOrderScreenState extends State<PreOrderScreen> {
               });
             },
           ),
-          if (_showShippingAddressForm) _buildAddressForm(viewModel, true),
+          if (_showShippingAddressForm)
+            _buildAddressForm(viewModel, true, false),
         ],
       ),
     );
@@ -327,7 +328,7 @@ class _PreOrderScreenState extends State<PreOrderScreen> {
         padding: const EdgeInsets.symmetric(vertical: 20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [_titleView, _buildAddressForm(viewModel, false)],
+          children: [_titleView, _buildAddressForm(viewModel, false, false)],
         ),
       );
     }
@@ -351,7 +352,8 @@ class _PreOrderScreenState extends State<PreOrderScreen> {
               });
             },
           ),
-          if (_showBillingAddressForm) _buildAddressForm(viewModel, false),
+          if (_showBillingAddressForm)
+            _buildAddressForm(viewModel, false, true),
         ],
       ),
     );
@@ -449,21 +451,22 @@ class _PreOrderScreenState extends State<PreOrderScreen> {
     );
   }
 
-  _buildAddressForm(_ViewModel viewModel, bool isAddShipping) {
+  _buildAddressForm(_ViewModel viewModel, bool isAddShipping, bool showTitle) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SizedBox(
           height: 8,
         ),
-        Text(
-          isAddShipping ? 'Shipping Address' : 'Billing Address',
-          style: TextStyle(
-            fontSize: 16,
-            color: AppTheme.color0F1015,
-            fontWeight: FontWeight.w600,
+        if (showTitle)
+          Text(
+            isAddShipping ? 'Shipping Address' : 'Billing Address',
+            style: TextStyle(
+              fontSize: 16,
+              color: AppTheme.color0F1015,
+              fontWeight: FontWeight.w600,
+            ),
           ),
-        ),
         AddressForm(
             isEditShipping: isAddShipping,
             countries: viewModel.config.country,
