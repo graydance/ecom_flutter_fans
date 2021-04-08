@@ -886,6 +886,7 @@ class _OrderDetailsExpansionTileState extends State<OrderDetailsExpansionTile> {
             ),
           Divider(),
           ListTile(
+            contentPadding: EdgeInsets.zero,
             title: Text(
               'Total:',
               style: TextStyle(
