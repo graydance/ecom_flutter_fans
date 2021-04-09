@@ -35,6 +35,7 @@ class _PreOrderScreenState extends State<PreOrderScreen> {
   Address _billingAddress = Address();
   bool _useShippingAddress = false;
   String _couponCode = '';
+  Coupon _coupon;
 
   final _emailController = TextEditingController();
   final _scrollController = ScrollController();
@@ -97,49 +98,62 @@ class _PreOrderScreenState extends State<PreOrderScreen> {
                     currency: viewModel.currency,
                     context: context,
                     model: viewModel.orderDetail,
-                    showCoupon: true,
+                    canAddCoupon: true,
+                    coupon: _coupon,
                     couponCode: _couponCode ?? '',
-                    onAddCouponCode: (value) => _couponCode = value,
+                    onAddCouponCode: (code, coupon) {
+                      setState(() {
+                        _couponCode = code;
+                        _coupon = coupon;
+                      });
+                    },
                   ),
                   if (viewModel.isAnonymous) _buildEmail(),
                   _buildAddressList(viewModel),
+                  Container(
+                    padding: EdgeInsets.only(
+                        top: 20,
+                        bottom: MediaQuery.of(context).padding.bottom + 20),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: FansButton(
+                        onPressed: _shippingAddress.id.isNotEmpty &&
+                                _billingAddress.id.isNotEmpty
+                            ? () {
+                                if (!viewModel.orderDetail.canOrder) {
+                                  ScaffoldMessenger.of(context)
+                                      .showSnackBar(SnackBar(
+                                    content: const Text('Out of stock'),
+                                    duration: const Duration(seconds: 2),
+                                  ));
+                                  return;
+                                }
+                                if (viewModel.isAnonymous &&
+                                    !validateEmail(_emailController.text)) {
+                                  ScaffoldMessenger.of(context)
+                                      .showSnackBar(SnackBar(
+                                    content: const Text('The email is invalid'),
+                                    duration: const Duration(seconds: 2),
+                                  ));
+                                  return;
+                                }
+
+                                viewModel.onTapPay(
+                                    _shippingAddress,
+                                    _billingAddress,
+                                    _emailController.text ?? '',
+                                    _couponCode ?? '',
+                                    _coupon);
+                              }
+                            : null,
+                        title: 'Continue to payment',
+                        isDisable: _shippingAddress.id.isEmpty ||
+                            _billingAddress.id.isEmpty,
+                      ),
+                    ),
+                  ),
                 ],
               ),
-            ),
-          ),
-        ),
-        bottomNavigationBar: Container(
-          padding:
-              EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: FansButton(
-              onPressed: _shippingAddress.id.isNotEmpty &&
-                      _billingAddress.id.isNotEmpty
-                  ? () {
-                      if (!viewModel.orderDetail.canOrder) {
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          content: const Text('Out of stock'),
-                          duration: const Duration(seconds: 2),
-                        ));
-                        return;
-                      }
-                      if (viewModel.isAnonymous &&
-                          !validateEmail(_emailController.text)) {
-                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                          content: const Text('The email is invalid'),
-                          duration: const Duration(seconds: 2),
-                        ));
-                        return;
-                      }
-
-                      viewModel.onTapPay(_shippingAddress, _billingAddress,
-                          _emailController.text ?? '', _couponCode ?? '');
-                    }
-                  : null,
-              title: 'Continue to payment',
-              isDisable:
-                  _shippingAddress.id.isEmpty || _billingAddress.id.isEmpty,
             ),
           ),
         ),
@@ -154,7 +168,7 @@ class _PreOrderScreenState extends State<PreOrderScreen> {
         padding: const EdgeInsets.symmetric(
           vertical: 20,
         ),
-        child: _buildAddressForm(viewModel, true),
+        child: _buildAddressForm(viewModel, true, true),
       );
     }
 
@@ -267,7 +281,8 @@ class _PreOrderScreenState extends State<PreOrderScreen> {
               });
             },
           ),
-          if (_showShippingAddressForm) _buildAddressForm(viewModel, true),
+          if (_showShippingAddressForm)
+            _buildAddressForm(viewModel, true, false),
         ],
       ),
     );
@@ -313,7 +328,7 @@ class _PreOrderScreenState extends State<PreOrderScreen> {
         padding: const EdgeInsets.symmetric(vertical: 20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [_titleView, _buildAddressForm(viewModel, false)],
+          children: [_titleView, _buildAddressForm(viewModel, false, false)],
         ),
       );
     }
@@ -337,7 +352,8 @@ class _PreOrderScreenState extends State<PreOrderScreen> {
               });
             },
           ),
-          if (_showBillingAddressForm) _buildAddressForm(viewModel, false),
+          if (_showBillingAddressForm)
+            _buildAddressForm(viewModel, false, true),
         ],
       ),
     );
@@ -435,20 +451,22 @@ class _PreOrderScreenState extends State<PreOrderScreen> {
     );
   }
 
-  _buildAddressForm(_ViewModel viewModel, bool isAddShipping) {
+  _buildAddressForm(_ViewModel viewModel, bool isAddShipping, bool showTitle) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         SizedBox(
           height: 8,
         ),
-        Text(
-          'Add Address',
-          style: TextStyle(
-            fontSize: 14,
-            color: AppTheme.color0F1015,
+        if (showTitle)
+          Text(
+            isAddShipping ? 'Shipping Address' : 'Billing Address',
+            style: TextStyle(
+              fontSize: 16,
+              color: AppTheme.color0F1015,
+              fontWeight: FontWeight.w600,
+            ),
           ),
-        ),
         AddressForm(
             isEditShipping: isAddShipping,
             countries: viewModel.config.country,
@@ -480,23 +498,40 @@ class _PreOrderScreenState extends State<PreOrderScreen> {
             fontWeight: FontWeight.w600,
           ),
         ),
+        SizedBox(
+          height: 8,
+        ),
         TextFormField(
+          autovalidateMode: AutovalidateMode.onUserInteraction,
           decoration: InputDecoration(
             hintText: 'Enter your email*',
-            hintStyle: TextStyle(fontSize: 12.0, color: AppTheme.colorC4C5CD),
-            border: UnderlineInputBorder(
+            hintStyle: TextStyle(fontSize: 14.0, color: AppTheme.colorC4C5CD),
+            labelStyle: TextStyle(fontSize: 14.0, color: AppTheme.color555764),
+            border: OutlineInputBorder(
               borderSide: BorderSide(color: AppTheme.colorC4C5CD),
+              borderRadius: BorderRadius.circular(0),
             ),
-            enabledBorder: UnderlineInputBorder(
+            enabledBorder: OutlineInputBorder(
               borderSide: BorderSide(color: AppTheme.colorC4C5CD),
+              borderRadius: BorderRadius.circular(0),
             ),
-            focusedBorder: UnderlineInputBorder(
-              borderSide: BorderSide(color: AppTheme.color0F1015),
+            focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: AppTheme.colorC4C5CD),
+              borderRadius: BorderRadius.circular(0),
             ),
+            disabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: AppTheme.colorC4C5CD),
+              borderRadius: BorderRadius.circular(0),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: AppTheme.colorED3544),
+              borderRadius: BorderRadius.circular(0),
+            ),
+            contentPadding: const EdgeInsets.all(12.0),
+            isDense: true,
           ),
           controller: _emailController,
-          validator: (value) =>
-              validateEmail(value) ? null : 'Email is required',
+          validator: (value) => validateEmail(value) ? null : 'Invalid email',
         ),
         // SizedBox(
         //   height: 10,
@@ -646,22 +681,24 @@ class _AddressRadioListState extends State<AddressRadioList> {
 }
 
 class OrderDetailsExpansionTile extends StatefulWidget {
+  final BuildContext context;
+  final String currency;
+  final OrderDetail model;
+  final bool canAddCoupon;
+  final Coupon coupon;
+  final String couponCode;
+  final Function(String, Coupon) onAddCouponCode;
+
   const OrderDetailsExpansionTile({
     Key key,
     @required this.context,
     @required this.currency,
     @required this.model,
-    this.showCoupon = false,
+    this.canAddCoupon = false,
+    this.coupon,
     this.couponCode = '',
     this.onAddCouponCode,
   }) : super(key: key);
-
-  final BuildContext context;
-  final String currency;
-  final OrderDetail model;
-  final bool showCoupon;
-  final String couponCode;
-  final Function(String) onAddCouponCode;
 
   @override
   _OrderDetailsExpansionTileState createState() =>
@@ -670,18 +707,24 @@ class OrderDetailsExpansionTile extends StatefulWidget {
 
 class _OrderDetailsExpansionTileState extends State<OrderDetailsExpansionTile> {
   bool _isExpanded = true;
-  Coupon _coupon;
 
   String _total;
 
   @override
   void initState() {
     super.initState();
-    _total = '${widget.currency}${widget.model.totalStr}';
+    if (widget.coupon != null) {
+      var price =
+          ((widget.model.subtotal + widget.model.taxes - widget.coupon.amount) /
+                  100.0)
+              .toStringAsFixed(2);
+      _total = '${widget.currency}$price';
+    } else {
+      _total = '${widget.currency}${widget.model.totalStr}';
+    }
   }
 
   _updatePrice(Coupon coupon) {
-    _coupon = coupon;
     if (coupon == null) {
       setState(() {
         _total = '${widget.currency}${widget.model.totalStr}';
@@ -748,7 +791,7 @@ class _OrderDetailsExpansionTileState extends State<OrderDetailsExpansionTile> {
             itemBuilder: (ctx, i) {
               final item = widget.model.list[i];
               return Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SizedBox(
                     height: 110,
@@ -769,6 +812,9 @@ class _OrderDetailsExpansionTileState extends State<OrderDetailsExpansionTile> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        SizedBox(
+                          height: 8,
+                        ),
                         Text(
                           item.goodsName,
                           maxLines: 3,
@@ -778,6 +824,9 @@ class _OrderDetailsExpansionTileState extends State<OrderDetailsExpansionTile> {
                             fontSize: 14,
                           ),
                         ),
+                        SizedBox(
+                          height: 6,
+                        ),
                         Text(
                           '${widget.currency}${item.currentPriceStr}',
                           style: TextStyle(
@@ -785,6 +834,9 @@ class _OrderDetailsExpansionTileState extends State<OrderDetailsExpansionTile> {
                             fontWeight: FontWeight.w600,
                             fontSize: 14,
                           ),
+                        ),
+                        SizedBox(
+                          height: 6,
                         ),
                         Text(
                           'Quantity:${item.number}',
@@ -815,21 +867,26 @@ class _OrderDetailsExpansionTileState extends State<OrderDetailsExpansionTile> {
             leading: 'Taxes',
             trailing: '${widget.currency}${widget.model.taxesStr}',
           ),
-          if (widget.showCoupon)
+          if (widget.canAddCoupon ||
+              (widget.canAddCoupon == false && widget.coupon != null))
             OrderCouponTile(
               model: widget.model,
-              hasCoupon: _coupon != null,
+              hasCoupon: widget.coupon != null,
               couponCode: widget.couponCode,
-              couponValue: '-${widget.currency}${_coupon?.amountStr ?? ''}',
-              onAddCoupon: (code, coupon) {
-                _updatePrice(coupon);
-                if (widget.onAddCouponCode != null) {
-                  widget.onAddCouponCode(code);
-                }
-              },
+              couponValue:
+                  '-${widget.currency}${widget.coupon?.amountStr ?? ''}',
+              onAddCoupon: widget.canAddCoupon
+                  ? (code, coupon) {
+                      _updatePrice(coupon);
+                      if (widget.onAddCouponCode != null) {
+                        widget.onAddCouponCode(code, coupon);
+                      }
+                    }
+                  : null,
             ),
           Divider(),
           ListTile(
+            contentPadding: EdgeInsets.zero,
             title: Text(
               'Total:',
               style: TextStyle(
@@ -927,9 +984,11 @@ class _OrderCouponTileState extends State<OrderCouponTile> {
 
     final leading = widget.hasCoupon ? 'Coupon code' : 'I have a coupon code';
     final trailingWidget = InkWell(
-      onTap: () {
-        _showCouponInputDialog(context, widget.model);
-      },
+      onTap: widget.onAddCoupon != null
+          ? () {
+              _showCouponInputDialog(context, widget.model);
+            }
+          : null,
       child: Text(
         widget.hasCoupon ? widget.couponValue : '+ Add',
         style: TextStyle(
@@ -953,60 +1012,110 @@ class _OrderCouponTileState extends State<OrderCouponTile> {
   }
 
   Future _showCouponInputDialog(BuildContext context, OrderDetail model) async {
-    return showCupertinoDialog(
+    return showDialog(
         context: context,
         builder: (ctx) {
-          return CupertinoAlertDialog(
-            title: Text('Coupon Code'),
-            content: TextField(
-              controller: _textFieldController,
-              decoration: InputDecoration(
-                hintText: "Enter your coupon code",
-                hintStyle:
-                    TextStyle(fontSize: 14.0, color: AppTheme.colorC4C5CD),
-                border: UnderlineInputBorder(
-                  borderSide: BorderSide(color: AppTheme.colorC4C5CD),
-                ),
-                enabledBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: AppTheme.colorC4C5CD),
-                ),
-                focusedBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: AppTheme.color0F1015),
-                ),
-              ),
+          return AlertDialog(
+            contentPadding: EdgeInsets.only(left: 20, right: 20, bottom: 20),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(16.0)),
             ),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                style: TextButton.styleFrom(
-                  minimumSize: Size(44, 44),
+            content: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Container(
+                    alignment: Alignment.topRight,
+                    padding: EdgeInsets.only(top: 12),
+                    child: Icon(
+                      Icons.clear,
+                      color: Color(0xFFC4C5CD),
+                      size: 16,
+                    ),
+                  ),
                 ),
-                child: Text(
-                  'Cancel',
+                Text(
+                  'Coupon Code',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: AppTheme.color0F1015,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
-              ),
-              TextButton(
-                onPressed: () {
-                  _checkCoupon(model.subtotal + model.taxes);
-                  Navigator.pop(context);
-                },
-                style: TextButton.styleFrom(
-                  minimumSize: Size(44, 44),
+                SizedBox(
+                  height: 16,
                 ),
-                child: Text(
-                  'Apply',
-                  style: TextStyle(fontWeight: FontWeight.w600),
+                TextFormField(
+                  controller: _textFieldController,
+                  style: TextStyle(
+                    fontSize: 16.0,
+                    color: AppTheme.color0F1015,
+                    fontWeight: FontWeight.normal,
+                  ),
+                  decoration: InputDecoration(
+                    filled: true,
+                    fillColor: AppTheme.colorEDEEF0,
+                    hintText: "Enter your coupon code",
+                    hintStyle: TextStyle(
+                      fontSize: 14.0,
+                      color: AppTheme.colorC4C5CD,
+                      fontWeight: FontWeight.normal,
+                    ),
+                    contentPadding: EdgeInsets.all(8),
+                    isDense: true,
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.transparent),
+                      // borderSide: BorderSide(color: AppTheme.colorC4C5CD),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      // borderSide: BorderSide(color: AppTheme.colorC4C5CD),
+                      borderSide: BorderSide(color: Colors.transparent),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Colors.transparent),
+                    ),
+                    suffixIcon: IconButton(
+                      onPressed: _textFieldController.clear,
+                      icon: Icon(
+                        Icons.clear,
+                        color: AppTheme.colorC4C5CD,
+                        size: 15,
+                      ),
+                    ),
+                  ),
+                  validator: (value) =>
+                      value.trim().isEmpty ? 'Coupon code is required' : null,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
                 ),
-              ),
-            ],
+                SizedBox(
+                  height: 16,
+                ),
+                Container(
+                  margin: EdgeInsets.symmetric(horizontal: 20),
+                  child: FansButton(
+                    title: "Apply",
+                    onPressed: () {
+                      if (_checkCoupon(model.subtotal + model.taxes)) {
+                        Navigator.pop(context);
+                      }
+                    },
+                  ),
+                ),
+              ],
+            ),
           );
         });
   }
 
-  _checkCoupon(int total) {
+  bool _checkCoupon(int total) {
     final code = _textFieldController.text;
+    if (code.trim().isEmpty) return false;
+
     EasyLoading.show();
     final completer = Completer();
     completer.future.then((value) {
@@ -1020,6 +1129,7 @@ class _OrderCouponTileState extends State<OrderCouponTile> {
     });
     StoreProvider.of<AppState>(context)
         .dispatch(CheckCouponAction(code, total, completer));
+    return true;
   }
 }
 
@@ -1031,7 +1141,7 @@ class _ViewModel {
   final Address billingDefaultAddress;
   final Config config;
   final Future<dynamic> Function() refreshData;
-  final Function(Address, Address, String, String) onTapPay;
+  final Function(Address, Address, String, String, Coupon) onTapPay;
 
   _ViewModel({
     this.isAnonymous,
@@ -1064,14 +1174,19 @@ class _ViewModel {
     }
 
     _onTapPay(Address shippingAddress, Address billingAddress, String email,
-        String code) {
+        String code, Coupon coupon) {
       EasyLoading.show();
       final completer = Completer();
       completer.future.then((value) {
         EasyLoading.dismiss();
         Keys.navigatorKey.currentState.pushNamed(Routes.payment,
             arguments: PaymentScreenParams(
-                shippingAddress, value['id'], value['number']));
+              shippingAddress,
+              value['id'],
+              value['number'],
+              coupon,
+              value['totalStr'],
+            ));
       }).catchError((error) {
         EasyLoading.dismiss();
         EasyLoading.showToast(error.toString());
