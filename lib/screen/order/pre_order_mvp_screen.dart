@@ -177,8 +177,8 @@ class _PreOrderMVPScreenState extends State<PreOrderMVPScreen> {
         TextFormField(
           autovalidateMode: AutovalidateMode.onUserInteraction,
           decoration: InputDecoration(
-            hintText: 'Enter your email*',
-            hintStyle: TextStyle(fontSize: 14.0, color: AppTheme.colorC4C5CD),
+            hintText: 'Enter your email',
+            hintStyle: TextStyle(fontSize: 14.0, color: AppTheme.color979AA9),
             labelStyle: TextStyle(fontSize: 14.0, color: AppTheme.color555764),
             border: OutlineInputBorder(
               borderSide: BorderSide(color: AppTheme.colorC4C5CD),
