@@ -576,7 +576,7 @@ class _ViewModel {
       completer.future.then((value) {
         EasyLoading.dismiss();
         Keys.navigatorKey.currentState
-            .pushNamed(Routes.preOrder, arguments: value);
+            .pushNamed(Routes.preOrderMVP, arguments: value);
       }).catchError((error) {
         EasyLoading.dismiss();
         EasyLoading.showToast(error.toString());
