@@ -13,6 +13,8 @@ jobs:
       ECOM_PROD: "fans"
       ECOM_ENV: "production"
       VERSION_KEY: ${{ secrets.VERSION_KEY }}
+      PUB_HOSTED_URL: "https://pub.flutter-io.cn"
+      FLUTTER_STORAGE_BASE_URL: "https://storage.flutter-io.cn"
     steps:
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@master
