@@ -15,3 +15,4 @@ export './coupon.dart';
 export './coupon_info.dart';
 export './config.dart';
 export './country.dart';
+export './address.dart';

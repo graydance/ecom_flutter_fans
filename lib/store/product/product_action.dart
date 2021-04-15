@@ -151,6 +151,37 @@ class OrderAction {
       this.email, this.code, this.completer);
 }
 
+class PreOrderNewAction {
+  final List<OrderParameter> buyGoods;
+  final Address shippingAddress;
+  final Address billingAddress;
+  final String email;
+  final bool isSame;
+  final String code;
+  final Completer completer;
+
+  PreOrderNewAction(this.buyGoods, this.shippingAddress, this.billingAddress,
+      this.email, this.isSame, this.code, this.completer);
+}
+
+class EditAddressAction {
+  final bool isEditShippingAddress;
+  final Address address;
+  final Completer completer;
+
+  EditAddressAction(this.isEditShippingAddress, this.address, this.completer);
+}
+
+class OnUpdateOrderDetailAddress {
+  final bool isShippingAddress;
+  final Address address;
+
+  OnUpdateOrderDetailAddress({
+    this.isShippingAddress,
+    this.address,
+  });
+}
+
 class PayAction {
   final String orderId;
   final String payName;

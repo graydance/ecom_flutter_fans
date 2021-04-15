@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fans/models/coupon_info.dart';
+import 'package:fans/models/tag.dart';
 import 'package:fans/screen/components/alert_view.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -467,9 +468,10 @@ class _Tile extends StatelessWidget {
                     SizedBox(
                       height: 8,
                     ),
+
                   Wrap(
-                    spacing: 2,
-                    runSpacing: 2,
+                    spacing: -2,
+                    runSpacing: -2,
                     children: model.tag
                         .map(
                           (e) => TagView(

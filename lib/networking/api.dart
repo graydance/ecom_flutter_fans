@@ -1,3 +1,4 @@
+import 'package:fans/models/address.dart';
 import 'package:flutter/material.dart';
 
 import 'package:fans/models/models.dart';
@@ -230,6 +231,55 @@ class AddAddressAPI extends API {
   String get path => '/user/address/add';
 }
 
+class EditAddressAPI extends API {
+  final String id;
+  final String firstName;
+  final String lastName;
+  final String addressLine1;
+  final String addressLine2;
+  final String zipCode;
+  final String city;
+  final String province;
+  final String country;
+  final String phoneNumber;
+  final bool isDefault;
+  final bool isBillDefault;
+
+  EditAddressAPI({
+    this.id,
+    this.firstName,
+    this.lastName,
+    this.addressLine1,
+    this.addressLine2,
+    this.zipCode,
+    this.city,
+    this.province,
+    this.country,
+    this.phoneNumber,
+    this.isDefault,
+    this.isBillDefault,
+  });
+
+  @override
+  Map<String, dynamic> get parameters => {
+        'addressId': id,
+        'firstName': firstName,
+        'lastName': lastName,
+        'addressLine1': addressLine1,
+        'addressLine2': addressLine2,
+        'zipCode': zipCode,
+        'city': city,
+        'province': province,
+        'country': country,
+        'phoneNumber': phoneNumber,
+        'isDefault': isDefault ? 1 : 0,
+        'isBillDefault': isBillDefault ? 1 : 0,
+      };
+
+  @override
+  String get path => '/user/address/edit';
+}
+
 class PreOrderAPI extends API {
   final List<OrderParameter> buyGoods;
   final String addressId;
@@ -267,6 +317,37 @@ class OrderAPI extends API {
 
   @override
   String get path => '/user/good/order';
+}
+
+class PreOrderNewAPI extends API {
+  final List<OrderParameter> buyGoods;
+  final Address address;
+  final Address billAddress;
+  final String email;
+  final bool isSame;
+  final String code;
+
+  PreOrderNewAPI({
+    @required this.buyGoods,
+    @required this.address,
+    @required this.billAddress,
+    @required this.email,
+    @required this.isSame,
+    this.code,
+  });
+
+  @override
+  Map<String, dynamic> get parameters => {
+        'buyGoods': buyGoods.map((e) => e.toMap()).toList(),
+        'address': address.toMap(),
+        'billAddress': billAddress.toMap(),
+        'email': email,
+        'isSame': isSame ?? true,
+        'code': code ?? '',
+      };
+
+  @override
+  String get path => '/user/good/order_pre_new';
 }
 
 class PayAPI extends API {
