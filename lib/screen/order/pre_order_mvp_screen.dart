@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:fans/screen/components/order_status_image_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -71,6 +72,14 @@ class _PreOrderMVPScreenState extends State<PreOrderMVPScreen> {
                         _coupon = coupon;
                       });
                     },
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Center(
+                    child: OrderStatusImageView(
+                      status: OrderStatus.shipping,
+                    ),
                   ),
                   if (viewModel.isAnonymous) _buildEmail(),
                   _buildAddressList(viewModel),
@@ -150,6 +159,16 @@ class _PreOrderMVPScreenState extends State<PreOrderMVPScreen> {
             fontSize: 16,
             color: AppTheme.color0F1015,
             fontWeight: FontWeight.w600,
+          ),
+        ),
+        SizedBox(
+          height: 8,
+        ),
+        Text(
+          'Please enter your email address to reveive order information.',
+          style: TextStyle(
+            fontSize: 14,
+            color: AppTheme.color0F1015,
           ),
         ),
         SizedBox(
