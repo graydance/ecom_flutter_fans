@@ -29,6 +29,7 @@ List<Middleware<AppState>> createStoreMiddleware() {
   final fetchGoods = _createFetchGoods();
   final fetchProductDetail = _createProductDetail();
   final preOrder = _createPreOrder();
+  final preOrderNew = _createPreOrderNew();
   final order = _createOrder();
   final payment = _createPayment();
   final addCart = _createAddCart();
@@ -44,6 +45,7 @@ List<Middleware<AppState>> createStoreMiddleware() {
   final checkCoupon = _createCheckCoupon();
   final showCoupon = _createShowCoupon();
   final fetchConfig = _createFetchConfig();
+  final updateAddress = _createUpdateAddress();
 
   return [
     TypedMiddleware<AppState, VerifyAuthenticationState>(verifyAuthState),
@@ -61,6 +63,7 @@ List<Middleware<AppState>> createStoreMiddleware() {
     TypedMiddleware<AppState, FetchProductDetailAction>(fetchProductDetail),
     TypedMiddleware<AppState, PreOrderAction>(preOrder),
     TypedMiddleware<AppState, OrderAction>(order),
+    TypedMiddleware<AppState, PreOrderNewAction>(preOrderNew),
     TypedMiddleware<AppState, PayAction>(payment),
     TypedMiddleware<AppState, AddCartAction>(addCart),
     TypedMiddleware<AppState, FetchCartListAction>(fetchCartList),
@@ -75,6 +78,7 @@ List<Middleware<AppState>> createStoreMiddleware() {
     TypedMiddleware<AppState, CheckCouponAction>(checkCoupon),
     TypedMiddleware<AppState, ShowCouponAction>(showCoupon),
     TypedMiddleware<AppState, FetchConfigAction>(fetchConfig),
+    TypedMiddleware<AppState, EditAddressAction>(updateAddress),
   ];
 }
 
@@ -88,7 +92,7 @@ Middleware<AppState> _verifyAuthState() {
         if (kIsWeb) {
         } else {
           Keys.navigatorKey.currentState
-              .pushReplacementNamed(Routes.shop + '/liuchen');
+              .pushReplacementNamed(Routes.shop + '/username1');
         }
       } else {
         store.dispatch(LocalUpdateUserAction(User()));
@@ -96,7 +100,7 @@ Middleware<AppState> _verifyAuthState() {
         if (kIsWeb) {
         } else {
           Keys.navigatorKey.currentState
-              .pushReplacementNamed(Routes.shop + '/liuchen');
+              .pushReplacementNamed(Routes.shop + '/username1');
         }
       }
     });
@@ -408,6 +412,32 @@ Middleware<AppState> _createOrder() {
   };
 }
 
+Middleware<AppState> _createPreOrderNew() {
+  return (Store<AppState> store, action, NextDispatcher next) {
+    if (action is PreOrderNewAction) {
+      Networking.request(PreOrderNewAPI(
+        buyGoods: action.buyGoods,
+        address: action.shippingAddress,
+        billAddress: action.billingAddress,
+        email: action.email,
+        isSame: action.isSame,
+        code: action.code,
+      )).then(
+        (data) {
+          var response = data['data'];
+          final model = OrderDetail.fromMap(response);
+          action.completer.complete(model);
+          store.dispatch(PreOrderSuccessAction(orderDetail: model));
+        },
+      ).catchError((err) {
+        action.completer.completeError(err.toString());
+        _handleUnauthorisedException(store, err, action);
+      });
+    }
+    next(action);
+  };
+}
+
 Middleware<AppState> _createPayment() {
   return (Store<AppState> store, action, NextDispatcher next) {
     if (action is PayAction) {
@@ -673,6 +703,39 @@ Middleware<AppState> _createFetchConfig() {
           store.dispatch(OnUpdateConfigAction(config));
         },
       ).catchError((err) {});
+    }
+    next(action);
+  };
+}
+
+Middleware<AppState> _createUpdateAddress() {
+  return (Store<AppState> store, action, NextDispatcher next) {
+    if (action is EditAddressAction) {
+      final address = action.address;
+      Networking.request(EditAddressAPI(
+        id: address.id,
+        firstName: address.firstName,
+        lastName: address.lastName,
+        addressLine1: address.addressLine1,
+        addressLine2: address.addressLine2,
+        city: address.city,
+        country: address.country,
+        province: address.province,
+        zipCode: address.zipCode,
+        phoneNumber: address.phoneNumber,
+        isDefault: address.isDefault == 1 ? true : false,
+        isBillDefault: address.isBillDefault == 1 ? true : false,
+      )).then(
+        (data) {
+          action.completer.complete();
+          store.dispatch(OnUpdateOrderDetailAddress(
+            isShippingAddress: action.isEditShippingAddress,
+            address: action.address,
+          ));
+        },
+      ).catchError((err) {
+        action.completer.completeError(err.toString());
+      });
     }
     next(action);
   };

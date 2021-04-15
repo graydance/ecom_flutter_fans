@@ -78,7 +78,7 @@ class _ReduxAppState extends State<ReduxApp> {
             Routes.shopDetail: (context) => ShopDetailScreen(),
             Routes.productDetail: (context) => ProductDetailScreen(),
             Routes.cart: (context) => CartScreen(),
-            Routes.preOrder: (context) => PreOrderScreen(),
+            // Routes.preOrder: (context) => PreOrderScreen(),
             Routes.payment: (context) => PaymentScreen(),
             Routes.paymentSuccess: (context) => PaymentSuccessScreen(),
             Routes.shop: (context) => ShopScreen(
@@ -86,6 +86,7 @@ class _ReduxAppState extends State<ReduxApp> {
                 ),
             Routes.signin: (context) => SignInScreen(),
             Routes.paypalResult: (context) => PaymentResultScreen(),
+            Routes.preOrderMVP: (context) => PreOrderMVPScreen(),
           },
           builder: EasyLoading.init(),
           onGenerateRoute: RouteConfiguration.onGenerateRoute,
@@ -110,7 +111,7 @@ class Routes {
   static final shop = '/shop';
   static final productDetail = '/product_detail';
   static final cart = '/cart';
-  static final preOrder = '/preorder';
+  // static final preOrder = '/preorder';
   static final payment = '/payment';
   static final paymentSuccess = '/payment_success';
   static final shopDetail = '/shop_detail';
@@ -118,6 +119,7 @@ class Routes {
   static final paypalPayment = '/paypal_payment';
   static final paypalResult = '/paypal_result';
   static final paypalCancel = '/paypal_cancel';
+  static final preOrderMVP = '/preorder_mvp';
 }
 
 class Path {

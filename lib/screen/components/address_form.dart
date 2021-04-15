@@ -9,38 +9,114 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_picker/flutter_picker.dart';
 import 'package:intl_phone_number_input/intl_phone_number_input.dart';
 
+class AddressFormController {
+  Address Function() getAddress;
+}
+
 class AddressForm extends StatefulWidget {
   final bool isEditShipping;
   final List<Country> countries;
   final VoidCallback onAdded;
+  final AddressFormController controller;
+  final Address address;
+
   AddressForm({
     Key key,
-    @required this.isEditShipping,
     @required this.countries,
+    isEditShipping,
     this.onAdded,
-  }) : super(key: key);
+    this.controller,
+    this.address,
+  }) : this.isEditShipping = isEditShipping ?? false;
 
   @override
-  _AddressFormState createState() => _AddressFormState();
+  _AddressFormState createState() => _AddressFormState(controller);
 }
 
 class _AddressFormState extends State<AddressForm> {
+  _AddressFormState(AddressFormController _controller) {
+    _controller.getAddress = _getAddress;
+  }
+
   final _formKey = GlobalKey<FormState>();
-  final _firstNameController = TextEditingController();
-  final _lastNameController = TextEditingController();
-  final _addressLine1Controller = TextEditingController();
-  final _addressLine2Controller = TextEditingController();
-  final _zipCodeController = TextEditingController();
-  final _cityController = TextEditingController();
-  final _provinceController = TextEditingController();
-  final _countryController = TextEditingController();
-  final _phoneNumberController = TextEditingController();
+  TextEditingController _firstNameController;
+  TextEditingController _lastNameController;
+  TextEditingController _addressLine1Controller;
+  TextEditingController _addressLine2Controller;
+  TextEditingController _zipCodeController;
+  TextEditingController _cityController;
+  TextEditingController _provinceController;
+  TextEditingController _countryController;
+  TextEditingController _phoneNumberController;
 
   bool _loading = false;
   Country _selectedCountry = Country();
   String _selectedState = '';
   List<String> _states = [];
-  String _phoneNumber = '';
+  String _phoneCode = '+1';
+  String _phoneCountryCode = 'US';
+
+  Address _getAddress() {
+    if (_formKey.currentState.validate())
+      return Address(
+        id: widget.address?.id ?? '',
+        firstName: _firstNameController.text,
+        lastName: _lastNameController.text ?? '',
+        addressLine1: _addressLine1Controller.text,
+        addressLine2: _addressLine2Controller.text ?? '',
+        zipCode: _zipCodeController.text,
+        city: _cityController.text,
+        province: _provinceController.text,
+        country: _countryController.text,
+        phoneNumber: _phoneCode + ' ' + _phoneNumberController.text,
+      );
+    return null;
+  }
+
+  @override
+  void initState() {
+    _firstNameController =
+        TextEditingController(text: widget.address?.firstName);
+    _lastNameController = TextEditingController(text: widget.address?.lastName);
+    _addressLine1Controller =
+        TextEditingController(text: widget.address?.addressLine1);
+    _addressLine2Controller =
+        TextEditingController(text: widget.address?.addressLine2);
+    _zipCodeController = TextEditingController(text: widget.address?.zipCode);
+    _cityController = TextEditingController(text: widget.address?.city);
+    _provinceController = TextEditingController(text: widget.address?.province);
+    _countryController = TextEditingController(text: widget.address?.country);
+    _phoneNumberController =
+        TextEditingController(text: widget.address?.phoneNumber);
+
+    super.initState();
+
+    if (widget.address != null) {
+      List<String> splitPhoneNumbers = widget.address.phoneNumber.split(' ');
+      if (splitPhoneNumbers.length == 2) {
+        _phoneCode = splitPhoneNumbers[0] ?? '';
+        _phoneNumberController =
+            TextEditingController(text: splitPhoneNumbers[1]);
+        _phoneCountryCode = widget.countries
+                .firstWhere((element) => element.phoneCode == _phoneCode)
+                .countryCode ??
+            'US';
+      }
+
+      _selectedCountry = widget.countries.firstWhere(
+          (element) => element.countryName == widget.address.country);
+      if (_selectedCountry != null) {
+        Networking.request(ProvinceAPI(_selectedCountry.countryCode))
+            .then((data) {
+          setState(() {
+            _states = List<String>.from(data['data']);
+            _selectedState = _states
+                .firstWhere((element) => element == widget.address.province);
+          });
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -202,13 +278,10 @@ class _AddressFormState extends State<AddressForm> {
           InternationalPhoneNumberInput(
             autoValidateMode: AutovalidateMode.onUserInteraction,
             onInputChanged: (PhoneNumber value) {
-              _phoneNumber = value.dialCode + ' ' + value.parseNumber();
-              print(_phoneNumber);
+              _phoneCode = value.dialCode;
+              print(_phoneCode);
             },
-            initialValue: PhoneNumber(
-                isoCode: _selectedCountry.countryCode.isNotEmpty
-                    ? _selectedCountry.countryCode
-                    : 'US'),
+            initialValue: PhoneNumber(isoCode: _phoneCountryCode),
             selectorConfig: SelectorConfig(
               showFlags: false,
               setSelectorButtonAsPrefixIcon: false,
@@ -236,47 +309,48 @@ class _AddressFormState extends State<AddressForm> {
           SizedBox(
             height: 20,
           ),
-          _loading
-              ? SizedBox(
-                  height: 20,
-                  width: 20,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                  ),
-                )
-              : Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    TextButton(
-                      onPressed: () => _uploadAddress(true),
-                      child: Text(
-                        // 'Set As Default',
-                        'Confirm',
-                        style: TextStyle(
-                          color: AppTheme.colorED8514,
+          if (widget.onAdded != null)
+            _loading
+                ? SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                    ),
+                  )
+                : Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      TextButton(
+                        onPressed: () => _uploadAddress(true),
+                        child: Text(
+                          // 'Set As Default',
+                          'Confirm',
+                          style: TextStyle(
+                            color: AppTheme.colorED8514,
+                          ),
+                        ),
+                        style: TextButton.styleFrom(
+                          side: BorderSide(color: AppTheme.colorED8514),
                         ),
                       ),
-                      style: TextButton.styleFrom(
-                        side: BorderSide(color: AppTheme.colorED8514),
-                      ),
-                    ),
-                    // SizedBox(
-                    //   width: 16,
-                    // ),
-                    // TextButton(
-                    //   onPressed: _loading ? null : () => _uploadAddress(false),
-                    //   child: Text(
-                    //     'Confirm & Save',
-                    //     style: TextStyle(
-                    //       color: AppTheme.color48B6EF,
-                    //     ),
-                    //   ),
-                    //   style: TextButton.styleFrom(
-                    //     side: BorderSide(color: AppTheme.color48B6EF),
-                    //   ),
-                    // ),
-                  ],
-                ),
+                      // SizedBox(
+                      //   width: 16,
+                      // ),
+                      // TextButton(
+                      //   onPressed: _loading ? null : () => _uploadAddress(false),
+                      //   child: Text(
+                      //     'Confirm & Save',
+                      //     style: TextStyle(
+                      //       color: AppTheme.color48B6EF,
+                      //     ),
+                      //   ),
+                      //   style: TextButton.styleFrom(
+                      //     side: BorderSide(color: AppTheme.color48B6EF),
+                      //   ),
+                      // ),
+                    ],
+                  ),
         ],
       ),
     );
