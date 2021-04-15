@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fans/screen/components/tag_view.dart';
 import 'package:flutter/material.dart';
@@ -63,21 +65,38 @@ class _ProductFeedItemState extends State<ProductFeedItem> {
             if (widget.onTap != null) widget.onTap(widget.model.id);
           },
           child: SizedBox(
-            height: 300,
+            height: MediaQuery.of(context).size.width - 20 * 2,
             child: ClipRRect(
               borderRadius: BorderRadius.circular(4.0),
               child: Container(
                 color: Color(0xfff8f8f8),
                 child: Stack(
                   children: [
+                    Container(
+                      constraints: BoxConstraints.expand(),
+                      decoration: BoxDecoration(
+                        image: DecorationImage(
+                          image: NetworkImage(widget.model.goods.first),
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                      child: BackdropFilter(
+                        filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
+                        child: Container(
+                          color: Colors.black.withOpacity(0.5),
+                        ),
+                      ),
+                    ),
                     MediaCarouselWidget(
                       items: widget.model.goods.map((url) {
-                        return CachedNetworkImage(
-                          placeholder: (context, _) => Container(
-                            color: AppTheme.colorEDEEF0,
+                        return Center(
+                          child: CachedNetworkImage(
+                            placeholder: (context, _) => Container(
+                              color: AppTheme.colorEDEEF0,
+                            ),
+                            imageUrl: url,
+                            fit: BoxFit.contain,
                           ),
-                          imageUrl: url,
-                          fit: BoxFit.cover,
                         );
                       }).toList(),
                     ),
