@@ -30,7 +30,7 @@ class _ProductAttributesBottomSheetState
   List<int> _selectionSpecIds;
   List<List<int>> _disableSpecIds;
 
-  bool _isCustomiz = false;
+  bool _isCustomiz = true;
   final _customizController = TextEditingController();
 
   @override
