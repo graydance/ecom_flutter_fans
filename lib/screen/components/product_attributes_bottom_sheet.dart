@@ -158,9 +158,11 @@ class _ProductAttributesBottomSheetState
                   child: FansButton(
                     onPressed: _currentSku.stock > 0
                         ? () {
-                            if (_customizController.text.trim().isEmpty ||
-                                _customizController.text.length > 10) {
-                              return;
+                            if (_isCustomiz) {
+                              if (_customizController.text.trim().isEmpty ||
+                                  _customizController.text.length > 10) {
+                                return;
+                              }
                             }
                             Navigator.of(context).pop();
                             widget.viewModel.onTapAction(
