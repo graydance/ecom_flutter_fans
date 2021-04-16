@@ -32,6 +32,8 @@ class _ProductAttributesBottomSheetState
 
   bool _isCustomiz = true;
   final _customizController = TextEditingController();
+  final _focusNode = FocusNode();
+  final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -158,9 +160,10 @@ class _ProductAttributesBottomSheetState
                   child: FansButton(
                     onPressed: _currentSku.stock > 0
                         ? () {
-                            if (_isCustomiz) {
-                              if (_customizController.text.trim().isEmpty ||
-                                  _customizController.text.length > 10) {
+                            if (widget.viewModel.model.isCustomiz == 1 &&
+                                _isCustomiz) {
+                              if (!_formKey.currentState.validate()) {
+                                FocusScope.of(context).requestFocus(_focusNode);
                                 return;
                               }
                             }
@@ -225,8 +228,12 @@ class _ProductAttributesBottomSheetState
             height: 8,
           ),
         if (_isCustomiz)
-          CustomizeTextField(
-            controller: _customizController,
+          Form(
+            child: CustomizeTextField(
+              formKey: _formKey,
+              controller: _customizController,
+              focusNode: _focusNode,
+            ),
           ),
       ],
     );
