@@ -376,6 +376,8 @@ class AddCartAPI extends API {
         'idolGoodsId': params.idolGoodsId,
         'skuSpecIds': params.skuSpecIds,
         'number': params.number,
+        'isCustomiz': params.isCustomiz,
+        'customiz': params.customiz,
       };
 
   @override
@@ -489,4 +491,18 @@ class CityAPI extends API {
       {'country': country, 'province': province};
 
   String get path => '/user/pub/city';
+}
+
+class EditCustomizAPI extends API {
+  final String cartItemId;
+  final int isCustomiz;
+  final String customiz;
+
+  EditCustomizAPI(this.cartItemId, this.isCustomiz, this.customiz);
+
+  @override
+  Map<String, dynamic> get parameters =>
+      {'id': cartItemId, 'isCustomiz': isCustomiz, 'customiz': customiz};
+
+  String get path => '/user/good/edit_customiz';
 }

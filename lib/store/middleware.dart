@@ -46,6 +46,7 @@ List<Middleware<AppState>> createStoreMiddleware() {
   final showCoupon = _createShowCoupon();
   final fetchConfig = _createFetchConfig();
   final updateAddress = _createUpdateAddress();
+  final editCustomiz = _createEditCustomiz();
 
   return [
     TypedMiddleware<AppState, VerifyAuthenticationState>(verifyAuthState),
@@ -79,6 +80,7 @@ List<Middleware<AppState>> createStoreMiddleware() {
     TypedMiddleware<AppState, ShowCouponAction>(showCoupon),
     TypedMiddleware<AppState, FetchConfigAction>(fetchConfig),
     TypedMiddleware<AppState, EditAddressAction>(updateAddress),
+    TypedMiddleware<AppState, EditCustomizAction>(editCustomiz),
   ];
 }
 
@@ -519,6 +521,29 @@ Middleware<AppState> _createDeleteCart() {
   return (Store<AppState> store, action, NextDispatcher next) {
     if (action is DeleteCartAction) {
       Networking.request(DeleteCartAPI(params: action.parameters)).then(
+        (data) {
+          final response = data['data'];
+          final cart = Cart.fromMap(response);
+          action.completer.complete(cart);
+          store.dispatch(OnUpdateCartAction(cart));
+        },
+      ).catchError((err) {
+        action.completer.completeError(err.toString());
+        _handleUnauthorisedException(store, err, action);
+      });
+    }
+    next(action);
+  };
+}
+
+Middleware<AppState> _createEditCustomiz() {
+  return (Store<AppState> store, action, NextDispatcher next) {
+    if (action is EditCustomizAction) {
+      Networking.request(EditCustomizAPI(
+        action.cartItemId,
+        action.isCustomiz,
+        action.customiz,
+      )).then(
         (data) {
           final response = data['data'];
           final cart = Cart.fromMap(response);
