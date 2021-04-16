@@ -30,6 +30,11 @@ class OrderSku {
   /// 库存是否充足
   final bool isStockEnough;
 
+  /// 是否支持定制
+  final int isCustomiz;
+  final String customiz;
+  final String cartItemId;
+
   const OrderSku({
     this.id = '',
     this.originalPrice = 0,
@@ -52,6 +57,9 @@ class OrderSku {
     this.goodsSkuName = '',
     this.currentPriceStr = '',
     this.isStockEnough = false,
+    this.isCustomiz = 0,
+    this.customiz = '',
+    this.cartItemId = '',
   });
 
   OrderSku copyWith({
@@ -76,6 +84,9 @@ class OrderSku {
     String goodsSkuName,
     String currentPriceStr,
     bool isStockEnough,
+    int isCustomiz,
+    String customiz,
+    String cartItemId,
   }) {
     return OrderSku(
       id: id ?? this.id,
@@ -99,6 +110,9 @@ class OrderSku {
       goodsSkuName: goodsSkuName ?? this.goodsSkuName,
       currentPriceStr: currentPriceStr ?? this.currentPriceStr,
       isStockEnough: isStockEnough ?? this.isStockEnough,
+      isCustomiz: isCustomiz ?? this.isCustomiz,
+      customiz: customiz ?? this.customiz,
+      cartItemId: cartItemId ?? this.cartItemId,
     );
   }
 
@@ -125,12 +139,13 @@ class OrderSku {
       'goodsSkuName': goodsSkuName,
       'currentPriceStr': currentPriceStr,
       'isStockEnough': isStockEnough,
+      'isCustomiz': isCustomiz,
+      'customiz': customiz,
+      'cartItemId': cartItemId,
     };
   }
 
   factory OrderSku.fromMap(Map<String, dynamic> map) {
-    if (map == null) return null;
-
     return OrderSku(
       id: map['id'],
       originalPrice: map['originalPrice'],
@@ -153,6 +168,9 @@ class OrderSku {
       goodsSkuName: map['goodsSkuName'],
       currentPriceStr: map['currentPriceStr'],
       isStockEnough: map['isStockEnough'],
+      isCustomiz: map['isCustomiz'],
+      customiz: map['customiz'],
+      cartItemId: map['cartItemId'],
     );
   }
 
@@ -162,31 +180,34 @@ class OrderSku {
       OrderSku.fromMap(json.decode(source));
 
   @override
-  bool operator ==(Object o) {
-    if (identical(this, o)) return true;
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
 
-    return o is OrderSku &&
-        o.id == id &&
-        o.originalPrice == originalPrice &&
-        o.currentPrice == currentPrice &&
-        o.earningPrice == earningPrice &&
-        o.tax == tax &&
-        o.barcode == barcode &&
-        o.stock == stock &&
-        o.sales == sales &&
-        o.weight == weight &&
-        o.skuImage == skuImage &&
-        o.skuSpecIds == skuSpecIds &&
-        o.createdAt == createdAt &&
-        o.updatedAt == updatedAt &&
-        o.number == number &&
-        o.idolGoodsId == idolGoodsId &&
-        o.idolId == idolId &&
-        o.status == status &&
-        o.goodsName == goodsName &&
-        o.goodsSkuName == goodsSkuName &&
-        o.currentPriceStr == currentPriceStr &&
-        o.isStockEnough == isStockEnough;
+    return other is OrderSku &&
+        other.id == id &&
+        other.originalPrice == originalPrice &&
+        other.currentPrice == currentPrice &&
+        other.earningPrice == earningPrice &&
+        other.tax == tax &&
+        other.barcode == barcode &&
+        other.stock == stock &&
+        other.sales == sales &&
+        other.weight == weight &&
+        other.skuImage == skuImage &&
+        other.skuSpecIds == skuSpecIds &&
+        other.createdAt == createdAt &&
+        other.updatedAt == updatedAt &&
+        other.number == number &&
+        other.idolGoodsId == idolGoodsId &&
+        other.idolId == idolId &&
+        other.status == status &&
+        other.goodsName == goodsName &&
+        other.goodsSkuName == goodsSkuName &&
+        other.currentPriceStr == currentPriceStr &&
+        other.isStockEnough == isStockEnough &&
+        other.isCustomiz == isCustomiz &&
+        other.customiz == customiz &&
+        other.cartItemId == cartItemId;
   }
 
   @override
@@ -211,12 +232,15 @@ class OrderSku {
         goodsName.hashCode ^
         goodsSkuName.hashCode ^
         currentPriceStr.hashCode ^
-        isStockEnough.hashCode;
+        isStockEnough.hashCode ^
+        isCustomiz.hashCode ^
+        customiz.hashCode ^
+        cartItemId.hashCode;
   }
 
   @override
   String toString() {
-    return 'OrderSku(id: $id, originalPrice: $originalPrice, currentPrice: $currentPrice, earningPrice: $earningPrice, tax: $tax, barcode: $barcode, stock: $stock, sales: $sales, weight: $weight, skuImage: $skuImage, skuSpecIds: $skuSpecIds, createdAt: $createdAt, updatedAt: $updatedAt, number: $number, idolGoodsId: $idolGoodsId, idolId: $idolId, status: $status, goodsName: $goodsName, goodsSkuName: $goodsSkuName, currentPriceStr: $currentPriceStr, isStockEnough: $isStockEnough)';
+    return 'OrderSku(id: $id, originalPrice: $originalPrice, currentPrice: $currentPrice, earningPrice: $earningPrice, tax: $tax, barcode: $barcode, stock: $stock, sales: $sales, weight: $weight, skuImage: $skuImage, skuSpecIds: $skuSpecIds, createdAt: $createdAt, updatedAt: $updatedAt, number: $number, idolGoodsId: $idolGoodsId, idolId: $idolId, status: $status, goodsName: $goodsName, goodsSkuName: $goodsSkuName, currentPriceStr: $currentPriceStr, isStockEnough: $isStockEnough, isCustomiz: $isCustomiz, customiz: $customiz, cartItemId: $cartItemId)';
   }
 }
 
@@ -225,24 +249,34 @@ class OrderParameter {
   final String skuSpecIds;
   final String idolGoodsId;
   final int number;
+  final int isCustomiz;
+  final String customiz;
 
-  OrderParameter({this.skuSpecIds, this.idolGoodsId, this.number = 0});
+  OrderParameter({
+    this.skuSpecIds,
+    this.idolGoodsId,
+    this.number = 0,
+    this.isCustomiz = 0,
+    this.customiz = '',
+  });
 
   Map<String, dynamic> toMap() {
     return {
       'skuSpecIds': skuSpecIds,
       'idolGoodsId': idolGoodsId,
       'number': number,
+      'isCustomiz': isCustomiz,
+      'customiz': customiz,
     };
   }
 
   factory OrderParameter.fromMap(Map<String, dynamic> map) {
-    if (map == null) return null;
-
     return OrderParameter(
       skuSpecIds: map['skuSpecIds'],
       idolGoodsId: map['idolGoodsId'],
       number: map['number'],
+      isCustomiz: map['isCustomiz'],
+      customiz: map['customiz'],
     );
   }
 
@@ -252,16 +286,23 @@ class OrderParameter {
       OrderParameter.fromMap(json.decode(source));
 
   @override
-  bool operator ==(Object o) {
-    if (identical(this, o)) return true;
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
 
-    return o is OrderParameter &&
-        o.skuSpecIds == skuSpecIds &&
-        o.idolGoodsId == idolGoodsId &&
-        o.number == number;
+    return other is OrderParameter &&
+        other.skuSpecIds == skuSpecIds &&
+        other.idolGoodsId == idolGoodsId &&
+        other.number == number &&
+        other.isCustomiz == isCustomiz &&
+        other.customiz == customiz;
   }
 
   @override
-  int get hashCode =>
-      skuSpecIds.hashCode ^ idolGoodsId.hashCode ^ number.hashCode;
+  int get hashCode {
+    return skuSpecIds.hashCode ^
+        idolGoodsId.hashCode ^
+        number.hashCode ^
+        isCustomiz.hashCode ^
+        customiz.hashCode;
+  }
 }

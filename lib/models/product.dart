@@ -34,6 +34,7 @@ class Product {
   final String originalPriceStr;
   final String currentPriceStr;
   final List<Tag> tag;
+  final int isCustomiz;
 
   const Product({
     this.id = '',
@@ -62,6 +63,7 @@ class Product {
     this.originalPriceStr = '',
     this.currentPriceStr = '',
     this.tag = const [],
+    this.isCustomiz = 0,
   });
 
   Product copyWith({
@@ -91,6 +93,7 @@ class Product {
     String originalPriceStr,
     String currentPriceStr,
     List<Tag> tag,
+    int isCustomiz,
   }) {
     return Product(
       id: id ?? this.id,
@@ -119,40 +122,42 @@ class Product {
       originalPriceStr: originalPriceStr ?? this.originalPriceStr,
       currentPriceStr: currentPriceStr ?? this.currentPriceStr,
       tag: tag ?? this.tag,
+      isCustomiz: isCustomiz ?? this.isCustomiz,
     );
   }
 
   @override
-  bool operator ==(Object o) {
-    if (identical(this, o)) return true;
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
 
-    return o is Product &&
-        o.id == id &&
-        o.productName == productName &&
-        o.originalPrice == originalPrice &&
-        o.currentPrice == currentPrice &&
-        o.earningPrice == earningPrice &&
-        o.description == description &&
-        o.carNumber == carNumber &&
-        o.collectNumber == collectNumber &&
-        o.status == status &&
-        o.originalUrl == originalUrl &&
-        o.specType == specType &&
-        o.width == width &&
-        o.height == height &&
-        o.supplierId == supplierId &&
-        listEquals(o.goodsPictures, goodsPictures) &&
-        listEquals(o.goodsSkus, goodsSkus) &&
-        listEquals(o.specList, specList) &&
-        o.idolId == idolId &&
-        o.idolGoodsId == idolGoodsId &&
-        o.nickName == nickName &&
-        o.storeName == storeName &&
-        o.isOfficial == isOfficial &&
-        listEquals(o.recommend, recommend) &&
-        o.originalPriceStr == originalPriceStr &&
-        o.currentPriceStr == currentPriceStr &&
-        listEquals(o.tag, tag);
+    return other is Product &&
+        other.id == id &&
+        other.productName == productName &&
+        other.originalPrice == originalPrice &&
+        other.currentPrice == currentPrice &&
+        other.earningPrice == earningPrice &&
+        other.description == description &&
+        other.carNumber == carNumber &&
+        other.collectNumber == collectNumber &&
+        other.status == status &&
+        other.originalUrl == originalUrl &&
+        other.specType == specType &&
+        other.width == width &&
+        other.height == height &&
+        other.supplierId == supplierId &&
+        listEquals(other.goodsPictures, goodsPictures) &&
+        listEquals(other.goodsSkus, goodsSkus) &&
+        listEquals(other.specList, specList) &&
+        other.idolId == idolId &&
+        other.idolGoodsId == idolGoodsId &&
+        other.nickName == nickName &&
+        other.storeName == storeName &&
+        other.isOfficial == isOfficial &&
+        listEquals(other.recommend, recommend) &&
+        other.originalPriceStr == originalPriceStr &&
+        other.currentPriceStr == currentPriceStr &&
+        listEquals(other.tag, tag) &&
+        other.isCustomiz == isCustomiz;
   }
 
   @override
@@ -182,12 +187,13 @@ class Product {
         recommend.hashCode ^
         originalPriceStr.hashCode ^
         currentPriceStr.hashCode ^
-        tag.hashCode;
+        tag.hashCode ^
+        isCustomiz.hashCode;
   }
 
   @override
   String toString() {
-    return 'Product(id: $id, productName: $productName, originalPrice: $originalPrice, currentPrice: $currentPrice, earningPrice: $earningPrice, description: $description, carNumber: $carNumber, collectNumber: $collectNumber, status: $status, originalUrl: $originalUrl, specType: $specType, width: $width, height: $height, supplierId: $supplierId, goodsPictures: $goodsPictures, goodsSkus: $goodsSkus, specList: $specList, idolId: $idolId, idolGoodsId: $idolGoodsId, nickName: $nickName, storeName: $storeName, isOfficial: $isOfficial, recommend: $recommend, originalPriceStr: $originalPriceStr, currentPriceStr: $currentPriceStr, tag: $tag)';
+    return 'Product(id: $id, productName: $productName, originalPrice: $originalPrice, currentPrice: $currentPrice, earningPrice: $earningPrice, description: $description, carNumber: $carNumber, collectNumber: $collectNumber, status: $status, originalUrl: $originalUrl, specType: $specType, width: $width, height: $height, supplierId: $supplierId, goodsPictures: $goodsPictures, goodsSkus: $goodsSkus, specList: $specList, idolId: $idolId, idolGoodsId: $idolGoodsId, nickName: $nickName, storeName: $storeName, isOfficial: $isOfficial, recommend: $recommend, originalPriceStr: $originalPriceStr, currentPriceStr: $currentPriceStr, tag: $tag, isCustomiz: $isCustomiz)';
   }
 
   Map<String, dynamic> toMap() {
@@ -206,24 +212,23 @@ class Product {
       'width': width,
       'height': height,
       'supplierId': supplierId,
-      'goodsPictures': goodsPictures?.map((x) => x?.toMap())?.toList(),
-      'goodsSkus': goodsSkus?.map((x) => x?.toMap())?.toList(),
-      'specList': specList?.map((x) => x?.toMap())?.toList(),
+      'goodsPictures': goodsPictures?.map((x) => x.toMap())?.toList(),
+      'goodsSkus': goodsSkus?.map((x) => x.toMap())?.toList(),
+      'specList': specList?.map((x) => x.toMap())?.toList(),
       'idolId': idolId,
       'idolGoodsId': idolGoodsId,
       'nickName': nickName,
       'storeName': storeName,
       'isOfficial': isOfficial,
-      'recommend': recommend?.map((x) => x?.toMap())?.toList(),
+      'recommend': recommend?.map((x) => x.toMap())?.toList(),
       'originalPriceStr': originalPriceStr,
       'currentPriceStr': currentPriceStr,
-      'tag': tag?.map((x) => x?.toMap())?.toList(),
+      'tag': tag?.map((x) => x.toMap())?.toList(),
+      'isCustomiz': isCustomiz,
     };
   }
 
   factory Product.fromMap(Map<String, dynamic> map) {
-    if (map == null) return null;
-
     return Product(
       id: map['id'],
       productName: map['productName'],
@@ -255,6 +260,7 @@ class Product {
       originalPriceStr: map['originalPriceStr'],
       currentPriceStr: map['currentPriceStr'],
       tag: List<Tag>.from(map['tag']?.map((x) => Tag.fromMap(x))),
+      isCustomiz: map['isCustomiz'],
     );
   }
 
