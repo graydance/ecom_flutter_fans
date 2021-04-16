@@ -134,9 +134,15 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                     onQuantityChange: (newValue) {
                                       _quantity = newValue;
                                     },
-                                    onTapAction: (skuSpecIds) {
+                                    onTapAction:
+                                        (skuSpecIds, isCustomiz, customiz) {
                                       model.onTapAddToCart(
-                                          _quantity, skuSpecIds, context);
+                                        _quantity,
+                                        skuSpecIds,
+                                        isCustomiz,
+                                        customiz,
+                                        context,
+                                      );
                                     },
                                   ),
                                 );
@@ -170,8 +176,10 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                     onQuantityChange: (newValue) {
                                       _quantity = newValue;
                                     },
-                                    onTapAction: (skuSpecIds) {
-                                      model.onTapBuyNow(_quantity, skuSpecIds);
+                                    onTapAction:
+                                        (skuSpecIds, isCustomiz, customiz) {
+                                      model.onTapBuyNow(_quantity, skuSpecIds,
+                                          isCustomiz, customiz);
                                     },
                                   ),
                                 );
@@ -318,8 +326,8 @@ class _ViewModel {
   final Product model;
   final String currency;
   final GoodsSkus firstSku;
-  final Function(int, String, BuildContext) onTapAddToCart;
-  final Function(int, String) onTapBuyNow;
+  final Function(int, String, bool, String, BuildContext) onTapAddToCart;
+  final Function(int, String, bool, String) onTapBuyNow;
 
   _ViewModel({
     this.isAnonymous,
@@ -333,7 +341,8 @@ class _ViewModel {
 
   static _ViewModel fromStore(Store<AppState> store, String id) {
     final state = store.state.productDetails.allStates[id];
-    _onTapAddToCart(int quantity, String skuSpecIds, BuildContext context) {
+    _onTapAddToCart(int quantity, String skuSpecIds, bool isCustomiz,
+        String customiz, BuildContext context) {
       EasyLoading.show();
       final completer = Completer();
       completer.future.then((value) {
@@ -363,6 +372,8 @@ class _ViewModel {
           idolGoodsId: state.model.idolGoodsId,
           skuSpecIds: skuSpecIds,
           number: quantity,
+          isCustomiz: isCustomiz && customiz.trim().isNotEmpty ? 1 : 0,
+          customiz: customiz,
         ),
         completer,
       );
@@ -370,7 +381,8 @@ class _ViewModel {
       store.dispatch(action);
     }
 
-    _onTapBuyNow(int quantity, String skuSpecIds) {
+    _onTapBuyNow(
+        int quantity, String skuSpecIds, bool isCustomiz, String customiz) {
       EasyLoading.show();
       final completer = Completer();
       completer.future.then((value) {
@@ -388,6 +400,8 @@ class _ViewModel {
             idolGoodsId: state.model.idolGoodsId,
             skuSpecIds: skuSpecIds,
             number: quantity,
+            isCustomiz: isCustomiz && customiz.trim().isNotEmpty ? 1 : 0,
+            customiz: customiz,
           )
         ],
         completer: completer,

@@ -230,3 +230,13 @@ class CheckCouponAction {
 
   CheckCouponAction(this.code, this.total, this.completer);
 }
+
+class EditCustomizAction {
+  final String cartItemId;
+  final int isCustomiz;
+  final String customiz;
+  final Completer completer;
+
+  EditCustomizAction(
+      this.cartItemId, this.isCustomiz, this.customiz, this.completer);
+}
