@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fans/app.dart';
+import 'package:fans/screen/components/customize_textfield.dart';
 import 'package:fans/screen/components/default_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -26,6 +27,7 @@ class CartScreen extends StatefulWidget {
 
 class _CartScreenState extends State<CartScreen> {
   final _controller = MultiSelectController();
+
   Map<String, int> _itemQuantities = {};
 
   String _subtotal = '';
@@ -112,6 +114,23 @@ class _CartScreenState extends State<CartScreen> {
     _controller.setList(viewModel.cart.list);
   }
 
+  _editCustomiz(OrderSku model, String customiz) async {
+    EasyLoading.show();
+
+    final completer = Completer();
+    final action = EditCustomizAction(
+        model.cartItemId, model.isCustomiz, customiz, completer);
+    StoreProvider.of<AppState>(context).dispatch(action);
+
+    try {
+      await completer.future;
+      EasyLoading.dismiss();
+    } catch (error) {
+      EasyLoading.dismiss();
+      EasyLoading.showToast(error.toString());
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _ViewModel>(
@@ -196,6 +215,9 @@ class _CartScreenState extends State<CartScreen> {
                               child: CartItemTile(
                                 currency: viewModel.currency,
                                 item: item,
+                                isShowMenu: !_controller.isSelecting,
+                                textFieldController:
+                                    TextEditingController(text: item.customiz),
                                 onQuantityChanged: (quantity, item) async {
                                   await _onQuantityChanged(
                                       context, quantity, item, viewModel);
@@ -203,6 +225,7 @@ class _CartScreenState extends State<CartScreen> {
                                 onTapRemove: (item) {
                                   _deleteCarts([item]);
                                 },
+                                onUpdateCustomiz: _editCustomiz,
                               ),
                             ),
                           ],
@@ -211,6 +234,9 @@ class _CartScreenState extends State<CartScreen> {
                       return CartItemTile(
                         currency: viewModel.currency,
                         item: item,
+                        isShowMenu: !_controller.isSelecting,
+                        textFieldController:
+                            TextEditingController(text: item.customiz),
                         onQuantityChanged: (quantity, item) async {
                           await _onQuantityChanged(
                               context, quantity, item, viewModel);
@@ -218,6 +244,7 @@ class _CartScreenState extends State<CartScreen> {
                         onTapRemove: (item) {
                           _deleteCarts([item]);
                         },
+                        onUpdateCustomiz: _editCustomiz,
                       );
                     },
                     itemCount: viewModel.cart.list.length,
@@ -228,8 +255,8 @@ class _CartScreenState extends State<CartScreen> {
           ),
         ),
         bottomNavigationBar: Container(
-          padding:
-              EdgeInsets.only(bottom: MediaQuery.of(context).padding.bottom),
+          padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).padding.bottom + 20),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Column(
@@ -319,95 +346,236 @@ class _CartScreenState extends State<CartScreen> {
 class CartItemTile extends StatelessWidget {
   final String currency;
   final OrderSku item;
+  final bool isShowMenu;
+  final TextEditingController textFieldController;
   final Function(int quantity, OrderSku item) onQuantityChanged;
   final Function(OrderSku item) onTapRemove;
+  final Function(OrderSku item, String customiz) onUpdateCustomiz;
 
-  const CartItemTile(
-      {Key key,
-      @required this.currency,
-      this.item,
-      this.onQuantityChanged,
-      this.onTapRemove})
-      : super(key: key);
+  CartItemTile({
+    Key key,
+    @required this.currency,
+    @required this.item,
+    @required this.isShowMenu,
+    this.textFieldController,
+    this.onQuantityChanged,
+    this.onTapRemove,
+    this.onUpdateCustomiz,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final String error = item.isStockEnough ? '' : '* Out of stock';
 
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
+    return Column(
+      mainAxisSize: MainAxisSize.min,
       children: [
-        SizedBox(
-          height: 110,
-          width: 110,
-          child: CachedNetworkImage(
-            placeholder: (context, _) => Container(
-              color: AppTheme.colorEDEEF0,
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(
+              height: 110,
+              width: 110,
+              child: CachedNetworkImage(
+                placeholder: (context, _) => Container(
+                  color: AppTheme.colorEDEEF0,
+                ),
+                imageUrl: item.skuImage,
+                fit: BoxFit.cover,
+              ),
             ),
-            imageUrl: item.skuImage,
-            fit: BoxFit.cover,
-          ),
-        ),
-        SizedBox(
-          width: 8,
-        ),
-        Expanded(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                item.goodsName,
-                maxLines: 3,
-                style: TextStyle(
-                  color: AppTheme.color0F1015,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 14,
-                ),
+            SizedBox(
+              width: 8,
+            ),
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    item.goodsName,
+                    maxLines: 3,
+                    style: TextStyle(
+                      color: AppTheme.color0F1015,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                    ),
+                  ),
+                  Text(
+                    '$currency${item.currentPriceStr}',
+                    style: TextStyle(
+                      color: AppTheme.color0F1015,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                    ),
+                  ),
+                  QuantityEditingButton(
+                    style: QuantityEditingButtonStyle.small,
+                    quantity: item.number,
+                    max: item.stock,
+                    onChanged: (value) {
+                      if (onQuantityChanged != null)
+                        onQuantityChanged(value, item);
+                    },
+                  ),
+                  Text(
+                    error,
+                    style: TextStyle(
+                      fontSize: 10,
+                      color: AppTheme.colorED3544,
+                    ),
+                  ),
+                ],
               ),
-              Text(
-                '$currency${item.currentPriceStr}',
-                style: TextStyle(
-                  color: AppTheme.color0F1015,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 14,
-                ),
-              ),
-              QuantityEditingButton(
-                style: QuantityEditingButtonStyle.small,
-                quantity: item.number,
-                max: item.stock,
-                onChanged: (value) {
-                  if (onQuantityChanged != null) onQuantityChanged(value, item);
+            ),
+            if (isShowMenu)
+              PopupMenuButton(
+                itemBuilder: (BuildContext context) => [
+                  PopupMenuItem(
+                      value: item,
+                      child: Text(
+                        'Remove',
+                        style: TextStyle(fontSize: 14),
+                      )),
+                ],
+                onSelected: (value) {
+                  if (onTapRemove != null) onTapRemove(value);
                 },
+                iconSize: 20,
+                padding: EdgeInsets.zero,
+              )
+          ],
+        ),
+        if (item.isCustomiz == 1)
+          SizedBox(
+            height: 8,
+          ),
+        if (item.isCustomiz == 1)
+          GestureDetector(
+            onTap: () => _showCustomizInputDialog(context, item),
+            child: Container(
+              height: 44,
+              decoration: BoxDecoration(
+                color: AppTheme.colorEDEEF0,
+                borderRadius: BorderRadius.circular(4),
               ),
-              Text(
-                error,
-                style: TextStyle(
-                  fontSize: 10,
-                  color: AppTheme.colorED3544,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 8,
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Customiz:',
+                            style: TextStyle(
+                              color: AppTheme.color555764,
+                              fontSize: 12,
+                            ),
+                          ),
+                          SizedBox(
+                            height: 2,
+                          ),
+                          Text(
+                            item.customiz,
+                            style: TextStyle(
+                              color: AppTheme.color555764,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Text(
+                        'Edit',
+                        style: TextStyle(
+                          color: AppTheme.colorED8514,
+                          fontSize: 12,
+                          decoration: TextDecoration.underline,
+                          fontWeight: FontWeight.normal,
+                        ),
+                      ),
+                    )
+                  ],
                 ),
               ),
-            ],
+            ),
           ),
-        ),
-        PopupMenuButton(
-          itemBuilder: (BuildContext context) => [
-            PopupMenuItem(
-                value: item,
-                child: Text(
-                  'Remove',
-                  style: TextStyle(fontSize: 14),
-                )),
-          ],
-          onSelected: (value) {
-            if (onTapRemove != null) onTapRemove(value);
-          },
-          iconSize: 20,
-          padding: EdgeInsets.zero,
-        )
       ],
     );
+  }
+
+  Future _showCustomizInputDialog(BuildContext context, OrderSku model) async {
+    return showDialog(
+        context: context,
+        builder: (ctx) {
+          return AlertDialog(
+            contentPadding: EdgeInsets.only(left: 20, right: 20, bottom: 20),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(Radius.circular(16.0)),
+            ),
+            content: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Container(
+                    alignment: Alignment.topRight,
+                    padding: EdgeInsets.only(top: 12),
+                    child: Icon(
+                      Icons.clear,
+                      color: Color(0xFFC4C5CD),
+                      size: 16,
+                    ),
+                  ),
+                ),
+                Text(
+                  'Customiz',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: AppTheme.color0F1015,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                SizedBox(
+                  height: 16,
+                ),
+                CustomizeTextField(controller: textFieldController),
+                SizedBox(
+                  height: 16,
+                ),
+                Container(
+                  margin: EdgeInsets.symmetric(horizontal: 20),
+                  child: FansButton(
+                      title: "Update",
+                      onPressed: () {
+                        if (textFieldController.text.trim().isEmpty ||
+                            textFieldController.text.length > 10) {
+                          return;
+                        }
+                        if (onUpdateCustomiz != null) {
+                          onUpdateCustomiz(
+                            model,
+                            textFieldController.text,
+                          );
+                        }
+                        Navigator.pop(context);
+                      }),
+                ),
+              ],
+            ),
+          );
+        });
   }
 }
 
@@ -588,6 +756,8 @@ class _ViewModel {
                   idolGoodsId: e.idolGoodsId,
                   skuSpecIds: e.skuSpecIds,
                   number: e.number,
+                  isCustomiz: e.isCustomiz,
+                  customiz: e.customiz,
                 ))
             .toList(),
         completer: completer,

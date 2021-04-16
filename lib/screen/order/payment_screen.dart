@@ -163,7 +163,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                             ),
                           ),
                           Text(
-                            'Free',
+                            viewModel.orderDetail.shipping,
                             style: TextStyle(
                               color: AppTheme.color555764,
                               fontSize: 12,
@@ -225,22 +225,18 @@ class _PaymentScreenState extends State<PaymentScreen> {
                       image: R.image.paypal(),
                     ),
                   ]),
-                )
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 20),
+                  child: FansButton(
+                    onPressed: () {
+                      viewModel.onTapPay(context);
+                    },
+                    title: 'Pay ${viewModel.currency}${viewModel.totalStr}'
+                        .toUpperCase(),
+                  ),
+                ),
               ],
-            ),
-          ),
-        ),
-        bottomNavigationBar: Container(
-          padding: EdgeInsets.only(
-              bottom: MediaQuery.of(context).padding.bottom + 20, top: 10),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: FansButton(
-              onPressed: () {
-                viewModel.onTapPay(context);
-              },
-              title: 'Pay ${viewModel.currency}${viewModel.totalStr}'
-                  .toUpperCase(),
             ),
           ),
         ),

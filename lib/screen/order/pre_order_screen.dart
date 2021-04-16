@@ -839,12 +839,24 @@ class _OrderDetailsExpansionTileState extends State<OrderDetailsExpansionTile> {
                           height: 6,
                         ),
                         Text(
-                          'Quantity:${item.number}',
+                          'Quantity: ${item.number}',
                           style: TextStyle(
                             color: AppTheme.color555764,
                             fontSize: 12,
                           ),
                         ),
+                        if (item.isCustomiz == 1)
+                          SizedBox(
+                            height: 6,
+                          ),
+                        if (item.isCustomiz == 1)
+                          Text(
+                            'Customiz: ${item.customiz}',
+                            style: TextStyle(
+                              color: AppTheme.color555764,
+                              fontSize: 12,
+                            ),
+                          ),
                       ],
                     ),
                   ),
@@ -1164,9 +1176,12 @@ class _ViewModel {
     Future _refreshData() {
       final buyGoods = orderDetail.list
           .map((sku) => OrderParameter(
-              idolGoodsId: sku.idolGoodsId,
-              skuSpecIds: sku.skuSpecIds,
-              number: sku.number))
+                idolGoodsId: sku.idolGoodsId,
+                skuSpecIds: sku.skuSpecIds,
+                number: sku.number,
+                isCustomiz: sku.isCustomiz,
+                customiz: sku.customiz,
+              ))
           .toList();
       final completer = Completer();
       store.dispatch(PreOrderAction(buyGoods: buyGoods, completer: completer));
@@ -1197,6 +1212,8 @@ class _ViewModel {
                 idolGoodsId: sku.idolGoodsId,
                 skuSpecIds: sku.skuSpecIds,
                 number: sku.number,
+                isCustomiz: sku.isCustomiz,
+                customiz: sku.customiz,
               ))
           .toList();
       store.dispatch(OrderAction(buyGoods, shippingAddress.id,

@@ -516,9 +516,12 @@ class _ViewModel {
       EasyLoading.show();
       final buyGoods = orderDetail.list
           .map((sku) => OrderParameter(
-              idolGoodsId: sku.idolGoodsId,
-              skuSpecIds: sku.skuSpecIds,
-              number: sku.number))
+                idolGoodsId: sku.idolGoodsId,
+                skuSpecIds: sku.skuSpecIds,
+                number: sku.number,
+                isCustomiz: sku.isCustomiz,
+                customiz: sku.customiz,
+              ))
           .toList();
       final completer = Completer();
       completer.future.then((value) {
@@ -557,6 +560,8 @@ class _ViewModel {
                 idolGoodsId: sku.idolGoodsId,
                 skuSpecIds: sku.skuSpecIds,
                 number: sku.number,
+                isCustomiz: sku.isCustomiz,
+                customiz: sku.customiz,
               ))
           .toList();
       store.dispatch(OrderAction(buyGoods, shippingAddress.id,

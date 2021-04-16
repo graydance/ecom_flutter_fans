@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:fans/screen/components/customize_textfield.dart';
 import 'package:flutter/material.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:photo_view/photo_view.dart';
@@ -28,6 +29,11 @@ class _ProductAttributesBottomSheetState
   List<GoodsSkus> _stockNotEnoughSkuList;
   List<int> _selectionSpecIds;
   List<List<int>> _disableSpecIds;
+
+  bool _isCustomiz = true;
+  final _customizController = TextEditingController();
+  final _focusNode = FocusNode();
+  final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -71,93 +77,165 @@ class _ProductAttributesBottomSheetState
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 20),
-      child: SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _titleBar(context, widget.viewModel.model,
-                widget.viewModel.currency, _currentSku),
-            SizedBox(
-              height: 30,
-            ),
-            Text(
-              'Choose your specifications:',
-              style: TextStyle(
-                color: AppTheme.color979AA9,
-                fontSize: 12,
-              ),
-            ),
-            SizedBox(
-              height: 8,
-            ),
-            ConstrainedBox(
-              constraints: BoxConstraints(
-                maxHeight: MediaQuery.of(context).size.height * 0.5,
-              ),
-              child: ListView.separated(
-                  shrinkWrap: true,
-                  itemBuilder: (ctx, i) {
-                    return SpecItem(
-                      model: widget.viewModel.model.specList[i],
-                      disableIds: _disableSpecIds[i],
-                      valueChanged: (selectedItem) {
-                        _selectionSpecIds[i] = selectedItem.id;
-                        final sku = widget.viewModel.model.goodsSkus.firstWhere(
-                            (element) =>
-                                element.skuSpecIds ==
-                                _selectionSpecIds.join('_'));
+    return AnimatedPadding(
+      duration: Duration(milliseconds: 250),
+      padding:
+          EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+      child: GestureDetector(
+        behavior: HitTestBehavior.translucent,
+        onTap: () {
+          // 触摸收起键盘
+          FocusScope.of(context).requestFocus(FocusNode());
+        },
+        child: SafeArea(
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 20),
+            child: ListView(
+              shrinkWrap: true,
+              children: [
+                _titleBar(context, widget.viewModel.model,
+                    widget.viewModel.currency, _currentSku),
+                SizedBox(
+                  height: 30,
+                ),
+                Text(
+                  'Choose your specifications:',
+                  style: TextStyle(
+                    color: AppTheme.color979AA9,
+                    fontSize: 12,
+                  ),
+                ),
+                SizedBox(
+                  height: 8,
+                ),
+                ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxHeight: MediaQuery.of(context).size.height * 0.5,
+                  ),
+                  child: ListView.separated(
+                      shrinkWrap: true,
+                      itemBuilder: (ctx, i) {
+                        return SpecItem(
+                          model: widget.viewModel.model.specList[i],
+                          disableIds: _disableSpecIds[i],
+                          valueChanged: (selectedItem) {
+                            _selectionSpecIds[i] = selectedItem.id;
+                            final sku = widget.viewModel.model.goodsSkus
+                                .firstWhere((element) =>
+                                    element.skuSpecIds ==
+                                    _selectionSpecIds.join('_'));
 
-                        final disableSpecIds =
-                            _getDisableSpecIds(i, selectedItem);
-                        setState(() {
-                          _currentSku = sku;
-                          _disableSpecIds = disableSpecIds;
-                        });
+                            final disableSpecIds =
+                                _getDisableSpecIds(i, selectedItem);
+                            setState(() {
+                              _currentSku = sku;
+                              _disableSpecIds = disableSpecIds;
+                            });
+                          },
+                        );
                       },
-                    );
-                  },
-                  separatorBuilder: (ctx, index) {
-                    return SizedBox(
-                      height: 20,
-                    );
-                  },
-                  itemCount: widget.viewModel.model.specList.length),
+                      separatorBuilder: (ctx, index) {
+                        return SizedBox(
+                          height: 20,
+                        );
+                      },
+                      itemCount: widget.viewModel.model.specList.length),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                QuantityEditingButton(
+                  min: 1,
+                  max: _currentSku.stock,
+                  quantity: widget.viewModel.quantity,
+                  onChanged: widget.viewModel.onQuantityChange,
+                ),
+                if (widget.viewModel.model.isCustomiz == 1) _customizView(),
+                SizedBox(
+                  height: 20,
+                ),
+                SizedBox(
+                  width: double.infinity,
+                  height: 44,
+                  child: FansButton(
+                    onPressed: _currentSku.stock > 0
+                        ? () {
+                            if (widget.viewModel.model.isCustomiz == 1 &&
+                                _isCustomiz) {
+                              if (!_formKey.currentState.validate()) {
+                                FocusScope.of(context).requestFocus(_focusNode);
+                                return;
+                              }
+                            }
+                            Navigator.of(context).pop();
+                            widget.viewModel.onTapAction(
+                              _currentSku.skuSpecIds,
+                              _isCustomiz,
+                              _customizController.text ?? '',
+                            );
+                          }
+                        : null,
+                    title: widget.viewModel.actionType.displayTitle,
+                    isDisable: _currentSku.stock == 0,
+                  ),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+              ],
             ),
-            SizedBox(
-              height: 20,
-            ),
-            QuantityEditingButton(
-              min: 1,
-              max: _currentSku.stock,
-              quantity: widget.viewModel.quantity,
-              onChanged: widget.viewModel.onQuantityChange,
-            ),
-            SizedBox(
-              height: 20,
-            ),
-            SizedBox(
-              width: double.infinity,
-              height: 44,
-              child: FansButton(
-                onPressed: _currentSku.stock > 0
-                    ? () {
-                        Navigator.of(context).pop();
-                        widget.viewModel.onTapAction(_currentSku.skuSpecIds);
-                      }
-                    : null,
-                title: widget.viewModel.actionType.displayTitle,
-                isDisable: _currentSku.stock == 0,
-              ),
-            ),
-            SizedBox(
-              height: 20,
-            ),
-          ],
+          ),
         ),
       ),
+    );
+  }
+
+  Widget _customizView() {
+    return Column(
+      children: [
+        SizedBox(
+          height: 8,
+        ),
+        Row(
+          children: [
+            SizedBox(
+              width: 24,
+              height: 24,
+              child: Checkbox(
+                  activeColor: AppTheme.colorED8514,
+                  value: _isCustomiz,
+                  onChanged: (newValue) {
+                    setState(() {
+                      _isCustomiz = !_isCustomiz;
+                    });
+                  }),
+            ),
+            SizedBox(
+              width: 4,
+            ),
+            Text(
+              'Customiz',
+              style: TextStyle(
+                fontSize: 14,
+                color: AppTheme.color555764,
+                fontWeight: FontWeight.w500,
+              ),
+            )
+          ],
+        ),
+        if (_isCustomiz)
+          SizedBox(
+            height: 8,
+          ),
+        if (_isCustomiz)
+          Form(
+            child: CustomizeTextField(
+              formKey: _formKey,
+              controller: _customizController,
+              focusNode: _focusNode,
+            ),
+          ),
+      ],
     );
   }
 
@@ -418,7 +496,7 @@ class ProductAttributesViewModel {
   final int quantity;
   final ProductAttributesActionType actionType;
   final Function(int) onQuantityChange;
-  final Function(String) onTapAction;
+  final Function(String, bool, String) onTapAction;
 
   ProductAttributesViewModel({
     @required this.currency,
