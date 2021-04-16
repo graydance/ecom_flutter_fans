@@ -163,7 +163,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                             ),
                           ),
                           Text(
-                            'Free',
+                            viewModel.orderDetail.shipping,
                             style: TextStyle(
                               color: AppTheme.color555764,
                               fontSize: 12,
