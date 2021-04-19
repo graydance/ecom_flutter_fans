@@ -258,7 +258,7 @@ class SimilarProducts extends StatelessWidget {
                         color: AppTheme.colorEDEEF0,
                       ),
                       imageUrl: e.picture,
-                      fit: BoxFit.cover,
+                      fit: BoxFit.contain,
                     ),
                   ),
                 ),

@@ -389,7 +389,7 @@ class _Tile extends StatelessWidget {
                       color: AppTheme.colorEDEEF0,
                     ),
                     imageUrl: model.picture,
-                    fit: BoxFit.cover,
+                    fit: BoxFit.contain,
                   ),
                   if (model.discount.isNotEmpty)
                     Positioned(
