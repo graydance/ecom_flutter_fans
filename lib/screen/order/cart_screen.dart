@@ -75,17 +75,17 @@ class _CartScreenState extends State<CartScreen> {
     await completer.future;
   }
 
-  _onTapToolBarRemove() async {
+  _onTapToolBarRemove(_ViewModel viewModel) async {
     if (_controller.selectedIds.isEmpty) return;
 
     final params = _controller.list
         .where((e) => _controller.selectedIds.contains(e.id))
         .toList();
 
-    await _deleteCarts(params);
+    await _deleteCarts(params, viewModel.currency);
   }
 
-  _deleteCarts(List<OrderSku> list) async {
+  _deleteCarts(List<OrderSku> list, String currency) async {
     EasyLoading.show();
 
     final params = list
@@ -99,7 +99,11 @@ class _CartScreenState extends State<CartScreen> {
     StoreProvider.of<AppState>(context).dispatch(action);
 
     try {
-      await completer.future;
+      final Cart cart = await completer.future;
+      setState(() {
+        _subtotal = currency + cart.subtotalStr;
+        _total = currency + cart.totalStr;
+      });
       EasyLoading.dismiss();
     } catch (error) {
       EasyLoading.dismiss();
@@ -223,7 +227,7 @@ class _CartScreenState extends State<CartScreen> {
                                       context, quantity, item, viewModel);
                                 },
                                 onTapRemove: (item) {
-                                  _deleteCarts([item]);
+                                  _deleteCarts([item], viewModel.currency);
                                 },
                                 onUpdateCustomiz: _editCustomiz,
                               ),
@@ -242,7 +246,7 @@ class _CartScreenState extends State<CartScreen> {
                               context, quantity, item, viewModel);
                         },
                         onTapRemove: (item) {
-                          _deleteCarts([item]);
+                          _deleteCarts([item], viewModel.currency);
                         },
                         onUpdateCustomiz: _editCustomiz,
                       );
@@ -279,7 +283,7 @@ class _CartScreenState extends State<CartScreen> {
                       });
                     },
                     onTapRemove: () async {
-                      await _onTapToolBarRemove();
+                      await _onTapToolBarRemove(viewModel);
                     },
                   ),
                 if (viewModel.cart.list.isNotEmpty && !_controller.isSelecting)
@@ -381,7 +385,7 @@ class CartItemTile extends StatelessWidget {
                   color: AppTheme.colorEDEEF0,
                 ),
                 imageUrl: item.skuImage,
-                fit: BoxFit.cover,
+                fit: BoxFit.contain,
               ),
             ),
             SizedBox(

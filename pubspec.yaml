@@ -15,7 +15,7 @@ dependencies:
   video_player: ^2.0.0-nullsafety.7
   flutter_svg: ^0.20.0-nullsafety.3
   r_dart_library: ^0.2.1
-  shared_preferences: ^0.5.12+4
+  shared_preferences: ^2.0.5
   flutter_easyrefresh: ^2.1.8
   flutter_easyloading: ^2.2.2
   intl: ^0.16.1
@@ -24,18 +24,20 @@ dependencies:
   flutter_staggered_grid_view:
     git:
       url: 'https://github.com/letsar/flutter_staggered_grid_view.git'
-  url_launcher: ^5.7.10
+  url_launcher: ^6.0.3
   photo_view: ^0.10.3
-  flutter_widget_from_html_core: ^0.5.2+1
+  flutter_widget_from_html_core: ^0.6.0
   badges: ^1.2.0
   uuid: ^3.0.1
   crypto: ^3.0.0
   cached_network_image: ^2.5.1
   flutter_picker: ^2.0.0
-  intl_phone_number_input:
-    git:
-      url: 'https://github.com/graydance/intl_phone_number_input.git'
-      ret: 1ea45e10409cc10476e8208fa08b7c82d4f800ff
+  intl_phone_number_input: ^0.7.0+1
+  firebase_core: ^1.0.3
+  firebase_analytics: ^7.1.1
+  firebase_crashlytics: ^2.0.0
+  enum_to_string: ^2.0.1
+  universal_html: ^2.0.8
 dev_dependencies:
   flutter_test:
     sdk: flutter
