@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:fans/event/app_event.dart';
 import 'package:fans/screen/components/order_status_image_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -127,6 +128,9 @@ class _PreOrderMVPScreenState extends State<PreOrderMVPScreen> {
                                 _couponCode ?? '',
                                 _coupon);
                           } else {
+                            AppEvent.shared.report(
+                                event: AnalyticsEvent.continue_to_payment);
+
                             viewModel.onTapPay(_emailController.text ?? '',
                                 _couponCode ?? '', _coupon);
                           }

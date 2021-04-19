@@ -32,7 +32,6 @@ class _ProductAttributesBottomSheetState
 
   bool _isCustomiz = true;
   final _customizController = TextEditingController();
-  final _focusNode = FocusNode();
   final _formKey = GlobalKey<FormState>();
 
   @override
@@ -163,7 +162,6 @@ class _ProductAttributesBottomSheetState
                             if (widget.viewModel.model.isCustomiz == 1 &&
                                 _isCustomiz) {
                               if (!_formKey.currentState.validate()) {
-                                FocusScope.of(context).requestFocus(_focusNode);
                                 return;
                               }
                             }
@@ -232,7 +230,6 @@ class _ProductAttributesBottomSheetState
             child: CustomizeTextField(
               formKey: _formKey,
               controller: _customizController,
-              focusNode: _focusNode,
             ),
           ),
       ],

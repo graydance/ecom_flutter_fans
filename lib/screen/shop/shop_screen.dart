@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:fans/event/app_event.dart';
 import 'package:fans/models/coupon_info.dart';
 import 'package:fans/models/tag.dart';
 import 'package:fans/screen/components/alert_view.dart';
@@ -47,6 +48,8 @@ class _ShopScreenState extends State<ShopScreen> {
             store, widget.userName); //ModalRoute.of(context).settings.arguments
       },
       onInitialBuild: (viewModel) async {
+        AppEvent.shared.report(event: AnalyticsEvent.shoplink_view);
+
         final completer = Completer();
         StoreProvider.of<AppState>(context).dispatch(FetchSellerInfoAction(
             userName: viewModel.userName, completer: completer));
@@ -263,10 +266,13 @@ class _ShopScreenState extends State<ShopScreen> {
                           crossAxisCount: 4,
                           mainAxisSpacing: 4.0,
                           crossAxisSpacing: 4.0,
-                          itemBuilder: (context, index) => _Tile(
-                              viewModel.currency,
-                              _goods[index],
-                              _getSize(_goods[index])),
+                          itemBuilder: (context, index) {
+                            AppEvent.shared
+                                .report(event: AnalyticsEvent.grid_desplay_c);
+
+                            return _Tile(viewModel.currency, _goods[index],
+                                _getSize(_goods[index]));
+                          },
                           staggeredTileBuilder: (index) => StaggeredTile.fit(2),
                         ),
                 ),
@@ -359,6 +365,8 @@ class _Tile extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
+        AppEvent.shared.report(event: AnalyticsEvent.grid_click_c);
+
         StoreProvider.of<AppState>(context)
             .dispatch(ShowProductDetailAction(model.idolGoodsId));
         Keys.navigatorKey.currentState.pushNamed(Routes.productDetail);
@@ -381,7 +389,7 @@ class _Tile extends StatelessWidget {
                       color: AppTheme.colorEDEEF0,
                     ),
                     imageUrl: model.picture,
-                    fit: BoxFit.cover,
+                    fit: BoxFit.contain,
                   ),
                   if (model.discount.isNotEmpty)
                     Positioned(

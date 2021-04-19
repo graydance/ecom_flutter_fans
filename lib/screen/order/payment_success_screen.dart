@@ -1,9 +1,10 @@
-import 'package:fans/screen/components/default_button.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'package:fans/app.dart';
+import 'package:fans/event/app_event.dart';
 import 'package:fans/r.g.dart';
+import 'package:fans/screen/components/default_button.dart';
 import 'package:fans/theme.dart';
 
 class PaymentSuccessScreen extends StatefulWidget {
@@ -14,6 +15,12 @@ class PaymentSuccessScreen extends StatefulWidget {
 }
 
 class _PaymentSuccessScreenState extends State<PaymentSuccessScreen> {
+  @override
+  void initState() {
+    AppEvent.shared.report(event: AnalyticsEvent.pay_success);
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     final Map<String, dynamic> arguments =

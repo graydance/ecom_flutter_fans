@@ -1,13 +1,15 @@
 import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
+import 'package:universal_html/html.dart' as html;
 import 'package:url_launcher/url_launcher.dart';
 
+import 'package:fans/event/app_event.dart';
 import 'package:fans/models/address.dart';
 import 'package:fans/models/models.dart';
 import 'package:fans/r.g.dart';
@@ -230,6 +232,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   padding: const EdgeInsets.symmetric(vertical: 20),
                   child: FansButton(
                     onPressed: () {
+                      AppEvent.shared.report(event: AnalyticsEvent.pay);
+
                       viewModel.onTapPay(context);
                     },
                     title: 'Pay ${viewModel.currency}${viewModel.totalStr}'
@@ -273,20 +277,11 @@ class _ViewModel {
         EasyLoading.dismiss();
 
         final payInfo = value as PayInfo;
-        launch(payInfo.payLink);
-
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(
-              'Please copy the payment link and open it manually. ${payInfo.payLink}'),
-          duration: const Duration(minutes: 2),
-          action: SnackBarAction(
-            textColor: AppTheme.colorED8514,
-            label: 'Copy>',
-            onPressed: () {
-              Clipboard.setData(ClipboardData(text: payInfo.payLink));
-            },
-          ),
-        ));
+        if (kIsWeb) {
+          html.window.location.href = payInfo.payLink;
+        } else {
+          launch(payInfo.payLink);
+        }
       }).catchError((error) {
         EasyLoading.dismiss();
         EasyLoading.showToast(error.toString());
