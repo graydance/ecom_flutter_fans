@@ -284,7 +284,7 @@ class _AddressFormState extends State<AddressForm> {
             initialValue: PhoneNumber(isoCode: _phoneCountryCode),
             selectorConfig: SelectorConfig(
               showFlags: false,
-              setSelectorButtonAsPrefixIcon: false,
+              setSelectorButtonAsPrefixIcon: true,
               selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
               // boxDecoration: BoxDecoration(
               //   border: Border.all(

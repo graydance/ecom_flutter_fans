@@ -381,7 +381,7 @@ class CartItemTile extends StatelessWidget {
                   color: AppTheme.colorEDEEF0,
                 ),
                 imageUrl: item.skuImage,
-                fit: BoxFit.cover,
+                fit: BoxFit.contain,
               ),
             ),
             SizedBox(

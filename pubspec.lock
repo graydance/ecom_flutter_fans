@@ -140,7 +140,7 @@ packages:
       name: csslib
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "0.16.2"
+    version: "0.17.0"
   dart_style:
     dependency: transitive
     description:
@@ -351,7 +351,7 @@ packages:
       name: flutter_widget_from_html_core
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "0.5.2+1"
+    version: "0.6.0"
   fuchsia_remote_debug_protocol:
     dependency: transitive
     description: flutter
@@ -370,7 +370,7 @@ packages:
       name: html
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "0.14.0+4"
+    version: "0.15.0"
   http:
     dependency: transitive
     description:
@@ -695,7 +695,7 @@ packages:
       name: sqflite
       url: "https://pub.flutter-io.cn"
     source: hosted
-    version: "2.0.0+2"
+    version: "2.0.0+3"
   sqflite_common:
     dependency: transitive
     description:
@@ -766,6 +766,20 @@ packages:
       url: "https://pub.flutter-io.cn"
     source: hosted
     version: "1.3.0"
+  universal_html:
+    dependency: "direct main"
+    description:
+      name: universal_html
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "2.0.8"
+  universal_io:
+    dependency: transitive
+    description:
+      name: universal_io
+      url: "https://pub.flutter-io.cn"
+    source: hosted
+    version: "2.0.4"
   url_launcher:
     dependency: "direct main"
     description:
