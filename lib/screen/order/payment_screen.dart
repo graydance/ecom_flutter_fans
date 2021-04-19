@@ -1,16 +1,15 @@
 import 'dart:async';
-import 'dart:html' as html;
 
-import 'package:fans/event/app_event.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:redux/redux.dart';
+import 'package:universal_html/html.dart' as html;
 import 'package:url_launcher/url_launcher.dart';
 
+import 'package:fans/event/app_event.dart';
 import 'package:fans/models/address.dart';
 import 'package:fans/models/models.dart';
 import 'package:fans/r.g.dart';
