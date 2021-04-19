@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:fans/app.dart';
+import 'package:fans/event/app_event.dart';
 import 'package:fans/screen/components/cart_button.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -43,6 +44,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _ViewModel>(
       onInit: (store) {
+        AppEvent.shared.report(event: AnalyticsEvent.product_view_c);
+
         _productId = store.state.productDetails.currentId;
       },
       converter: (store) => _ViewModel.fromStore(store, _productId),
@@ -123,6 +126,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         onPressed: model.model == null
                             ? null
                             : () async {
+                                AppEvent.shared
+                                    .report(event: AnalyticsEvent.add_to_cart);
+
                                 await showProductAttributesBottomSheet(
                                   context,
                                   ProductAttributesViewModel(
@@ -165,6 +171,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         onPressed: model.model == null
                             ? null
                             : () async {
+                                AppEvent.shared
+                                    .report(event: AnalyticsEvent.buy_now);
+
                                 await showProductAttributesBottomSheet(
                                   context,
                                   ProductAttributesViewModel(

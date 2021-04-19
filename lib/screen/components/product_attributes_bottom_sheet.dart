@@ -30,8 +30,9 @@ class _ProductAttributesBottomSheetState
   List<int> _selectionSpecIds;
   List<List<int>> _disableSpecIds;
 
-  bool _isCustomiz = false;
+  bool _isCustomiz = true;
   final _customizController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
@@ -158,9 +159,11 @@ class _ProductAttributesBottomSheetState
                   child: FansButton(
                     onPressed: _currentSku.stock > 0
                         ? () {
-                            if (_customizController.text.trim().isEmpty ||
-                                _customizController.text.length > 10) {
-                              return;
+                            if (widget.viewModel.model.isCustomiz == 1 &&
+                                _isCustomiz) {
+                              if (!_formKey.currentState.validate()) {
+                                return;
+                              }
                             }
                             Navigator.of(context).pop();
                             widget.viewModel.onTapAction(
@@ -223,8 +226,11 @@ class _ProductAttributesBottomSheetState
             height: 8,
           ),
         if (_isCustomiz)
-          CustomizeTextField(
-            controller: _customizController,
+          Form(
+            child: CustomizeTextField(
+              formKey: _formKey,
+              controller: _customizController,
+            ),
           ),
       ],
     );

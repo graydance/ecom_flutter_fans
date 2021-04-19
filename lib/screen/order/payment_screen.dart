@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:fans/event/app_event.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -163,7 +164,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                             ),
                           ),
                           Text(
-                            'Free',
+                            viewModel.orderDetail.shipping,
                             style: TextStyle(
                               color: AppTheme.color555764,
                               fontSize: 12,
@@ -225,22 +226,20 @@ class _PaymentScreenState extends State<PaymentScreen> {
                       image: R.image.paypal(),
                     ),
                   ]),
-                )
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 20),
+                  child: FansButton(
+                    onPressed: () {
+                      AppEvent.shared.report(event: AnalyticsEvent.pay);
+
+                      viewModel.onTapPay(context);
+                    },
+                    title: 'Pay ${viewModel.currency}${viewModel.totalStr}'
+                        .toUpperCase(),
+                  ),
+                ),
               ],
-            ),
-          ),
-        ),
-        bottomNavigationBar: Container(
-          padding: EdgeInsets.only(
-              bottom: MediaQuery.of(context).padding.bottom + 20, top: 10),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: FansButton(
-              onPressed: () {
-                viewModel.onTapPay(context);
-              },
-              title: 'Pay ${viewModel.currency}${viewModel.totalStr}'
-                  .toUpperCase(),
             ),
           ),
         ),

@@ -286,12 +286,12 @@ class _AddressFormState extends State<AddressForm> {
               showFlags: false,
               setSelectorButtonAsPrefixIcon: false,
               selectorType: PhoneInputSelectorType.BOTTOM_SHEET,
-              boxDecoration: BoxDecoration(
-                border: Border.all(
-                  color: AppTheme.colorC4C5CD,
-                ),
-              ),
-              padding: EdgeInsets.all(11.0),
+              // boxDecoration: BoxDecoration(
+              //   border: Border.all(
+              //     color: AppTheme.colorC4C5CD,
+              //   ),
+              // ),
+              // padding: EdgeInsets.all(11.0),
             ),
             ignoreBlank: false,
             textFieldController: _phoneNumberController,
