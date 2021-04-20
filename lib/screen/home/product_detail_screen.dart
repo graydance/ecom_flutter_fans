@@ -109,6 +109,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         bottomNavigationBar: model.model.idolGoodsId.isEmpty
             ? null
             : Container(
+                height: 44,
                 padding: EdgeInsets.only(
                     bottom: MediaQuery.of(context).padding.bottom),
                 child: Row(

@@ -31,4 +31,14 @@ class AuthStorage {
     }
     return User.fromJson(jsonString) ?? User();
   }
+
+  static Future<void> setString(String key, String value) async {
+    final preferences = await SharedPreferences.getInstance();
+    preferences.setString(key, value);
+  }
+
+  static Future<String> getString(String key) async {
+    final preferences = await SharedPreferences.getInstance();
+    return preferences.getString(key);
+  }
 }

@@ -6,6 +6,7 @@ import 'package:fans/event/app_event.dart';
 import 'package:fans/models/coupon_info.dart';
 import 'package:fans/models/tag.dart';
 import 'package:fans/screen/components/alert_view.dart';
+import 'package:fans/storage/auth_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
@@ -39,6 +40,12 @@ class _ShopScreenState extends State<ShopScreen> {
   int _page = 1;
   final _pageSize = 20;
   List<GoodsItem> _goods = [];
+
+  @override
+  void initState() async {
+    super.initState();
+    await AuthStorage.setString('lastUser', widget.userName);
+  }
 
   @override
   Widget build(BuildContext context) {
