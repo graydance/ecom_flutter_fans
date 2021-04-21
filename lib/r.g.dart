@@ -244,10 +244,33 @@ class _R_Image_AssetResource {
   final common_button_bg =
       const AssetResource("assets/images/product/common_button_bg.png", packageName: null);
 
+  /// asset: assets/images/product/icon_add.png
+  // ignore: non_constant_identifier_names
+  final icon_add = const AssetResource("assets/images/product/icon_add.png", packageName: null);
+
+  /// asset: assets/images/product/icon_add_disable.png
+  // ignore: non_constant_identifier_names
+  final icon_add_disable =
+      const AssetResource("assets/images/product/icon_add_disable.png", packageName: null);
+
+  /// asset: assets/images/product/icon_close.png
+  // ignore: non_constant_identifier_names
+  final icon_close = const AssetResource("assets/images/product/icon_close.png", packageName: null);
+
   /// asset: assets/images/product/icon_payment.png
   // ignore: non_constant_identifier_names
   final icon_payment =
       const AssetResource("assets/images/product/icon_payment.png", packageName: null);
+
+  /// asset: assets/images/product/icon_remove.png
+  // ignore: non_constant_identifier_names
+  final icon_remove =
+      const AssetResource("assets/images/product/icon_remove.png", packageName: null);
+
+  /// asset: assets/images/product/icon_remove_disable.png
+  // ignore: non_constant_identifier_names
+  final icon_remove_disable =
+      const AssetResource("assets/images/product/icon_remove_disable.png", packageName: null);
 
   /// asset: assets/images/product/icon_shipping.png
   // ignore: non_constant_identifier_names
@@ -524,10 +547,40 @@ class _R_Image {
     return AssetImage(asset.common_button_bg.keyName);
   }
 
+  /// asset: assets/images/product/icon_add.png
+  // ignore: non_constant_identifier_names
+  AssetImage icon_add() {
+    return AssetImage(asset.icon_add.keyName);
+  }
+
+  /// asset: assets/images/product/icon_add_disable.png
+  // ignore: non_constant_identifier_names
+  AssetImage icon_add_disable() {
+    return AssetImage(asset.icon_add_disable.keyName);
+  }
+
+  /// asset: assets/images/product/icon_close.png
+  // ignore: non_constant_identifier_names
+  AssetImage icon_close() {
+    return AssetImage(asset.icon_close.keyName);
+  }
+
   /// asset: assets/images/product/icon_payment.png
   // ignore: non_constant_identifier_names
   AssetImage icon_payment() {
     return AssetImage(asset.icon_payment.keyName);
+  }
+
+  /// asset: assets/images/product/icon_remove.png
+  // ignore: non_constant_identifier_names
+  AssetImage icon_remove() {
+    return AssetImage(asset.icon_remove.keyName);
+  }
+
+  /// asset: assets/images/product/icon_remove_disable.png
+  // ignore: non_constant_identifier_names
+  AssetImage icon_remove_disable() {
+    return AssetImage(asset.icon_remove_disable.keyName);
   }
 
   /// asset: assets/images/product/icon_shipping.png
