@@ -43,6 +43,7 @@ enum AnalyticsEvent {
   product_view_c,
   add_to_cart,
   buy_now,
+  check_out,
   continue_to_payment,
   pay,
   pay_success,
