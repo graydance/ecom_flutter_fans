@@ -94,7 +94,7 @@ Middleware<AppState> _verifyAuthState() {
         if (kIsWeb) {
         } else {
           Keys.navigatorKey.currentState
-              .pushReplacementNamed(Routes.shop + '/username1');
+              .pushReplacementNamed(Routes.shop + '/iuui');
         }
       } else {
         store.dispatch(LocalUpdateUserAction(User()));
@@ -102,7 +102,7 @@ Middleware<AppState> _verifyAuthState() {
         if (kIsWeb) {
         } else {
           Keys.navigatorKey.currentState
-              .pushReplacementNamed(Routes.shop + '/username1');
+              .pushReplacementNamed(Routes.shop + '/iuui');
         }
       }
     });

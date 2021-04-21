@@ -32,6 +32,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   int _quantity = 1;
 
   _precacheSkuImages(Product model) {
+    if (!mounted) return;
     model.goodsSkus.forEach((e) {
       precacheImage(
         CachedNetworkImageProvider(e.skuImage),
