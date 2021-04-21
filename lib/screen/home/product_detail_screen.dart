@@ -128,9 +128,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         onPressed: model.model == null
                             ? null
                             : () async {
-                                AppEvent.shared
-                                    .report(event: AnalyticsEvent.add_to_cart);
-
                                 await showProductAttributesBottomSheet(
                                   context,
                                   ProductAttributesViewModel(
@@ -144,6 +141,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                     },
                                     onTapAction:
                                         (skuSpecIds, isCustomiz, customiz) {
+                                      AppEvent.shared.report(
+                                          event: AnalyticsEvent.add_to_cart,
+                                          parameters: {
+                                            AnalyticsEventParameter.id:
+                                                model.model.idolGoodsId
+                                          });
                                       model.onTapAddToCart(
                                         _quantity,
                                         skuSpecIds,
@@ -173,9 +176,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         onPressed: model.model == null
                             ? null
                             : () async {
-                                AppEvent.shared
-                                    .report(event: AnalyticsEvent.buy_now);
-
                                 await showProductAttributesBottomSheet(
                                   context,
                                   ProductAttributesViewModel(
@@ -189,6 +189,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                     },
                                     onTapAction:
                                         (skuSpecIds, isCustomiz, customiz) {
+                                      AppEvent.shared.report(
+                                          event: AnalyticsEvent.buy_now,
+                                          parameters: {
+                                            AnalyticsEventParameter.id:
+                                                model.model.idolGoodsId
+                                          });
                                       model.onTapBuyNow(_quantity, skuSpecIds,
                                           isCustomiz, customiz);
                                     },

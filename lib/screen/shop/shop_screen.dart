@@ -39,6 +39,8 @@ class _ShopScreenState extends State<ShopScreen> {
   final _pageSize = 20;
   List<GoodsItem> _goods = [];
 
+  Set<String> _reportedIds = {};
+
   _loadData(_ViewModel viewModel) async {
     final completer = Completer();
     StoreProvider.of<AppState>(context).dispatch(
@@ -278,8 +280,16 @@ class _ShopScreenState extends State<ShopScreen> {
                           mainAxisSpacing: 4.0,
                           crossAxisSpacing: 4.0,
                           itemBuilder: (context, index) {
-                            AppEvent.shared
-                                .report(event: AnalyticsEvent.grid_desplay_c);
+                            final model = _goods[index];
+                            if (!_reportedIds.contains(model.id)) {
+                              _reportedIds.add(model.id);
+                              AppEvent.shared.report(
+                                event: AnalyticsEvent.grid_display_c,
+                                parameters: {
+                                  AnalyticsEventParameter.id: model.id
+                                },
+                              );
+                            }
 
                             return _Tile(viewModel.currency, _goods[index],
                                 _getSize(_goods[index]));
@@ -395,12 +405,14 @@ class _Tile extends StatelessWidget {
               height: size.height,
               child: Stack(
                 children: [
-                  CachedNetworkImage(
-                    placeholder: (context, _) => Container(
-                      color: AppTheme.colorEDEEF0,
+                  Center(
+                    child: CachedNetworkImage(
+                      placeholder: (context, _) => Container(
+                        color: AppTheme.colorEDEEF0,
+                      ),
+                      imageUrl: model.picture,
+                      fit: BoxFit.contain,
                     ),
-                    imageUrl: model.picture,
-                    fit: BoxFit.contain,
                   ),
                   if (model.discount.isNotEmpty)
                     Positioned(
@@ -443,7 +455,6 @@ class _Tile extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // 已知问题：web无法同时支持maxLines和ellipsis，详见 https://github.com/flutter/flutter/issues/44802#issuecomment-555707104
                   Text(
                     '${model.goodsName}',
                     style: TextStyle(
@@ -487,7 +498,6 @@ class _Tile extends StatelessWidget {
                     SizedBox(
                       height: 8,
                     ),
-
                   Wrap(
                     spacing: -2,
                     runSpacing: -2,
