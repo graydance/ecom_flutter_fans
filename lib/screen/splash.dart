@@ -12,9 +12,13 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   @override
-  void initState() async {
+  void initState() {
     super.initState();
 
+    _redirect();
+  }
+
+  _redirect() async {
     final String userName = await AuthStorage.getString('lastUser');
     if (userName != null && userName.isNotEmpty) {
       Future.delayed(Duration(milliseconds: 200)).then((value) => Keys

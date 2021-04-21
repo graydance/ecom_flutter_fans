@@ -16,7 +16,7 @@ dependencies:
   flutter_svg: ^0.20.0-nullsafety.3
   r_dart_library: ^0.2.1
   shared_preferences: ^2.0.5
-  flutter_easyrefresh: ^2.1.8
+  flutter_easyrefresh: ^2.2.1
   flutter_easyloading: ^2.2.2
   intl: ^0.16.1
   modal_bottom_sheet: ^1.0.0+1

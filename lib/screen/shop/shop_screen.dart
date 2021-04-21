@@ -2,11 +2,6 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:fans/event/app_event.dart';
-import 'package:fans/models/coupon_info.dart';
-import 'package:fans/models/tag.dart';
-import 'package:fans/screen/components/alert_view.dart';
-import 'package:fans/storage/auth_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
@@ -15,12 +10,15 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:redux/redux.dart';
 
 import 'package:fans/app.dart';
+import 'package:fans/event/app_event.dart';
+import 'package:fans/models/coupon_info.dart';
 import 'package:fans/models/goods_item.dart';
 import 'package:fans/models/models.dart';
 import 'package:fans/r.g.dart';
+import 'package:fans/screen/components/alert_view.dart';
 import 'package:fans/screen/components/cart_button.dart';
-import 'package:fans/screen/components/empty_view.dart';
 import 'package:fans/screen/components/tag_view.dart';
+import 'package:fans/storage/auth_storage.dart';
 import 'package:fans/store/actions.dart';
 import 'package:fans/theme.dart';
 
@@ -41,10 +39,28 @@ class _ShopScreenState extends State<ShopScreen> {
   final _pageSize = 20;
   List<GoodsItem> _goods = [];
 
+  _loadData(_ViewModel viewModel) async {
+    final completer = Completer();
+    StoreProvider.of<AppState>(context).dispatch(
+        FetchSellerInfoAction(userName: widget.userName, completer: completer));
+
+    try {
+      final Feed seller = await completer.future;
+      setState(() {
+        _seller = seller;
+      });
+    } catch (e) {}
+
+    _showCoupon(viewModel.currency);
+
+    // 获取配置
+    StoreProvider.of<AppState>(context).dispatch(FetchConfigAction());
+  }
+
   @override
-  void initState() async {
+  void initState() {
     super.initState();
-    await AuthStorage.setString('lastUser', widget.userName);
+    AuthStorage.setString('lastUser', widget.userName);
   }
 
   @override
@@ -56,20 +72,6 @@ class _ShopScreenState extends State<ShopScreen> {
       },
       onInitialBuild: (viewModel) async {
         AppEvent.shared.report(event: AnalyticsEvent.shoplink_view);
-
-        final completer = Completer();
-        StoreProvider.of<AppState>(context).dispatch(FetchSellerInfoAction(
-            userName: viewModel.userName, completer: completer));
-
-        final Feed seller = await completer.future;
-        setState(() {
-          _seller = seller;
-        });
-
-        _showCoupon(viewModel.currency);
-
-        // 获取配置
-        StoreProvider.of<AppState>(context).dispatch(FetchConfigAction());
       },
       builder: (ctx, viewModel) => Scaffold(
         backgroundColor: AppTheme.colorF8F8F8,
@@ -85,6 +87,8 @@ class _ShopScreenState extends State<ShopScreen> {
                 limit: _pageSize,
                 completer: Completer());
             StoreProvider.of<AppState>(context).dispatch(action);
+
+            _loadData(viewModel);
 
             try {
               final response = await action.completer.future;

@@ -120,12 +120,15 @@ class _ProductAttributesBottomSheetState
                           valueChanged: (selectedItem) {
                             _selectionSpecIds[i] = selectedItem.id;
                             final sku = widget.viewModel.model.goodsSkus
-                                .firstWhere((element) =>
-                                    element.skuSpecIds ==
-                                    _selectionSpecIds.join('_'));
+                                .firstWhere(
+                                    (element) =>
+                                        element.skuSpecIds ==
+                                        _selectionSpecIds.join('_'),
+                                    orElse: () => GoodsSkus());
 
                             final disableSpecIds =
                                 _getDisableSpecIds(i, selectedItem);
+
                             setState(() {
                               _currentSku = sku;
                               _disableSpecIds = disableSpecIds;
@@ -157,23 +160,28 @@ class _ProductAttributesBottomSheetState
                   width: double.infinity,
                   height: 44,
                   child: FansButton(
-                    onPressed: _currentSku.stock > 0
-                        ? () {
-                            if (widget.viewModel.model.isCustomiz == 1 &&
-                                _isCustomiz) {
-                              if (!_formKey.currentState.validate()) {
-                                return;
-                              }
-                            }
-                            Navigator.of(context).pop();
-                            widget.viewModel.onTapAction(
-                              _currentSku.skuSpecIds,
-                              _isCustomiz,
-                              _customizController.text ?? '',
-                            );
-                          }
-                        : null,
-                    title: widget.viewModel.actionType.displayTitle,
+                    onPressed: () {
+                      if (_currentSku.stock == 0) {
+                        return;
+                      }
+
+                      if (widget.viewModel.model.isCustomiz == 1 &&
+                          _isCustomiz) {
+                        if (!_formKey.currentState.validate()) {
+                          return;
+                        }
+                      }
+
+                      Navigator.of(context).pop();
+                      widget.viewModel.onTapAction(
+                        _currentSku.skuSpecIds,
+                        _isCustomiz,
+                        _customizController.text ?? '',
+                      );
+                    },
+                    title: _currentSku.stock == 0
+                        ? 'Out of stock'
+                        : widget.viewModel.actionType.displayTitle,
                     isDisable: _currentSku.stock == 0,
                   ),
                 ),
