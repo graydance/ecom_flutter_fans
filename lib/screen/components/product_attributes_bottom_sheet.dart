@@ -223,7 +223,7 @@ class _ProductAttributesBottomSheetState
               'Customiz',
               style: TextStyle(
                 fontSize: 14,
-                color: AppTheme.color555764,
+                color: AppTheme.color0F1015,
                 fontWeight: FontWeight.w500,
               ),
             )
@@ -262,9 +262,9 @@ class _ProductAttributesBottomSheetState
                   primary: AppTheme.colorC4C5CD,
                   padding: EdgeInsets.all(1),
                 ),
-                child: Icon(
-                  Icons.close,
-                  size: 20,
+                child: Image(
+                  image: R.image.icon_close(),
+                  width: 20,
                 ),
               ),
             ),
