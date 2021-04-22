@@ -120,6 +120,10 @@ class _PreOrderMVPScreenState extends State<PreOrderMVPScreen> {
                             if (billingAddress == null) {
                               return;
                             }
+
+                            AppEvent.shared
+                                .report(event: AnalyticsEvent.check_out);
+
                             viewModel.onCheckout(
                                 shippingAddress,
                                 billingAddress,

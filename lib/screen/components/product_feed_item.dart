@@ -1,15 +1,15 @@
 import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:fans/screen/components/tag_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:intl/intl.dart';
 
 import 'package:fans/models/models.dart';
 import 'package:fans/r.g.dart';
 import 'package:fans/screen/components/media_carousel_widget.dart';
+import 'package:fans/screen/components/tag_view.dart';
 import 'package:fans/theme.dart';
 
 class ProductFeedItem extends StatefulWidget {
@@ -72,27 +72,13 @@ class _ProductFeedItemState extends State<ProductFeedItem> {
                 color: Color(0xfff8f8f8),
                 child: Stack(
                   children: [
-                    Container(
-                      constraints: BoxConstraints.expand(),
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          image: NetworkImage(widget.model.goods.first),
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                      child: BackdropFilter(
-                        filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
-                        child: Container(
-                          color: Colors.black.withOpacity(0.5),
-                        ),
-                      ),
-                    ),
                     MediaCarouselWidget(
                       items: widget.model.goods.map((url) {
                         return Center(
                           child: CachedNetworkImage(
-                            placeholder: (context, _) => Container(
-                              color: AppTheme.colorEDEEF0,
+                            placeholder: (context, _) => Image(
+                              image: R.image.goods_placeholder(),
+                              fit: BoxFit.cover,
                             ),
                             imageUrl: url,
                             fit: BoxFit.contain,
@@ -197,14 +183,8 @@ class _ProductFeedItemState extends State<ProductFeedItem> {
         ),
         Align(
           alignment: Alignment.centerLeft,
-          child: HtmlWidget(
-            widget.model.goodsDescription,
-            customStylesBuilder: (e) => {
-              'font-size': '12',
-              'line-height': 'normal',
-              'margin': '0',
-              'padding': '0',
-            },
+          child: Html(
+            data: widget.model.goodsDescription,
           ),
         ),
       ],

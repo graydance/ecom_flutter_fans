@@ -381,8 +381,9 @@ class CartItemTile extends StatelessWidget {
               height: 110,
               width: 110,
               child: CachedNetworkImage(
-                placeholder: (context, _) => Container(
-                  color: AppTheme.colorEDEEF0,
+                placeholder: (context, _) => Image(
+                  image: R.image.goods_placeholder(),
+                  fit: BoxFit.cover,
                 ),
                 imageUrl: item.skuImage,
                 fit: BoxFit.contain,

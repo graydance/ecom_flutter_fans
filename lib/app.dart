@@ -58,36 +58,6 @@ class _ReduxAppState extends State<ReduxApp> {
           ),
           initialRoute: Routes.splash,
           navigatorKey: Keys.navigatorKey,
-          routes: {
-            Routes.splash: (context) => SplashScreen(),
-            Routes.welcome: (context) => WelcomeScreen(),
-            Routes.verifyEmail: (context) => AuthEmailScreen(),
-            Routes.signup: (context) => SignupScreen(),
-            Routes.login: (context) => LoginScreen(),
-            Routes.forgotPassword: (context) => ForgotPasswordScreen(),
-            Routes.interests: (context) => InterestListScreen(
-                  onInit: () {
-                    StoreProvider.of<AppState>(context)
-                        .dispatch(FetchInterestAction());
-                  },
-                ),
-            Routes.home: (context) => TabbarScreen(
-                  onInit: () {},
-                ),
-            Routes.searchByTag: (context) => SearchByTagScreen(),
-            Routes.shopDetail: (context) => ShopDetailScreen(),
-            Routes.productDetail: (context) => ProductDetailScreen(),
-            Routes.cart: (context) => CartScreen(),
-            // Routes.preOrder: (context) => PreOrderScreen(),
-            Routes.payment: (context) => PaymentScreen(),
-            Routes.paymentSuccess: (context) => PaymentSuccessScreen(),
-            Routes.shop: (context) => ShopScreen(
-                  userName: '',
-                ),
-            Routes.signin: (context) => SignInScreen(),
-            Routes.paypalResult: (context) => PaymentResultScreen(),
-            Routes.preOrderMVP: (context) => PreOrderMVPScreen(),
-          },
           builder: EasyLoading.init(),
           onGenerateRoute: RouteConfiguration.onGenerateRoute,
         ));
@@ -137,6 +107,37 @@ class Path {
 }
 
 class RouteConfiguration {
+  static var routeInitd = false;
+  static var routes = {
+    Routes.splash: (context) => SplashScreen(),
+    Routes.welcome: (context) => WelcomeScreen(),
+    Routes.verifyEmail: (context) => AuthEmailScreen(),
+    Routes.signup: (context) => SignupScreen(),
+    Routes.login: (context) => LoginScreen(),
+    Routes.forgotPassword: (context) => ForgotPasswordScreen(),
+    Routes.interests: (context) => InterestListScreen(
+          onInit: () {
+            StoreProvider.of<AppState>(context).dispatch(FetchInterestAction());
+          },
+        ),
+    Routes.home: (context) => TabbarScreen(
+          onInit: () {},
+        ),
+    Routes.searchByTag: (context) => SearchByTagScreen(),
+    Routes.shopDetail: (context) => ShopDetailScreen(),
+    Routes.productDetail: (context) => ProductDetailScreen(),
+    Routes.cart: (context) => CartScreen(),
+    // Routes.preOrder: (context) => PreOrderScreen(),
+    Routes.payment: (context) => PaymentScreen(),
+    Routes.paymentSuccess: (context) => PaymentSuccessScreen(),
+    Routes.shop: (context) => ShopScreen(
+          userName: '',
+        ),
+    Routes.signin: (context) => SignInScreen(),
+    Routes.paypalResult: (context) => PaymentResultScreen(),
+    Routes.preOrderMVP: (context) => PreOrderMVPScreen(),
+  };
+
   /// List of [Path] to for route matching. When a named route is pushed with
   /// [Navigator.pushNamed], the route name is matched with the [Path.pattern]
   /// in the list below. As soon as there is a match, the associated builder
@@ -178,6 +179,21 @@ class RouteConfiguration {
   /// [WidgetsApp.onGenerateRoute] to make use of the [paths] for route
   /// matching.
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
+    if (routes.containsKey(settings.name)) {
+      if (!routeInitd) {
+        return MaterialPageRoute<void>(
+          builder: routes[Routes.splash],
+          settings: settings,
+        );
+      }
+
+      return MaterialPageRoute<void>(
+        builder: routes[settings.name],
+        settings: settings,
+      );
+    }
+
+    routeInitd = true;
     for (Path path in paths) {
       if (path.useQueryString && settings.name.startsWith(path.pattern)) {
         final queryParameters = Uri.parse(settings.name).queryParameters;

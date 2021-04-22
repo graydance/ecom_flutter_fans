@@ -32,6 +32,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   int _quantity = 1;
 
   _precacheSkuImages(Product model) {
+    if (!mounted) return;
     model.goodsSkus.forEach((e) {
       precacheImage(
         CachedNetworkImageProvider(e.skuImage),
@@ -109,6 +110,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         bottomNavigationBar: model.model.idolGoodsId.isEmpty
             ? null
             : Container(
+                height: 44,
                 padding: EdgeInsets.only(
                     bottom: MediaQuery.of(context).padding.bottom),
                 child: Row(
@@ -126,9 +128,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         onPressed: model.model == null
                             ? null
                             : () async {
-                                AppEvent.shared
-                                    .report(event: AnalyticsEvent.add_to_cart);
-
                                 await showProductAttributesBottomSheet(
                                   context,
                                   ProductAttributesViewModel(
@@ -142,6 +141,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                     },
                                     onTapAction:
                                         (skuSpecIds, isCustomiz, customiz) {
+                                      AppEvent.shared.report(
+                                          event: AnalyticsEvent.add_to_cart,
+                                          parameters: {
+                                            AnalyticsEventParameter.id:
+                                                model.model.idolGoodsId
+                                          });
                                       model.onTapAddToCart(
                                         _quantity,
                                         skuSpecIds,
@@ -171,9 +176,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         onPressed: model.model == null
                             ? null
                             : () async {
-                                AppEvent.shared
-                                    .report(event: AnalyticsEvent.buy_now);
-
                                 await showProductAttributesBottomSheet(
                                   context,
                                   ProductAttributesViewModel(
@@ -187,6 +189,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                     },
                                     onTapAction:
                                         (skuSpecIds, isCustomiz, customiz) {
+                                      AppEvent.shared.report(
+                                          event: AnalyticsEvent.buy_now,
+                                          parameters: {
+                                            AnalyticsEventParameter.id:
+                                                model.model.idolGoodsId
+                                          });
                                       model.onTapBuyNow(_quantity, skuSpecIds,
                                           isCustomiz, customiz);
                                     },

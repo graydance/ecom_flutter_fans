@@ -12,11 +12,10 @@ dependencies:
   dio: ^3.0.7
   redux_logging: ^0.4.0
   logging: ^0.11.4
-  video_player: ^2.0.0-nullsafety.7
-  flutter_svg: ^0.20.0-nullsafety.3
+  video_player: ^2.1.1
   r_dart_library: ^0.2.1
   shared_preferences: ^2.0.5
-  flutter_easyrefresh: ^2.1.8
+  flutter_easyrefresh: ^2.2.1
   flutter_easyloading: ^2.2.2
   intl: ^0.16.1
   modal_bottom_sheet: ^1.0.0+1
@@ -26,7 +25,7 @@ dependencies:
       url: 'https://github.com/letsar/flutter_staggered_grid_view.git'
   url_launcher: ^6.0.3
   photo_view: ^0.10.3
-  flutter_widget_from_html_core: ^0.6.0
+  flutter_html: ^2.0.0-nullsafety.0
   badges: ^1.2.0
   uuid: ^3.0.1
   crypto: ^3.0.0
@@ -80,7 +79,13 @@ flutter:
   - assets/images/logo.png
   - assets/images/product/cart_empty.png
   - assets/images/product/common_button_bg.png
+  - assets/images/product/goods_placeholder.png
+  - assets/images/product/icon_add.png
+  - assets/images/product/icon_add_disable.png
+  - assets/images/product/icon_close.png
   - assets/images/product/icon_payment.png
+  - assets/images/product/icon_remove.png
+  - assets/images/product/icon_remove_disable.png
   - assets/images/product/icon_shipping.png
   - assets/images/product/payment_success.png
   - assets/images/product/paypal.png

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:fans/r.g.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -797,8 +798,9 @@ class _OrderDetailsExpansionTileState extends State<OrderDetailsExpansionTile> {
                     height: 110,
                     width: 110,
                     child: CachedNetworkImage(
-                      placeholder: (context, _) => Container(
-                        color: AppTheme.colorEDEEF0,
+                      placeholder: (context, _) => Image(
+                        image: R.image.goods_placeholder(),
+                        fit: BoxFit.cover,
                       ),
                       imageUrl: item.skuImage,
                       fit: BoxFit.cover,

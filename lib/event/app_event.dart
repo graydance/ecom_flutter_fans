@@ -1,14 +1,20 @@
+import 'dart:convert';
+
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:enum_to_string/enum_to_string.dart';
 import 'package:firebase_analytics/observer.dart';
 import 'package:flutter/foundation.dart';
+import 'package:universal_html/js.dart' as js;
 
 class AppEvent {
   final List<AnalyticsProvider> providers;
 
   AppEvent(this.providers);
 
-  static AppEvent get shared => AppEvent([FirebaseAnalyticsProvider()]);
+  static AppEvent get shared => AppEvent([
+        FirebaseAnalyticsProvider(),
+        FacebookWebAnalyticsProvider(),
+      ]);
 
   Future<void> report(
       {@required AnalyticsEvent event,
@@ -31,12 +37,14 @@ class AppEvent {
 }
 
 enum AnalyticsEvent {
+  splash,
   shoplink_view,
-  grid_desplay_c,
+  grid_display_c,
   grid_click_c,
   product_view_c,
   add_to_cart,
   buy_now,
+  check_out,
   continue_to_payment,
   pay,
   pay_success,
@@ -76,5 +84,21 @@ class FirebaseAnalyticsProvider extends AnalyticsProvider {
       }
     }
     return analytics.logEvent(name: event.name, parameters: maps);
+  }
+}
+
+class FacebookWebAnalyticsProvider extends AnalyticsProvider {
+  @override
+  Future<void> report(
+      {AnalyticsEvent event,
+      Map<AnalyticsEventParameter, dynamic> parameters}) {
+    Map<String, dynamic> maps = {};
+    if (parameters != null) {
+      for (var key in parameters.keys) {
+        maps.addAll({key.name: parameters[key]});
+      }
+    }
+    return js.context
+        .callMethod('fb_logEvent', [event.name, json.encode(maps)]);
   }
 }
