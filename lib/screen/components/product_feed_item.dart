@@ -1,15 +1,15 @@
 import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:fans/screen/components/tag_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_widget_from_html_core/flutter_widget_from_html_core.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:intl/intl.dart';
 
 import 'package:fans/models/models.dart';
 import 'package:fans/r.g.dart';
 import 'package:fans/screen/components/media_carousel_widget.dart';
+import 'package:fans/screen/components/tag_view.dart';
 import 'package:fans/theme.dart';
 
 class ProductFeedItem extends StatefulWidget {
@@ -197,14 +197,8 @@ class _ProductFeedItemState extends State<ProductFeedItem> {
         ),
         Align(
           alignment: Alignment.centerLeft,
-          child: HtmlWidget(
-            widget.model.goodsDescription,
-            customStylesBuilder: (e) => {
-              'font-size': '12',
-              'line-height': 'normal',
-              'margin': '0',
-              'padding': '0',
-            },
+          child: Html(
+            data: widget.model.goodsDescription,
           ),
         ),
       ],
