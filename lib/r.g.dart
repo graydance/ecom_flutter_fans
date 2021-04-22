@@ -244,6 +244,11 @@ class _R_Image_AssetResource {
   final common_button_bg =
       const AssetResource("assets/images/product/common_button_bg.png", packageName: null);
 
+  /// asset: assets/images/product/goods_placeholder.png
+  // ignore: non_constant_identifier_names
+  final goods_placeholder =
+      const AssetResource("assets/images/product/goods_placeholder.png", packageName: null);
+
   /// asset: assets/images/product/icon_add.png
   // ignore: non_constant_identifier_names
   final icon_add = const AssetResource("assets/images/product/icon_add.png", packageName: null);
@@ -545,6 +550,12 @@ class _R_Image {
   // ignore: non_constant_identifier_names
   AssetImage common_button_bg() {
     return AssetImage(asset.common_button_bg.keyName);
+  }
+
+  /// asset: assets/images/product/goods_placeholder.png
+  // ignore: non_constant_identifier_names
+  AssetImage goods_placeholder() {
+    return AssetImage(asset.goods_placeholder.keyName);
   }
 
   /// asset: assets/images/product/icon_add.png

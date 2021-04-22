@@ -79,6 +79,7 @@ flutter:
   - assets/images/logo.png
   - assets/images/product/cart_empty.png
   - assets/images/product/common_button_bg.png
+  - assets/images/product/goods_placeholder.png
   - assets/images/product/icon_add.png
   - assets/images/product/icon_add_disable.png
   - assets/images/product/icon_close.png

@@ -72,27 +72,13 @@ class _ProductFeedItemState extends State<ProductFeedItem> {
                 color: Color(0xfff8f8f8),
                 child: Stack(
                   children: [
-                    Container(
-                      constraints: BoxConstraints.expand(),
-                      decoration: BoxDecoration(
-                        image: DecorationImage(
-                          image: NetworkImage(widget.model.goods.first),
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                      child: BackdropFilter(
-                        filter: ImageFilter.blur(sigmaX: 15, sigmaY: 15),
-                        child: Container(
-                          color: Colors.black.withOpacity(0.5),
-                        ),
-                      ),
-                    ),
                     MediaCarouselWidget(
                       items: widget.model.goods.map((url) {
                         return Center(
                           child: CachedNetworkImage(
-                            placeholder: (context, _) => Container(
-                              color: AppTheme.colorEDEEF0,
+                            placeholder: (context, _) => Image(
+                              image: R.image.goods_placeholder(),
+                              fit: BoxFit.cover,
                             ),
                             imageUrl: url,
                             fit: BoxFit.contain,
