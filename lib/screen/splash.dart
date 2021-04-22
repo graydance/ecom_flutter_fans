@@ -1,4 +1,5 @@
 import 'package:fans/app.dart';
+import 'package:fans/screen/components/default_button.dart';
 import 'package:fans/storage/auth_storage.dart';
 import 'package:flutter/material.dart';
 
@@ -12,27 +13,44 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   @override
-  void initState() {
-    super.initState();
-
-    _redirect();
-  }
-
-  _redirect() async {
-    final String userName = await AuthStorage.getString('lastUser');
-    if (userName != null && userName.isNotEmpty) {
-      Future.delayed(Duration(milliseconds: 200)).then((value) => Keys
-          .navigatorKey.currentState
-          .pushReplacementNamed('${Routes.shop}/$userName'));
-    }
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
         child: Center(
-          child: AuthHeroLogo(),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              AuthHeroLogo(),
+              FutureBuilder(
+                future: AuthStorage.getString('lastUser'),
+                builder:
+                    (BuildContext context, AsyncSnapshot<String> snapshot) {
+                  final userName = snapshot.data;
+                  if (userName != null && userName.isNotEmpty) {
+                    return Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: TextButton(
+                        onPressed: () {
+                          Keys.navigatorKey.currentState
+                              .pushReplacementNamed('${Routes.shop}/$userName');
+                        },
+                        child: Text(
+                          'Continue shopping',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            decoration: TextDecoration.underline,
+                          ),
+                        ),
+                      ),
+                    );
+                  } else {
+                    return Container();
+                  }
+                },
+              ),
+            ],
+          ),
         ),
         decoration: BoxDecoration(
           image: DecorationImage(

@@ -69,14 +69,9 @@ class _PaymentResultScreenState extends State<PaymentResultScreen> {
 
       int payStatus = data['payStatus'];
       if (payStatus == 1) {
-        if (kIsWeb) {
-          Keys.navigatorKey.currentState
-              .pushNamed(Routes.paymentSuccess, arguments: data);
-        } else {
-          Keys.navigatorKey.currentState.pushNamedAndRemoveUntil(
-              Routes.paymentSuccess, (route) => route.isFirst,
-              arguments: data);
-        }
+        Keys.navigatorKey.currentState.pushNamedAndRemoveUntil(
+            Routes.paymentSuccess, (route) => route.isFirst,
+            arguments: data);
       } else if (payStatus == -1) {
         setState(() {
           _message = 'Payment cancelled';
