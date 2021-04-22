@@ -1,5 +1,5 @@
 import 'package:fans/app.dart';
-import 'package:fans/screen/components/default_button.dart';
+import 'package:fans/event/app_event.dart';
 import 'package:fans/storage/auth_storage.dart';
 import 'package:flutter/material.dart';
 
@@ -27,6 +27,7 @@ class _SplashScreenState extends State<SplashScreen> {
                     (BuildContext context, AsyncSnapshot<String> snapshot) {
                   final userName = snapshot.data;
                   if (userName != null && userName.isNotEmpty) {
+                    AppEvent.shared.report(event: AnalyticsEvent.splash);
                     return Padding(
                       padding: const EdgeInsets.all(20.0),
                       child: TextButton(
