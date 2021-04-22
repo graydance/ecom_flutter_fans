@@ -16,18 +16,17 @@ class PaymentSuccessScreen extends StatefulWidget {
 
 class _PaymentSuccessScreenState extends State<PaymentSuccessScreen> {
   @override
-  void initState() {
-    AppEvent.shared.report(event: AnalyticsEvent.pay_success);
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final Map<String, dynamic> arguments =
         ModalRoute.of(context).settings.arguments;
 
     final orderId = arguments['number'];
     final username = arguments['userName'];
+
+    AppEvent.shared.report(
+        event: AnalyticsEvent.pay_success,
+        parameters: {AnalyticsEventParameter.id: orderId});
+
     return Scaffold(
       body: SafeArea(
         child: Padding(

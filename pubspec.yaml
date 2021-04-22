@@ -16,7 +16,7 @@ dependencies:
   flutter_svg: ^0.20.0-nullsafety.3
   r_dart_library: ^0.2.1
   shared_preferences: ^2.0.5
-  flutter_easyrefresh: ^2.1.8
+  flutter_easyrefresh: ^2.2.1
   flutter_easyloading: ^2.2.2
   intl: ^0.16.1
   modal_bottom_sheet: ^1.0.0+1
@@ -80,7 +80,12 @@ flutter:
   - assets/images/logo.png
   - assets/images/product/cart_empty.png
   - assets/images/product/common_button_bg.png
+  - assets/images/product/icon_add.png
+  - assets/images/product/icon_add_disable.png
+  - assets/images/product/icon_close.png
   - assets/images/product/icon_payment.png
+  - assets/images/product/icon_remove.png
+  - assets/images/product/icon_remove_disable.png
   - assets/images/product/icon_shipping.png
   - assets/images/product/payment_success.png
   - assets/images/product/paypal.png

@@ -1,3 +1,4 @@
+import 'package:fans/r.g.dart';
 import 'package:fans/theme.dart';
 import 'package:flutter/material.dart';
 
@@ -86,7 +87,8 @@ class _QuantityEditingButtonState extends State<QuantityEditingButton> {
           height: _buttonSize,
           width: _buttonSize,
           child: QuantityButton(
-            icon: Icons.remove,
+            image: R.image.icon_remove(),
+            disableImage: R.image.icon_remove_disable(),
             iconSize: _iconSize,
             isEnable: _quantity > widget.min,
             onPressed: () {
@@ -116,7 +118,8 @@ class _QuantityEditingButtonState extends State<QuantityEditingButton> {
           height: _buttonSize,
           width: _buttonSize,
           child: QuantityButton(
-            icon: Icons.add,
+            image: R.image.icon_add(),
+            disableImage: R.image.icon_add_disable(),
             iconSize: _iconSize,
             isEnable: _quantity < widget.max,
             onPressed: () {
@@ -137,34 +140,30 @@ class QuantityButton extends StatelessWidget {
     Key key,
     @required bool isEnable,
     @required double iconSize,
-    @required IconData icon,
+    @required ImageProvider image,
+    @required ImageProvider disableImage,
     @required VoidCallback onPressed,
   })  : _isEnable = isEnable,
         _iconSize = iconSize,
-        _icon = icon,
+        _image = image,
+        _disableImage = disableImage,
         _onPressed = onPressed,
         super(key: key);
 
   final bool _isEnable;
   final double _iconSize;
-  final IconData _icon;
+  final ImageProvider _image;
+  final ImageProvider _disableImage;
   final VoidCallback _onPressed;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: _isEnable ? _onPressed : null,
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(4),
-          color: _isEnable ? AppTheme.colorEDEEF0 : AppTheme.colorF6F6F6,
-        ),
-        padding: const EdgeInsets.all(5),
-        child: Icon(
-          _icon,
-          size: _iconSize,
-          color: _isEnable ? AppTheme.color0F1015 : AppTheme.color979AA9,
-        ),
+      child: Image(
+        width: _iconSize,
+        height: _iconSize,
+        image: _isEnable ? _image : _disableImage,
       ),
     );
   }

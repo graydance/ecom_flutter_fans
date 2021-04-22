@@ -2,10 +2,6 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:fans/event/app_event.dart';
-import 'package:fans/models/coupon_info.dart';
-import 'package:fans/models/tag.dart';
-import 'package:fans/screen/components/alert_view.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
@@ -14,12 +10,15 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:redux/redux.dart';
 
 import 'package:fans/app.dart';
+import 'package:fans/event/app_event.dart';
+import 'package:fans/models/coupon_info.dart';
 import 'package:fans/models/goods_item.dart';
 import 'package:fans/models/models.dart';
 import 'package:fans/r.g.dart';
+import 'package:fans/screen/components/alert_view.dart';
 import 'package:fans/screen/components/cart_button.dart';
-import 'package:fans/screen/components/empty_view.dart';
 import 'package:fans/screen/components/tag_view.dart';
+import 'package:fans/storage/auth_storage.dart';
 import 'package:fans/store/actions.dart';
 import 'package:fans/theme.dart';
 
@@ -40,6 +39,32 @@ class _ShopScreenState extends State<ShopScreen> {
   final _pageSize = 20;
   List<GoodsItem> _goods = [];
 
+  Set<String> _reportedIds = {};
+
+  _loadData(_ViewModel viewModel) async {
+    final completer = Completer();
+    StoreProvider.of<AppState>(context).dispatch(
+        FetchSellerInfoAction(userName: widget.userName, completer: completer));
+
+    try {
+      final Feed seller = await completer.future;
+      setState(() {
+        _seller = seller;
+      });
+    } catch (e) {}
+
+    _showCoupon(viewModel.currency);
+
+    // 获取配置
+    StoreProvider.of<AppState>(context).dispatch(FetchConfigAction());
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    AuthStorage.setString('lastUser', widget.userName);
+  }
+
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _ViewModel>(
@@ -49,20 +74,6 @@ class _ShopScreenState extends State<ShopScreen> {
       },
       onInitialBuild: (viewModel) async {
         AppEvent.shared.report(event: AnalyticsEvent.shoplink_view);
-
-        final completer = Completer();
-        StoreProvider.of<AppState>(context).dispatch(FetchSellerInfoAction(
-            userName: viewModel.userName, completer: completer));
-
-        final Feed seller = await completer.future;
-        setState(() {
-          _seller = seller;
-        });
-
-        _showCoupon(viewModel.currency);
-
-        // 获取配置
-        StoreProvider.of<AppState>(context).dispatch(FetchConfigAction());
       },
       builder: (ctx, viewModel) => Scaffold(
         backgroundColor: AppTheme.colorF8F8F8,
@@ -78,6 +89,8 @@ class _ShopScreenState extends State<ShopScreen> {
                 limit: _pageSize,
                 completer: Completer());
             StoreProvider.of<AppState>(context).dispatch(action);
+
+            _loadData(viewModel);
 
             try {
               final response = await action.completer.future;
@@ -267,8 +280,16 @@ class _ShopScreenState extends State<ShopScreen> {
                           mainAxisSpacing: 4.0,
                           crossAxisSpacing: 4.0,
                           itemBuilder: (context, index) {
-                            AppEvent.shared
-                                .report(event: AnalyticsEvent.grid_desplay_c);
+                            final model = _goods[index];
+                            if (!_reportedIds.contains(model.id)) {
+                              _reportedIds.add(model.id);
+                              AppEvent.shared.report(
+                                event: AnalyticsEvent.grid_display_c,
+                                parameters: {
+                                  AnalyticsEventParameter.id: model.id
+                                },
+                              );
+                            }
 
                             return _Tile(viewModel.currency, _goods[index],
                                 _getSize(_goods[index]));
@@ -384,12 +405,14 @@ class _Tile extends StatelessWidget {
               height: size.height,
               child: Stack(
                 children: [
-                  CachedNetworkImage(
-                    placeholder: (context, _) => Container(
-                      color: AppTheme.colorEDEEF0,
+                  Center(
+                    child: CachedNetworkImage(
+                      placeholder: (context, _) => Container(
+                        color: AppTheme.colorEDEEF0,
+                      ),
+                      imageUrl: model.picture,
+                      fit: BoxFit.contain,
                     ),
-                    imageUrl: model.picture,
-                    fit: BoxFit.contain,
                   ),
                   if (model.discount.isNotEmpty)
                     Positioned(
@@ -432,7 +455,6 @@ class _Tile extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // 已知问题：web无法同时支持maxLines和ellipsis，详见 https://github.com/flutter/flutter/issues/44802#issuecomment-555707104
                   Text(
                     '${model.goodsName}',
                     style: TextStyle(
@@ -476,7 +498,6 @@ class _Tile extends StatelessWidget {
                     SizedBox(
                       height: 8,
                     ),
-
                   Wrap(
                     spacing: -2,
                     runSpacing: -2,

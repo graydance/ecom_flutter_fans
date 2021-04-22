@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:fans/storage/auth_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -157,7 +158,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                           ),
                           Expanded(
                             child: Text(
-                              'Satndard Express  15 - 30 days',
+                              'Satndard Express 2 - 6 days',
                               style: TextStyle(
                                 color: AppTheme.color555764,
                                 fontSize: 12,
@@ -273,11 +274,12 @@ class _ViewModel {
     _onTapPay(BuildContext context) {
       EasyLoading.show();
       final completer = Completer();
-      completer.future.then((value) {
+      completer.future.then((value) async {
         EasyLoading.dismiss();
 
         final payInfo = value as PayInfo;
         if (kIsWeb) {
+          await AuthStorage.setString('lastUser', '');
           html.window.location.href = payInfo.payLink;
         } else {
           launch(payInfo.payLink);
