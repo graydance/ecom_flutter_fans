@@ -37,6 +37,7 @@ class AppEvent {
 }
 
 enum AnalyticsEvent {
+  splash,
   shoplink_view,
   grid_display_c,
   grid_click_c,
