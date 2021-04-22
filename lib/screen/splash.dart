@@ -18,22 +18,31 @@ class _SplashScreenState extends State<SplashScreen> {
       body: Container(
         child: Center(
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
               AuthHeroLogo(),
               FutureBuilder(
                 future: AuthStorage.getString('lastUser'),
                 builder:
                     (BuildContext context, AsyncSnapshot<String> snapshot) {
-                  if (snapshot.hasData) {
-                    final userName = snapshot.data;
-                    return FansButton(
-                      onPressed: () {
-                        if (userName != null && userName.isNotEmpty) {
+                  final userName = snapshot.data;
+                  if (userName != null && userName.isNotEmpty) {
+                    return Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: TextButton(
+                        onPressed: () {
                           Keys.navigatorKey.currentState
                               .pushReplacementNamed('${Routes.shop}/$userName');
-                        }
-                      },
-                      title: 'Continue shopping',
+                        },
+                        child: Text(
+                          'Continue shopping',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            decoration: TextDecoration.underline,
+                          ),
+                        ),
+                      ),
                     );
                   } else {
                     return Container();
