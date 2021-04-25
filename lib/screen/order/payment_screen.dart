@@ -46,6 +46,17 @@ class PaymentScreen extends StatefulWidget {
 
 class _PaymentScreenState extends State<PaymentScreen> {
   String _groupValue = 'Shipping';
+  String _paymentGroupValue = '';
+
+  List<String> _paymentNames = ['Credit/Debit card', 'PayPal'];
+  List<String> _paymentValues = ['allinpay', 'paypal'];
+  List<bool> _paymentImages = [false, true];
+
+  @override
+  void initState() {
+    super.initState();
+    _paymentGroupValue = _paymentValues.first;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -191,43 +202,57 @@ class _PaymentScreenState extends State<PaymentScreen> {
                     ),
                   ),
                 ),
-                Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(4),
-                    border: Border.all(color: AppTheme.color555764, width: 1),
-                  ),
-                  height: 46,
-                  padding: const EdgeInsets.all(8),
-                  child: Row(children: [
-                    SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: Radio(
-                          value: 'PayPal',
-                          groupValue: 'PayPal',
-                          activeColor: AppTheme.colorED8514,
-                          onChanged: (value) {
-                            setState(() {
-                              _groupValue = value;
-                            });
-                          }),
-                    ),
-                    SizedBox(
-                      width: 4,
-                    ),
-                    Expanded(
-                      child: Text(
-                        'PayPal',
-                        style: TextStyle(
-                          color: AppTheme.color555764,
-                          fontSize: 12,
-                        ),
+                ListView.separated(
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  itemBuilder: (ctx, index) {
+                    return Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(4),
+                        border:
+                            Border.all(color: AppTheme.color555764, width: 1),
                       ),
-                    ),
-                    Image(
-                      image: R.image.paypal(),
-                    ),
-                  ]),
+                      height: 46,
+                      padding: const EdgeInsets.all(8),
+                      child: Row(children: [
+                        SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: Radio(
+                              value: _paymentValues[index],
+                              groupValue: _paymentGroupValue,
+                              activeColor: AppTheme.colorED8514,
+                              onChanged: (value) {
+                                setState(() {
+                                  _paymentGroupValue = value;
+                                });
+                              }),
+                        ),
+                        SizedBox(
+                          width: 4,
+                        ),
+                        Expanded(
+                          child: Text(
+                            _paymentNames[index],
+                            style: TextStyle(
+                              color: AppTheme.color555764,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
+                        if (_paymentImages[index])
+                          Image(
+                            image: R.image.paypal(),
+                          ),
+                      ]),
+                    );
+                  },
+                  separatorBuilder: (ctx, index) {
+                    return SizedBox(
+                      height: 8,
+                    );
+                  },
+                  itemCount: _paymentNames.length,
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 20),
@@ -235,7 +260,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                     onPressed: () {
                       AppEvent.shared.report(event: AnalyticsEvent.pay);
 
-                      viewModel.onTapPay(context);
+                      viewModel.onTapPay(context, _paymentGroupValue);
                     },
                     title: 'Pay ${viewModel.currency}${viewModel.totalStr}'
                         .toUpperCase(),
@@ -257,7 +282,7 @@ class _ViewModel {
   final String orderId;
   final Coupon coupon;
   final String totalStr;
-  final Function(BuildContext) onTapPay;
+  final Function(BuildContext, String) onTapPay;
 
   _ViewModel({
     this.currency,
@@ -271,7 +296,7 @@ class _ViewModel {
 
   static _ViewModel fromStore(
       Store<AppState> store, PaymentScreenParams params) {
-    _onTapPay(BuildContext context) {
+    _onTapPay(BuildContext context, String payment) {
       EasyLoading.show();
       final completer = Completer();
       completer.future.then((value) {
@@ -288,7 +313,7 @@ class _ViewModel {
         EasyLoading.showToast(error.toString());
       });
 
-      store.dispatch(PayAction(params.orderId, 'PayPal', completer));
+      store.dispatch(PayAction(params.orderId, payment, completer));
     }
 
     final _shippAddress = params.shippAddress;

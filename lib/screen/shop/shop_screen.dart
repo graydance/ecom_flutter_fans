@@ -94,8 +94,8 @@ class _ShopScreenState extends State<ShopScreen> {
 
             try {
               final response = await action.completer.future;
-              final totalPage = response['totalPage'];
-              final currentPage = response['currentPage'];
+              if (!mounted) return;
+
               final list = response['list'] as List;
               List<GoodsItem> models =
                   list.map((e) => GoodsItem.fromMap(e)).toList();
@@ -105,10 +105,8 @@ class _ShopScreenState extends State<ShopScreen> {
                 _goods = models;
               });
 
-              final isNoMore = currentPage == totalPage;
-              _refreshGoodsController.finishRefresh(noMore: isNoMore);
-              _refreshGoodsController.finishLoad(noMore: isNoMore);
-              _refreshGoodsController.resetRefreshState();
+              _refreshGoodsController.resetLoadState();
+              _refreshGoodsController.finishRefresh();
             } catch (error) {
               _refreshGoodsController.finishRefresh(success: false);
             }
@@ -125,6 +123,8 @@ class _ShopScreenState extends State<ShopScreen> {
 
                   try {
                     final response = await action.completer.future;
+                    if (!mounted) return;
+
                     final totalPage = response['totalPage'];
                     final currentPage = response['currentPage'];
                     final list = response['list'] as List;
@@ -318,6 +318,8 @@ class _ShopScreenState extends State<ShopScreen> {
     try {
       final data = await completer.future;
       final String expressInfo = data['expressInfo'];
+      if (!mounted) return;
+
       setState(() {
         _expressInfo = expressInfo;
       });

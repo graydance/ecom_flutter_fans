@@ -15,6 +15,8 @@ class PaymentSuccessScreen extends StatefulWidget {
 }
 
 class _PaymentSuccessScreenState extends State<PaymentSuccessScreen> {
+  bool _isReported = false;
+
   @override
   Widget build(BuildContext context) {
     final Map<String, dynamic> arguments =
@@ -23,9 +25,12 @@ class _PaymentSuccessScreenState extends State<PaymentSuccessScreen> {
     final orderId = arguments['number'];
     final username = arguments['userName'];
 
-    AppEvent.shared.report(
-        event: AnalyticsEvent.pay_success,
-        parameters: {AnalyticsEventParameter.id: orderId});
+    if (!_isReported) {
+      _isReported = true;
+      AppEvent.shared.report(
+          event: AnalyticsEvent.pay_success,
+          parameters: {AnalyticsEventParameter.id: orderId});
+    }
 
     return Scaffold(
       body: SafeArea(
