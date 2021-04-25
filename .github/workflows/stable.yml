@@ -42,5 +42,5 @@ jobs:
       - run: rm -f build/web/*.bak
       - name: Deploy Web
         run: |
-          cd build/web && gsutil -m cp -z js -r * gs://mypik.shop/
-          gcloud compute url-maps invalidate-cdn-cache ecom-producation --async --path "/*" --async --host "mypik.shop" --project $GCLOUD_PROJECT
+          cd build/web && gsutil -m cp -z js -r * gs://store.mypik.shop/
+          gcloud compute url-maps invalidate-cdn-cache ecom-producation --async --path "/*" --async --host "store.mypik.shop" --project $GCLOUD_PROJECT
