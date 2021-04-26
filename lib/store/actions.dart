@@ -41,3 +41,11 @@ class PayCaptureAction {
 
   PayCaptureAction(this.payNumber, this.completer);
 }
+
+class PayQueryAction {
+  final String orderId;
+  final String payName;
+  final Completer completer;
+
+  PayQueryAction(this.orderId, this.payName, this.completer);
+}

@@ -18,6 +18,7 @@ import 'package:fans/screen/shop/shop_screen.dart';
 import 'package:fans/store/actions.dart';
 import 'package:fans/store/appreducers.dart';
 import 'package:fans/store/middleware.dart';
+import 'package:universal_html/js.dart';
 
 class ReduxApp extends StatefulWidget {
   @override
@@ -90,6 +91,7 @@ class Routes {
   static final paypalResult = '/paypal_result';
   static final paypalCancel = '/paypal_cancel';
   static final preOrderMVP = '/preorder_mvp';
+  static final allinpayResult = '/allinpay_result';
 }
 
 class Path {
@@ -136,6 +138,7 @@ class RouteConfiguration {
     Routes.signin: (context) => SignInScreen(),
     Routes.paypalResult: (context) => PaymentResultScreen(),
     Routes.preOrderMVP: (context) => PreOrderMVPScreen(),
+    Routes.allinpayResult: (context) => AllinPayResultScreen(),
   };
 
   /// List of [Path] to for route matching. When a named route is pushed with
@@ -162,6 +165,13 @@ class RouteConfiguration {
       Routes.paypalResult,
       true,
       (context, args) => PaymentResultScreen(
+        arguments: args,
+      ),
+    ),
+    Path(
+      Routes.allinpayResult,
+      true,
+      (context, args) => AllinPayResultScreen(
         arguments: args,
       ),
     ),
@@ -198,8 +208,7 @@ class RouteConfiguration {
       if (path.useQueryString && settings.name.startsWith(path.pattern)) {
         final queryParameters = Uri.parse(settings.name).queryParameters;
         return MaterialPageRoute<void>(
-          builder: (context) => path.builder(
-              context, PaymentResultArguments.fromMap(queryParameters)),
+          builder: (context) => path.builder(context, queryParameters),
           settings: settings,
         );
       } else {

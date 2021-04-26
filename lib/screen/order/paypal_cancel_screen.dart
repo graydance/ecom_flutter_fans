@@ -3,11 +3,10 @@ import 'package:flutter/material.dart';
 
 import 'package:fans/event/app_event.dart';
 import 'package:fans/r.g.dart';
-import 'package:fans/screen/order/payment_result_screen.dart';
 import 'package:fans/theme.dart';
 
 class PayPalCancelScreen extends StatelessWidget {
-  final PaymentResultArguments arguments;
+  final Map<String, dynamic> arguments;
   const PayPalCancelScreen({Key key, this.arguments}) : super(key: key);
 
   @override
