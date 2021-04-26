@@ -49,8 +49,10 @@ flutter:
   - assets/images/auth/auth_background.png
   - assets/images/auth/eyes_visibility.png
   - assets/images/auth/eyes_visibility_off.png
+  - assets/images/auth/ic_index_logo.png
   - assets/images/auth/interest_selected.png
   - assets/images/auth/interest_unselected.png
+  - assets/images/auth/splash_background.png
   - assets/images/feed/ad_avatar_placeholder.png
   - assets/images/feed/add_cart.png
   - assets/images/feed/avatar_placeholder.png
@@ -76,7 +78,6 @@ flutter:
   - assets/images/kol/kol_tab_album_unselected.png
   - assets/images/kol/kol_tab_photos.png
   - assets/images/kol/kol_tab_photos_unselected.png
-  - assets/images/logo.png
   - assets/images/product/cart_empty.png
   - assets/images/product/common_button_bg.png
   - assets/images/product/goods_placeholder.png

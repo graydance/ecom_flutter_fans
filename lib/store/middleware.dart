@@ -47,6 +47,7 @@ List<Middleware<AppState>> createStoreMiddleware() {
   final fetchConfig = _createFetchConfig();
   final updateAddress = _createUpdateAddress();
   final editCustomiz = _createEditCustomiz();
+  final payQuery = _createPayQuery();
 
   return [
     TypedMiddleware<AppState, VerifyAuthenticationState>(verifyAuthState),
@@ -81,6 +82,7 @@ List<Middleware<AppState>> createStoreMiddleware() {
     TypedMiddleware<AppState, FetchConfigAction>(fetchConfig),
     TypedMiddleware<AppState, EditAddressAction>(updateAddress),
     TypedMiddleware<AppState, EditCustomizAction>(editCustomiz),
+    TypedMiddleware<AppState, PayQueryAction>(payQuery),
   ];
 }
 
@@ -757,6 +759,21 @@ Middleware<AppState> _createUpdateAddress() {
             isShippingAddress: action.isEditShippingAddress,
             address: action.address,
           ));
+        },
+      ).catchError((err) {
+        action.completer.completeError(err.toString());
+      });
+    }
+    next(action);
+  };
+}
+
+Middleware<AppState> _createPayQuery() {
+  return (Store<AppState> store, action, NextDispatcher next) {
+    if (action is PayQueryAction) {
+      Networking.request(PayQueryAPI(action.orderId, action.payName)).then(
+        (data) {
+          action.completer.complete(data['data']);
         },
       ).catchError((err) {
         action.completer.completeError(err.toString());

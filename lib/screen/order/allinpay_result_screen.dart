@@ -1,6 +1,6 @@
 import 'dart:async';
+import 'dart:convert';
 
-import 'package:fans/theme.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_redux/flutter_redux.dart';
@@ -8,45 +8,48 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:fans/app.dart';
 import 'package:fans/models/models.dart';
 import 'package:fans/store/actions.dart';
+import 'package:fans/theme.dart';
 
-class PaymentResultArguments {
-  final String token;
+class AllinPayResultArguments {
+  final String accessOrderId;
 
-  PaymentResultArguments(this.token);
+  AllinPayResultArguments(this.accessOrderId);
 
   Map<String, dynamic> toMap() {
     return {
-      'token': token,
+      'accessOrderId': accessOrderId,
     };
   }
 
-  factory PaymentResultArguments.fromMap(Map<String, dynamic> map) {
-    if (map == null) return null;
-
-    return PaymentResultArguments(
-      map['token'] ?? '',
+  factory AllinPayResultArguments.fromMap(Map<String, dynamic> map) {
+    return AllinPayResultArguments(
+      map['accessOrderId'] ?? '',
     );
   }
+
+  String toJson() => json.encode(toMap());
+
+  factory AllinPayResultArguments.fromJson(String source) =>
+      AllinPayResultArguments.fromMap(json.decode(source));
 }
 
-class PaymentResultScreen extends StatefulWidget {
+class AllinPayResultScreen extends StatefulWidget {
   final Map<String, dynamic> arguments;
-  PaymentResultScreen({Key key, this.arguments}) : super(key: key);
+  AllinPayResultScreen({Key key, this.arguments}) : super(key: key);
 
   @override
-  _PaymentResultScreenState createState() => _PaymentResultScreenState();
+  _AllinPayResultScreenState createState() => _AllinPayResultScreenState();
 }
 
-class _PaymentResultScreenState extends State<PaymentResultScreen> {
+class _AllinPayResultScreenState extends State<AllinPayResultScreen> {
   bool _isLoading = true;
   String _message = '';
 
   @override
   Widget build(BuildContext context) {
-    final PaymentResultArguments args =
-        PaymentResultArguments.fromMap(widget.arguments);
-    _confirmPayStatus(args.token);
-
+    final AllinPayResultArguments args =
+        AllinPayResultArguments.fromMap(widget.arguments);
+    _confirmPayStatus(args.accessOrderId);
     return Scaffold(
       body: Container(
         child: _isLoading
@@ -63,25 +66,21 @@ class _PaymentResultScreenState extends State<PaymentResultScreen> {
     );
   }
 
-  _confirmPayStatus(String token) {
+  _confirmPayStatus(String accessOrderId) {
     final completer = Completer();
     completer.future.then((data) {
       setState(() {
         _isLoading = false;
       });
 
-      int payStatus = data['payStatus'];
-      if (payStatus == 1) {
+      bool isSuccess = data['isPaySuccess'];
+      if (isSuccess) {
         Keys.navigatorKey.currentState.pushNamedAndRemoveUntil(
             Routes.paymentSuccess, (route) => route.isFirst,
             arguments: data);
-      } else if (payStatus == -1) {
-        setState(() {
-          _message = 'Payment cancelled';
-        });
       } else {
         setState(() {
-          _message = 'Payment failed';
+          _message = data['payDesc'] ?? 'Payment failed';
         });
       }
     }).catchError((error) {
@@ -92,6 +91,6 @@ class _PaymentResultScreenState extends State<PaymentResultScreen> {
     });
 
     StoreProvider.of<AppState>(context)
-        .dispatch(PayCaptureAction(token, completer));
+        .dispatch(PayQueryAction(accessOrderId, 'allinpay', completer));
   }
 }
