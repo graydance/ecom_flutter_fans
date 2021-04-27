@@ -37,6 +37,8 @@ dependencies:
   firebase_crashlytics: ^2.0.0
   enum_to_string: ^2.0.1
   universal_html: ^2.0.8
+  flutter_web_plugins:
+    sdk: flutter
 dev_dependencies:
   flutter_test:
     sdk: flutter
