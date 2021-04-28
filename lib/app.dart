@@ -198,6 +198,7 @@ class RouteConfiguration {
 
         // Routes.paypalResult || Routes.paypalResult || Routes.allinpayResult || Routes.paypalCancel
         if (path.useQueryString && settings.name.startsWith(path.pattern)) {
+          shopInited = true;
           final queryParameters = Uri.parse(settings.name).queryParameters;
           return MaterialPageRoute<void>(
             builder: (context) => path.builder(context, queryParameters),
