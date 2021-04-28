@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -31,14 +32,21 @@ class ProductFeedItem extends StatefulWidget {
 }
 
 class _ProductFeedItemState extends State<ProductFeedItem> {
+  var _isPreload = false;
   @override
   void didChangeDependencies() {
-    widget.model.goods.forEach((e) {
-      precacheImage(
-        CachedNetworkImageProvider(e),
-        context,
-      );
-    });
+    if (_isPreload == false) {
+      _isPreload = true;
+
+      widget.model.goods
+          .sublist(0, min(2, widget.model.goods.length))
+          .forEach((e) {
+        precacheImage(
+          CachedNetworkImageProvider(e),
+          context,
+        );
+      });
+    }
     super.didChangeDependencies();
   }
 
@@ -61,7 +69,6 @@ class _ProductFeedItemState extends State<ProductFeedItem> {
         ),
         GestureDetector(
           onTap: () {
-            debugPrint('GestureDetector ${widget.model.idolGoodsId}');
             if (widget.onTap != null) widget.onTap(widget.model.id);
           },
           child: SizedBox(

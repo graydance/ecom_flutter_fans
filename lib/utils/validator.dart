@@ -7,3 +7,11 @@ bool validateEmail(String email) {
 bool validatePassowrd(String email) {
   return email.length >= 8;
 }
+
+String matchStoreName(String host) {
+  bool hasMatch = RegExp(r"^\w+[^\s]+(.store.olaak.com)$").hasMatch(host);
+  if (hasMatch) {
+    return host.split('.').first;
+  }
+  return null;
+}

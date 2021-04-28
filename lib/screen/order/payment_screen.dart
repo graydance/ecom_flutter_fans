@@ -46,6 +46,7 @@ class PaymentScreen extends StatefulWidget {
 
 class _PaymentScreenState extends State<PaymentScreen> {
   String _groupValue = 'Shipping';
+  String _paymentGroupValue = '';
 
   @override
   Widget build(BuildContext context) {
@@ -53,6 +54,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
       distinct: true,
       converter: (store) => _ViewModel.fromStore(
           store, ModalRoute.of(context).settings.arguments),
+      onInitialBuild: (viewModel) {
+        _paymentGroupValue = viewModel.paymentMethods.first?.id ?? '';
+      },
       builder: (ctx, viewModel) => Scaffold(
         appBar: AppBar(
           title: Text('My Order'),
@@ -191,43 +195,58 @@ class _PaymentScreenState extends State<PaymentScreen> {
                     ),
                   ),
                 ),
-                Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(4),
-                    border: Border.all(color: AppTheme.color555764, width: 1),
-                  ),
-                  height: 46,
-                  padding: const EdgeInsets.all(8),
-                  child: Row(children: [
-                    SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: Radio(
-                          value: 'PayPal',
-                          groupValue: 'PayPal',
-                          activeColor: AppTheme.colorED8514,
-                          onChanged: (value) {
-                            setState(() {
-                              _groupValue = value;
-                            });
-                          }),
-                    ),
-                    SizedBox(
-                      width: 4,
-                    ),
-                    Expanded(
-                      child: Text(
-                        'PayPal',
-                        style: TextStyle(
-                          color: AppTheme.color555764,
-                          fontSize: 12,
-                        ),
+                ListView.separated(
+                  shrinkWrap: true,
+                  physics: NeverScrollableScrollPhysics(),
+                  itemBuilder: (ctx, index) {
+                    final paymentMethod = viewModel.paymentMethods[index];
+                    return Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(4),
+                        border:
+                            Border.all(color: AppTheme.color555764, width: 1),
                       ),
-                    ),
-                    Image(
-                      image: R.image.paypal(),
-                    ),
-                  ]),
+                      height: 46,
+                      padding: const EdgeInsets.all(8),
+                      child: Row(children: [
+                        SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: Radio(
+                              value: paymentMethod.id,
+                              groupValue: _paymentGroupValue,
+                              activeColor: AppTheme.colorED8514,
+                              onChanged: (value) {
+                                setState(() {
+                                  _paymentGroupValue = value;
+                                });
+                              }),
+                        ),
+                        SizedBox(
+                          width: 4,
+                        ),
+                        Expanded(
+                          child: Text(
+                            paymentMethod.name,
+                            style: TextStyle(
+                              color: AppTheme.color555764,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
+                        if (paymentMethod.id.toLowerCase() == 'paypal')
+                          Image(
+                            image: R.image.paypal(),
+                          ),
+                      ]),
+                    );
+                  },
+                  separatorBuilder: (ctx, index) {
+                    return SizedBox(
+                      height: 8,
+                    );
+                  },
+                  itemCount: viewModel.paymentMethods.length,
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 20),
@@ -235,7 +254,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                     onPressed: () {
                       AppEvent.shared.report(event: AnalyticsEvent.pay);
 
-                      viewModel.onTapPay(context);
+                      viewModel.onTapPay(context, _paymentGroupValue);
                     },
                     title: 'Pay ${viewModel.currency}${viewModel.totalStr}'
                         .toUpperCase(),
@@ -257,7 +276,8 @@ class _ViewModel {
   final String orderId;
   final Coupon coupon;
   final String totalStr;
-  final Function(BuildContext) onTapPay;
+  final List<PaymentMethod> paymentMethods;
+  final Function(BuildContext, String) onTapPay;
 
   _ViewModel({
     this.currency,
@@ -266,12 +286,13 @@ class _ViewModel {
     this.orderId,
     this.coupon,
     this.totalStr,
+    this.paymentMethods,
     this.onTapPay,
   });
 
   static _ViewModel fromStore(
       Store<AppState> store, PaymentScreenParams params) {
-    _onTapPay(BuildContext context) {
+    _onTapPay(BuildContext context, String payment) {
       EasyLoading.show();
       final completer = Completer();
       completer.future.then((value) {
@@ -288,12 +309,18 @@ class _ViewModel {
         EasyLoading.showToast(error.toString());
       });
 
-      store.dispatch(PayAction(params.orderId, 'PayPal', completer));
+      store.dispatch(PayAction(params.orderId, payment, completer));
     }
 
     final _shippAddress = params.shippAddress;
     final address =
         '${_shippAddress.firstName} ${_shippAddress.lastName}, ${_shippAddress.addressLine1} ${_shippAddress.addressLine2}, ${_shippAddress.city}, ${_shippAddress.province}, ${_shippAddress.country}, ${_shippAddress.zipCode}';
+
+    var paymentMethods = store.state.config.payMethod;
+    if (paymentMethods.isEmpty) {
+      paymentMethods = [PaymentMethod(id: 'paypal', name: 'PayPal')];
+    }
+
     return _ViewModel(
       currency: store.state.auth.user.monetaryUnit,
       orderDetail: store.state.preOrder.orderDetail,
@@ -301,6 +328,7 @@ class _ViewModel {
       orderId: params.orderId,
       totalStr: params.totalStr,
       coupon: params.coupon,
+      paymentMethods: paymentMethods,
       onTapPay: _onTapPay,
     );
   }

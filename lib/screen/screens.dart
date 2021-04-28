@@ -13,3 +13,4 @@ export './order/cart_screen.dart';
 export './order/pre_order_screen.dart';
 export './shop/sign_in_screen.dart';
 export './order/pre_order_mvp_screen.dart';
+export 'order/allinpay_result_screen.dart';

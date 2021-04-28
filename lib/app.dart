@@ -1,3 +1,4 @@
+import 'package:fans/utils/validator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
@@ -18,6 +19,7 @@ import 'package:fans/screen/shop/shop_screen.dart';
 import 'package:fans/store/actions.dart';
 import 'package:fans/store/appreducers.dart';
 import 'package:fans/store/middleware.dart';
+import 'package:universal_html/js.dart' as js;
 
 class ReduxApp extends StatefulWidget {
   @override
@@ -90,6 +92,7 @@ class Routes {
   static final paypalResult = '/paypal_result';
   static final paypalCancel = '/paypal_cancel';
   static final preOrderMVP = '/preorder_mvp';
+  static final allinpayResult = '/allinpay_result';
 }
 
 class Path {
@@ -136,6 +139,7 @@ class RouteConfiguration {
     Routes.signin: (context) => SignInScreen(),
     Routes.paypalResult: (context) => PaymentResultScreen(),
     Routes.preOrderMVP: (context) => PreOrderMVPScreen(),
+    Routes.allinpayResult: (context) => AllinPayResultScreen(),
   };
 
   /// List of [Path] to for route matching. When a named route is pushed with
@@ -166,6 +170,13 @@ class RouteConfiguration {
       ),
     ),
     Path(
+      Routes.allinpayResult,
+      true,
+      (context, args) => AllinPayResultScreen(
+        arguments: args,
+      ),
+    ),
+    Path(
       Routes.paypalCancel,
       true,
       (context, args) => PayPalCancelScreen(
@@ -181,6 +192,11 @@ class RouteConfiguration {
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     if (routes.containsKey(settings.name)) {
       if (!routeInitd) {
+        final storeNameRoute = generateStoreNameRoute(settings);
+        if (storeNameRoute != null) {
+          return storeNameRoute;
+        }
+
         return MaterialPageRoute<void>(
           builder: routes[Routes.splash],
           settings: settings,
@@ -198,8 +214,7 @@ class RouteConfiguration {
       if (path.useQueryString && settings.name.startsWith(path.pattern)) {
         final queryParameters = Uri.parse(settings.name).queryParameters;
         return MaterialPageRoute<void>(
-          builder: (context) => path.builder(
-              context, PaymentResultArguments.fromMap(queryParameters)),
+          builder: (context) => path.builder(context, queryParameters),
           settings: settings,
         );
       } else {
@@ -217,6 +232,18 @@ class RouteConfiguration {
     }
 
     // If no match was found, we let [WidgetsApp.onUnknownRoute] handle it.
+    return generateStoreNameRoute(settings);
+  }
+
+  static Route<dynamic> generateStoreNameRoute(RouteSettings settings) {
+    var uri = Uri.parse(js.context['location']['href']);
+    var storeName = matchStoreName(uri.host);
+    if (storeName != null) {
+      return MaterialPageRoute<void>(
+        builder: routes['${Routes.shop}/$storeName'],
+        settings: settings,
+      );
+    }
     return null;
   }
 }
