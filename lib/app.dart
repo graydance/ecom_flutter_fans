@@ -110,7 +110,7 @@ class Path {
 }
 
 class RouteConfiguration {
-  static var isFirstRoute = true;
+  static var shopInited = false;
   static var routes = {
     Routes.welcome: (context) => WelcomeScreen(),
     Routes.verifyEmail: (context) => AuthEmailScreen(),
@@ -190,11 +190,9 @@ class RouteConfiguration {
   /// matching.
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     debugPrint(
-        'onGenerateRoute >>> settings.name: ${settings.name} isFirstRoute: $isFirstRoute');
+        'onGenerateRoute >>> settings.name: ${settings.name} shopInited: $shopInited');
 
-    if (isFirstRoute) {
-      isFirstRoute = false;
-
+    if (!shopInited) {
       for (Path path in paths) {
         final regExpPattern = RegExp(path.pattern);
 
