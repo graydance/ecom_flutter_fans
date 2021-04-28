@@ -83,7 +83,7 @@ class _PaymentSuccessScreenState extends State<PaymentSuccessScreen> {
                   onPressed: () {
                     if (kIsWeb) {
                       Keys.navigatorKey.currentState
-                          .pushReplacementNamed('/$username');
+                          .pushReplacementNamed('${Routes.shop}/$username');
                     } else {
                       Keys.navigatorKey.currentState
                           .popUntil((route) => route.isFirst);
