@@ -132,9 +132,6 @@ class RouteConfiguration {
     // Routes.preOrder: (context) => PreOrderScreen(),
     Routes.payment: (context) => PaymentScreen(),
     Routes.paymentSuccess: (context) => PaymentSuccessScreen(),
-    Routes.shop: (context) => ShopScreen(
-          userName: '',
-        ),
     Routes.signin: (context) => SignInScreen(),
     Routes.paypalResult: (context) => PaymentResultScreen(),
     Routes.preOrderMVP: (context) => PreOrderMVPScreen(),
@@ -204,7 +201,8 @@ class RouteConfiguration {
             builder: (context) => path.builder(context, queryParameters),
             settings: settings,
           );
-        } else if (regExpPattern.hasMatch(settings.name)) {
+        } else if (regExpPattern.hasMatch(settings.name) &&
+            !routes.containsKey(settings.name)) {
           debugPrint(
               'onGenerateRoute >>> settings.name: ${settings.name} useQueryString: ${path.useQueryString} path: ${path.pattern}');
 
