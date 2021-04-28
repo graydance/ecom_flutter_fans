@@ -1,3 +1,4 @@
+import 'package:fans/utils/validator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
@@ -18,7 +19,7 @@ import 'package:fans/screen/shop/shop_screen.dart';
 import 'package:fans/store/actions.dart';
 import 'package:fans/store/appreducers.dart';
 import 'package:fans/store/middleware.dart';
-import 'package:universal_html/js.dart';
+import 'package:universal_html/js.dart' as js;
 
 class ReduxApp extends StatefulWidget {
   @override
@@ -191,6 +192,11 @@ class RouteConfiguration {
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     if (routes.containsKey(settings.name)) {
       if (!routeInitd) {
+        final storeNameRoute = generateStoreNameRoute(settings);
+        if (storeNameRoute != null) {
+          return storeNameRoute;
+        }
+
         return MaterialPageRoute<void>(
           builder: routes[Routes.splash],
           settings: settings,
@@ -226,6 +232,18 @@ class RouteConfiguration {
     }
 
     // If no match was found, we let [WidgetsApp.onUnknownRoute] handle it.
+    return generateStoreNameRoute(settings);
+  }
+
+  static Route<dynamic> generateStoreNameRoute(RouteSettings settings) {
+    var uri = Uri.parse(js.context['location']['href']);
+    var storeName = matchStoreName(uri.host);
+    if (storeName != null) {
+      return MaterialPageRoute<void>(
+        builder: routes['${Routes.shop}/$storeName'],
+        settings: settings,
+      );
+    }
     return null;
   }
 }

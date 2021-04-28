@@ -176,10 +176,10 @@ class _AddressFormState extends State<AddressForm> {
           ),
           TextFormField(
             autovalidateMode: AutovalidateMode.onUserInteraction,
-            decoration: _commonInputDecoration('Last Name (optional)'),
+            decoration: _commonInputDecoration('Last Name'),
             controller: _lastNameController,
             validator: (value) =>
-                value.length > 64 ? 'Invalid Last Name' : null,
+                value.isEmpty || value.length > 64 ? 'Invalid Last Name' : null,
             style: _textStyle,
           ),
           SizedBox(

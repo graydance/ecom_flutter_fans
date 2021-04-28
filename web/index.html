@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <!--
+
+<head>
+  <!--
     If you are serving your web app in a path other than the root, change the
     href value below to reflect the base path you are serving from.
 
@@ -11,181 +12,177 @@
     Fore more details:
     * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
   -->
-    <base href="/" />
+  <base href="/" />
 
-    <meta charset="UTF-8" />
-    <meta content="IE=Edge" http-equiv="X-UA-Compatible" />
-    <meta name="description" content="A new Flutter project." />
+  <meta charset="UTF-8" />
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible" />
+  <meta name="description" content="A new Flutter project." />
 
-    <!-- iOS meta tags & icons -->
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
-    <meta name="apple-mobile-web-app-title" content="Olaak" />
-    <link rel="apple-touch-icon" href="icons/Icon-192.png" />
+  <!-- iOS meta tags & icons -->
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  <meta name="apple-mobile-web-app-title" content="Olaak" />
+  <link rel="apple-touch-icon" href="icons/Icon-192.png" />
 
-    <!-- Favicon -->
-    <link rel="icon" type="image/png" href="favicon.png" />
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="favicon.png" />
 
-    <title>Olaak</title>
-    <link rel="manifest" href="manifest.json" />
-    <style>
-      body {
-        padding: 0;
-        margin: 0;
+  <title>Olaak</title>
+  <link rel="manifest" href="manifest.json" />
+  <style>
+    body {
+      padding: 0;
+      margin: 0;
+    }
+
+    #splash {
+      width: 100vw;
+      height: 100vh;
+      background: url(/assets/assets/images/auth/2.0x/splash_background.png) no-repeat center center fixed;
+      -webkit-background-size: cover;
+      -moz-background-size: cover;
+      -o-background-size: cover;
+      background-size: cover;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
+
+    .dot-flashing {
+      position: relative;
+      width: 8pt;
+      height: 8pt;
+      border-radius: 4pt;
+      background-color: #f8f8f842;
+      color: #f8f8f842;
+      animation: dot-flashing 1s infinite linear alternate;
+      animation-delay: 0.5s;
+    }
+
+    .dot-flashing::before,
+    .dot-flashing::after {
+      content: "";
+      display: inline-block;
+      position: absolute;
+      top: 0;
+    }
+
+    .dot-flashing::before {
+      left: -16pt;
+      width: 8pt;
+      height: 8pt;
+      border-radius: 4pt;
+      background-color: #f8f8f842;
+      color: #f8f8f842;
+      animation: dot-flashing 1s infinite alternate;
+      animation-delay: 0s;
+    }
+
+    .dot-flashing::after {
+      left: 16pt;
+      width: 8pt;
+      height: 8pt;
+      border-radius: 4pt;
+      background-color: #f8f8f842;
+      color: #f8f8f842;
+      animation: dot-flashing 1s infinite alternate;
+      animation-delay: 1s;
+    }
+
+    @keyframes dot-flashing {
+      0% {
+        background-color: #ebe6ff;
       }
-      #splash {
-        width: 100vw;
-        height: 100vh;
-        background: url(/assets/assets/images/auth/2.0x/auth_background.png)
-          no-repeat center center fixed;
-        -webkit-background-size: cover;
-        -moz-background-size: cover;
-        -o-background-size: cover;
-        background-size: cover;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-direction: column;
-      }
-      .dot-flashing {
-        position: relative;
-        width: 10pt;
-        height: 10pt;
-        border-radius: 5pt;
-        background-color: #9880ff;
-        color: #9880ff;
-        animation: dot-flashing 1s infinite linear alternate;
-        animation-delay: 0.5s;
-      }
 
-      .dot-flashing::before,
-      .dot-flashing::after {
-        content: "";
-        display: inline-block;
-        position: absolute;
-        top: 0;
+      50%,
+      100% {
+        background-color: #f8f8f842;
       }
+    }
+  </style>
+</head>
 
-      .dot-flashing::before {
-        left: -20pt;
-        width: 10pt;
-        height: 10pt;
-        border-radius: 5pt;
-        background-color: #9880ff;
-        color: #9880ff;
-        animation: dot-flashing 1s infinite alternate;
-        animation-delay: 0s;
-      }
-
-      .dot-flashing::after {
-        left: 20pt;
-        width: 10pt;
-        height: 10pt;
-        border-radius: 5pt;
-        background-color: #9880ff;
-        color: #9880ff;
-        animation: dot-flashing 1s infinite alternate;
-        animation-delay: 1s;
-      }
-
-      @keyframes dot-flashing {
-        0% {
-          background-color: #9880ff;
-        }
-        50%,
-        100% {
-          background-color: #ebe6ff;
-        }
-      }
-    </style>
-  </head>
-
-  <body>
-    <div id="splash">
-      <img
-        style="margin-bottom: 20pt"
-        src="/assets/assets/images/auth/2.0x/ic_index_logo.png"
-      />
-      <span class="dot-flashing"></span>
-    </div>
-    <!-- This script installs service_worker.js to provide PWA functionality to
+<body>
+  <div id="splash">
+    <img style="margin-bottom: 20pt" src="/assets/assets/images/auth/2.0x/ic_index_logo.png" />
+    <span class="dot-flashing"></span>
+  </div>
+  <!-- This script installs service_worker.js to provide PWA functionality to
        application. For more information, see:
        https://developers.google.com/web/fundamentals/primers/service-workers -->
-    <script>
-      if ("serviceWorker" in navigator) {
-        window.addEventListener("flutter-first-frame", function () {
-          navigator.serviceWorker.register("flutter_service_worker.js");
-        });
-      }
-    </script>
-    <!-- The core Firebase JS SDK is always required and must be listed first -->
-    <script src="https://www.gstatic.com/firebasejs/8.2.10/firebase-app.js"></script>
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("flutter-first-frame", function () {
+        navigator.serviceWorker.register("flutter_service_worker.js");
+      });
+    }
+  </script>
+  <!-- The core Firebase JS SDK is always required and must be listed first -->
+  <script src="https://www.gstatic.com/firebasejs/8.2.10/firebase-app.js"></script>
 
-    <!-- TODO: Add SDKs for Firebase products that you want to use
+  <!-- TODO: Add SDKs for Firebase products that you want to use
      https://firebase.google.com/docs/web/setup#available-libraries -->
-    <script src="https://www.gstatic.com/firebasejs/8.2.10/firebase-analytics.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.2.10/firebase-analytics.js"></script>
 
-    <script>
-      // Your web app's Firebase configuration
-      // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-      var firebaseConfig = {
-        apiKey: "AIzaSyCkun1UzEfvAZBCswu3kH63s-mCm3DJxfI",
-        authDomain: "olaak-3b626.firebaseapp.com",
-        projectId: "olaak-3b626",
-        storageBucket: "olaak-3b626.appspot.com",
-        messagingSenderId: "280651964891",
-        appId: "1:280651964891:web:aac021487b544530c3c7fe",
-        measurementId: "G-BWF8YG5S7H",
+  <script>
+    // Your web app's Firebase configuration
+    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+    var firebaseConfig = {
+      apiKey: "AIzaSyCkun1UzEfvAZBCswu3kH63s-mCm3DJxfI",
+      authDomain: "olaak-3b626.firebaseapp.com",
+      projectId: "olaak-3b626",
+      storageBucket: "olaak-3b626.appspot.com",
+      messagingSenderId: "280651964891",
+      appId: "1:280651964891:web:aac021487b544530c3c7fe",
+      measurementId: "G-BWF8YG5S7H",
+    };
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    firebase.analytics();
+  </script>
+  <script src="assets/packages/libphonenumber_plugin/js/libphonenumber.js"></script>
+  <script src="assets/packages/libphonenumber_plugin/js/stringbuffer.js"></script>
+  <!-- Facebook Pixel Code -->
+  <script>
+    !(function (f, b, e, v, n, t, s) {
+      if (f.fbq) return;
+      n = f.fbq = function () {
+        n.callMethod
+          ? n.callMethod.apply(n, arguments)
+          : n.queue.push(arguments);
       };
-      // Initialize Firebase
-      firebase.initializeApp(firebaseConfig);
-      firebase.analytics();
-    </script>
-    <script src="assets/packages/libphonenumber_plugin/js/libphonenumber.js"></script>
-    <script src="assets/packages/libphonenumber_plugin/js/stringbuffer.js"></script>
-    <!-- Facebook Pixel Code -->
-    <script>
-      !(function (f, b, e, v, n, t, s) {
-        if (f.fbq) return;
-        n = f.fbq = function () {
-          n.callMethod
-            ? n.callMethod.apply(n, arguments)
-            : n.queue.push(arguments);
-        };
-        if (!f._fbq) f._fbq = n;
-        n.push = n;
-        n.loaded = !0;
-        n.version = "2.0";
-        n.queue = [];
-        t = b.createElement(e);
-        t.async = !0;
-        t.src = v;
-        s = b.getElementsByTagName(e)[0];
-        s.parentNode.insertBefore(t, s);
-      })(
-        window,
-        document,
-        "script",
-        "https://connect.facebook.net/en_US/fbevents.js"
-      );
-      fbq("init", "387916715533869");
-      fbq("track", "PageView");
-    </script>
-    <noscript>
-      <img
-        height="1"
-        width="1"
-        src="https://www.facebook.com/tr?id=387916715533869&ev=PageView
-  &noscript=1"
-      />
-    </noscript>
-    <script>
-      function fb_logEvent(event, parameters) {
-        console.log(event, parameters);
-        fbq("trackCustom", event, parameters);
-      }
-    </script>
-    <!-- End Facebook Pixel Code -->
-    <script src="main.dart.js" type="application/javascript"></script>
-  </body>
+      if (!f._fbq) f._fbq = n;
+      n.push = n;
+      n.loaded = !0;
+      n.version = "2.0";
+      n.queue = [];
+      t = b.createElement(e);
+      t.async = !0;
+      t.src = v;
+      s = b.getElementsByTagName(e)[0];
+      s.parentNode.insertBefore(t, s);
+    })(
+      window,
+      document,
+      "script",
+      "https://connect.facebook.net/en_US/fbevents.js"
+    );
+    fbq("init", "387916715533869");
+    fbq("track", "PageView");
+  </script>
+  <noscript>
+    <img height="1" width="1" src="https://www.facebook.com/tr?id=387916715533869&ev=PageView
+  &noscript=1" />
+  </noscript>
+  <script>
+    function fb_logEvent(event, parameters) {
+      console.log(event, parameters);
+      fbq("trackCustom", event, parameters);
+    }
+  </script>
+  <!-- End Facebook Pixel Code -->
+  <script src="main.dart.js" type="application/javascript"></script>
+</body>
+
 </html>
