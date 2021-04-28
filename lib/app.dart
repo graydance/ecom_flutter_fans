@@ -111,7 +111,7 @@ class Path {
 }
 
 class RouteConfiguration {
-  static var routeInitd = false;
+  static var isFirstRoute = true;
   static var routes = {
     Routes.splash: (context) => SplashScreen(),
     Routes.welcome: (context) => WelcomeScreen(),
@@ -191,36 +191,27 @@ class RouteConfiguration {
   /// [WidgetsApp.onGenerateRoute] to make use of the [paths] for route
   /// matching.
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
-    if (routes.containsKey(settings.name)) {
-      if (!routeInitd) {
-        debugPrint('Step 2 >>> routeInitd $routeInitd');
-        final storeNameRoute = generateStoreNameRoute(settings);
-        if (storeNameRoute != null) {
-          routeInitd = true;
-          debugPrint('Step 3 >>> Route StoreName');
-          return storeNameRoute;
-        }
-      }
+    debugPrint(
+        'onGenerateRoute >>> settings.name: ${settings.name} isFirstRoute: $isFirstRoute');
 
-      debugPrint('Step 4 >>> Route settings.name: ${settings.name}');
-      return MaterialPageRoute<void>(
-        builder: routes[settings.name],
-        settings: settings,
-      );
-    }
+    if (isFirstRoute) {
+      isFirstRoute = false;
 
-    routeInitd = true;
-    debugPrint('Step 1 >>> routeInitd: $routeInitd');
-    for (Path path in paths) {
-      if (path.useQueryString && settings.name.startsWith(path.pattern)) {
-        final queryParameters = Uri.parse(settings.name).queryParameters;
-        return MaterialPageRoute<void>(
-          builder: (context) => path.builder(context, queryParameters),
-          settings: settings,
-        );
-      } else {
+      for (Path path in paths) {
         final regExpPattern = RegExp(path.pattern);
-        if (regExpPattern.hasMatch(settings.name)) {
+
+        // Routes.paypalResult || Routes.paypalResult || Routes.allinpayResult || Routes.paypalCancel
+        if (path.useQueryString && settings.name.startsWith(path.pattern)) {
+          final queryParameters = Uri.parse(settings.name).queryParameters;
+          return MaterialPageRoute<void>(
+            builder: (context) => path.builder(context, queryParameters),
+            settings: settings,
+          );
+        } else if (regExpPattern.hasMatch(settings.name)) {
+          debugPrint(
+              'onGenerateRoute >>> settings.name: ${settings.name} useQueryString: ${path.useQueryString} path: ${path.pattern}');
+
+          // /username || /shop/username
           final firstMatch = regExpPattern.firstMatch(settings.name);
           final match =
               (firstMatch.groupCount == 1) ? firstMatch.group(1) : null;
@@ -228,13 +219,44 @@ class RouteConfiguration {
             builder: (context) => path.builder(context, match),
             settings: settings,
           );
+        } else {
+          // If no match was found, we let [WidgetsApp.onUnknownRoute] handle it.
+          // Shop || Splash
+          return handleUnknowRoute(settings);
         }
+      }
+    } else {
+      if (routes.containsKey(settings.name)) {
+        debugPrint(
+            'onGenerateRoute >>> containsKey Route settings.name: ${settings.name}');
+        return MaterialPageRoute<void>(
+          builder: routes[settings.name],
+          settings: settings,
+        );
+      } else {
+        // If no match was found, we let [WidgetsApp.onUnknownRoute] handle it.
+        return handleUnknowRoute(settings);
       }
     }
 
-    debugPrint('Step 5 >>> unknown route: $routeInitd ${settings.name}');
     // If no match was found, we let [WidgetsApp.onUnknownRoute] handle it.
-    return generateStoreNameRoute(settings);
+    return handleUnknowRoute(settings);
+  }
+
+  static Route<dynamic> handleUnknowRoute(RouteSettings settings) {
+    final storeNameRoute = generateStoreNameRoute(settings);
+    // 泛域名进入首页
+    if (storeNameRoute != null) {
+      debugPrint('onGenerateRoute >>> Route StoreName');
+      return storeNameRoute;
+    } else {
+      debugPrint('onGenerateRoute >>> Route to Splash');
+      // 非泛域名进入闪屏页
+      return MaterialPageRoute<void>(
+        builder: (context) => SplashScreen(),
+        settings: settings,
+      );
+    }
   }
 
   static Route<dynamic> generateStoreNameRoute(RouteSettings settings) {
