@@ -107,6 +107,11 @@ class _R_Image_AssetResource {
   final eyes_visibility_off =
       const AssetResource("assets/images/auth/eyes_visibility_off.png", packageName: null);
 
+  /// asset: assets/images/auth/ic_index_logo.png
+  // ignore: non_constant_identifier_names
+  final ic_index_logo =
+      const AssetResource("assets/images/auth/ic_index_logo.png", packageName: null);
+
   /// asset: assets/images/auth/interest_selected.png
   // ignore: non_constant_identifier_names
   final interest_selected =
@@ -116,6 +121,11 @@ class _R_Image_AssetResource {
   // ignore: non_constant_identifier_names
   final interest_unselected =
       const AssetResource("assets/images/auth/interest_unselected.png", packageName: null);
+
+  /// asset: assets/images/auth/splash_background.png
+  // ignore: non_constant_identifier_names
+  final splash_background =
+      const AssetResource("assets/images/auth/splash_background.png", packageName: null);
 
   /// asset: assets/images/feed/ad_avatar_placeholder.png
   // ignore: non_constant_identifier_names
@@ -230,10 +240,6 @@ class _R_Image_AssetResource {
   // ignore: non_constant_identifier_names
   final kol_tab_photos_unselected =
       const AssetResource("assets/images/kol/kol_tab_photos_unselected.png", packageName: null);
-
-  /// asset: assets/images/logo.png
-  // ignore: non_constant_identifier_names
-  final logo = const AssetResource("assets/images/logo.png", packageName: null);
 
   /// asset: assets/images/product/cart_empty.png
   // ignore: non_constant_identifier_names
@@ -372,6 +378,12 @@ class _R_Image {
     return AssetImage(asset.eyes_visibility_off.keyName);
   }
 
+  /// asset: assets/images/auth/ic_index_logo.png
+  // ignore: non_constant_identifier_names
+  AssetImage ic_index_logo() {
+    return AssetImage(asset.ic_index_logo.keyName);
+  }
+
   /// asset: assets/images/auth/interest_selected.png
   // ignore: non_constant_identifier_names
   AssetImage interest_selected() {
@@ -382,6 +394,12 @@ class _R_Image {
   // ignore: non_constant_identifier_names
   AssetImage interest_unselected() {
     return AssetImage(asset.interest_unselected.keyName);
+  }
+
+  /// asset: assets/images/auth/splash_background.png
+  // ignore: non_constant_identifier_names
+  AssetImage splash_background() {
+    return AssetImage(asset.splash_background.keyName);
   }
 
   /// asset: assets/images/feed/ad_avatar_placeholder.png
@@ -532,12 +550,6 @@ class _R_Image {
   // ignore: non_constant_identifier_names
   AssetImage kol_tab_photos_unselected() {
     return AssetImage(asset.kol_tab_photos_unselected.keyName);
-  }
-
-  /// asset: assets/images/logo.png
-  // ignore: non_constant_identifier_names
-  AssetImage logo() {
-    return AssetImage(asset.logo.keyName);
   }
 
   /// asset: assets/images/product/cart_empty.png

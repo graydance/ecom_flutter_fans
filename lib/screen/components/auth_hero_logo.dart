@@ -9,9 +9,8 @@ class AuthHeroLogo extends StatelessWidget {
     return Container(
       child: Hero(
         tag: 'hero_logo',
-        child: CircleAvatar(
-          radius: 80,
-          backgroundImage: R.image.logo(),
+        child: Image(
+          image: R.image.ic_index_logo(),
         ),
       ),
     );

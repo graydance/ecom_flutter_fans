@@ -39,6 +39,8 @@ class _ShopScreenState extends State<ShopScreen> {
   final _pageSize = 20;
   List<GoodsItem> _goods = [];
 
+  Map<String, _Size> _cacheSize = {};
+
   Set<String> _reportedIds = {};
 
   _loadData(_ViewModel viewModel) async {
@@ -306,9 +308,15 @@ class _ShopScreenState extends State<ShopScreen> {
   }
 
   _Size _getSize(GoodsItem item) {
+    final cache = _cacheSize[item.idolGoodsId];
+    if (cache != null) return cache;
+
     var screenWidth = (MediaQuery.of(context).size.width - 16 * 2 - 4 * 4) / 2;
     var height = item.height / item.width * screenWidth;
-    return _Size(screenWidth, height);
+
+    final size = _Size(screenWidth, height);
+    _cacheSize[item.idolGoodsId] = size;
+    return size;
   }
 
   _showCoupon(String currency) async {
@@ -415,6 +423,7 @@ class _Tile extends StatelessWidget {
                       ),
                       imageUrl: model.picture,
                       fit: BoxFit.contain,
+                      memCacheHeight: size.height.ceil(),
                     ),
                   ),
                   if (model.discount.isNotEmpty)

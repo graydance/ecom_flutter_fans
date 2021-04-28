@@ -506,3 +506,16 @@ class EditCustomizAPI extends API {
 
   String get path => '/user/good/edit_customiz';
 }
+
+class PayQueryAPI extends API {
+  final String orderId;
+  final String payName;
+
+  PayQueryAPI(this.orderId, this.payName);
+
+  @override
+  Map<String, dynamic> get parameters =>
+      {'orderId': orderId, 'payName': payName};
+
+  String get path => '/user/good/pay_query';
+}
