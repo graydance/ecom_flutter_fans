@@ -196,6 +196,7 @@ class RouteConfiguration {
         debugPrint('Step 2 >>> routeInitd $routeInitd');
         final storeNameRoute = generateStoreNameRoute(settings);
         if (storeNameRoute != null) {
+          routeInitd = true;
           debugPrint('Step 3 >>> Route StoreName');
           return storeNameRoute;
         }
