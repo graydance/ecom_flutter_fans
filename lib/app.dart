@@ -125,6 +125,9 @@ class RouteConfiguration {
     Routes.home: (context) => TabbarScreen(
           onInit: () {},
         ),
+    Routes.shop: (context) => ShopScreen(
+          userName: '',
+        ),
     Routes.searchByTag: (context) => SearchByTagScreen(),
     Routes.shopDetail: (context) => ShopDetailScreen(),
     Routes.productDetail: (context) => ProductDetailScreen(),
@@ -202,7 +205,8 @@ class RouteConfiguration {
             settings: settings,
           );
         } else if (regExpPattern.hasMatch(settings.name) &&
-            !routes.containsKey(settings.name)) {
+            (settings.name == Routes.shop ||
+                !routes.containsKey(settings.name))) {
           debugPrint(
               'onGenerateRoute >>> settings.name: ${settings.name} useQueryString: ${path.useQueryString} path: ${path.pattern}');
 
