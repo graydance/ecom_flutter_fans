@@ -48,22 +48,15 @@ class _PaymentScreenState extends State<PaymentScreen> {
   String _groupValue = 'Shipping';
   String _paymentGroupValue = '';
 
-  List<String> _paymentNames = ['Credit/Debit card', 'PayPal'];
-  List<String> _paymentValues = ['allinpay', 'paypal'];
-  List<bool> _paymentImages = [false, true];
-
-  @override
-  void initState() {
-    super.initState();
-    _paymentGroupValue = _paymentValues.first;
-  }
-
   @override
   Widget build(BuildContext context) {
     return StoreConnector<AppState, _ViewModel>(
       distinct: true,
       converter: (store) => _ViewModel.fromStore(
           store, ModalRoute.of(context).settings.arguments),
+      onInitialBuild: (viewModel) {
+        _paymentGroupValue = viewModel.paymentMethods.first?.id ?? '';
+      },
       builder: (ctx, viewModel) => Scaffold(
         appBar: AppBar(
           title: Text('My Order'),
@@ -206,6 +199,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   shrinkWrap: true,
                   physics: NeverScrollableScrollPhysics(),
                   itemBuilder: (ctx, index) {
+                    final paymentMethod = viewModel.paymentMethods[index];
                     return Container(
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(4),
@@ -219,7 +213,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                           width: 20,
                           height: 20,
                           child: Radio(
-                              value: _paymentValues[index],
+                              value: paymentMethod.id,
                               groupValue: _paymentGroupValue,
                               activeColor: AppTheme.colorED8514,
                               onChanged: (value) {
@@ -233,14 +227,14 @@ class _PaymentScreenState extends State<PaymentScreen> {
                         ),
                         Expanded(
                           child: Text(
-                            _paymentNames[index],
+                            paymentMethod.name,
                             style: TextStyle(
                               color: AppTheme.color555764,
                               fontSize: 12,
                             ),
                           ),
                         ),
-                        if (_paymentImages[index])
+                        if (paymentMethod.id.toLowerCase() == 'paypal')
                           Image(
                             image: R.image.paypal(),
                           ),
@@ -252,7 +246,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                       height: 8,
                     );
                   },
-                  itemCount: _paymentNames.length,
+                  itemCount: viewModel.paymentMethods.length,
                 ),
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 20),
@@ -282,6 +276,7 @@ class _ViewModel {
   final String orderId;
   final Coupon coupon;
   final String totalStr;
+  final List<PaymentMethod> paymentMethods;
   final Function(BuildContext, String) onTapPay;
 
   _ViewModel({
@@ -291,6 +286,7 @@ class _ViewModel {
     this.orderId,
     this.coupon,
     this.totalStr,
+    this.paymentMethods,
     this.onTapPay,
   });
 
@@ -319,6 +315,12 @@ class _ViewModel {
     final _shippAddress = params.shippAddress;
     final address =
         '${_shippAddress.firstName} ${_shippAddress.lastName}, ${_shippAddress.addressLine1} ${_shippAddress.addressLine2}, ${_shippAddress.city}, ${_shippAddress.province}, ${_shippAddress.country}, ${_shippAddress.zipCode}';
+
+    var paymentMethods = store.state.config.payMethod;
+    if (paymentMethods.isEmpty) {
+      paymentMethods = [PaymentMethod(id: 'paypal', name: 'PayPal')];
+    }
+
     return _ViewModel(
       currency: store.state.auth.user.monetaryUnit,
       orderDetail: store.state.preOrder.orderDetail,
@@ -326,6 +328,7 @@ class _ViewModel {
       orderId: params.orderId,
       totalStr: params.totalStr,
       coupon: params.coupon,
+      paymentMethods: paymentMethods,
       onTapPay: _onTapPay,
     );
   }

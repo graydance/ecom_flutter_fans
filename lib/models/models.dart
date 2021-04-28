@@ -16,3 +16,4 @@ export './coupon_info.dart';
 export './config.dart';
 export './country.dart';
 export './address.dart';
+export './payment_method.dart';
