@@ -63,6 +63,7 @@ class _ShopScreenState extends State<ShopScreen> {
 
   @override
   void initState() {
+    RouteConfiguration.shopInited = true;
     super.initState();
     AuthStorage.setString('lastUser', widget.userName);
   }

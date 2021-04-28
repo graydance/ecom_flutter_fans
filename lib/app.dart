@@ -59,7 +59,6 @@ class _ReduxAppState extends State<ReduxApp> {
             scaffoldBackgroundColor: Colors.white,
             primaryColor: Colors.white,
           ),
-          initialRoute: Routes.splash,
           navigatorKey: Keys.navigatorKey,
           builder: EasyLoading.init(),
           onGenerateRoute: RouteConfiguration.onGenerateRoute,
@@ -111,9 +110,8 @@ class Path {
 }
 
 class RouteConfiguration {
-  static var isFirstRoute = true;
+  static var shopInited = false;
   static var routes = {
-    Routes.splash: (context) => SplashScreen(),
     Routes.welcome: (context) => WelcomeScreen(),
     Routes.verifyEmail: (context) => AuthEmailScreen(),
     Routes.signup: (context) => SignupScreen(),
@@ -192,16 +190,15 @@ class RouteConfiguration {
   /// matching.
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     debugPrint(
-        'onGenerateRoute >>> settings.name: ${settings.name} isFirstRoute: $isFirstRoute');
+        'onGenerateRoute >>> settings.name: ${settings.name} shopInited: $shopInited');
 
-    if (isFirstRoute) {
-      isFirstRoute = false;
-
+    if (!shopInited) {
       for (Path path in paths) {
         final regExpPattern = RegExp(path.pattern);
 
         // Routes.paypalResult || Routes.paypalResult || Routes.allinpayResult || Routes.paypalCancel
         if (path.useQueryString && settings.name.startsWith(path.pattern)) {
+          shopInited = true;
           final queryParameters = Uri.parse(settings.name).queryParameters;
           return MaterialPageRoute<void>(
             builder: (context) => path.builder(context, queryParameters),
