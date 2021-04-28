@@ -214,10 +214,6 @@ class RouteConfiguration {
             builder: (context) => path.builder(context, match),
             settings: settings,
           );
-        } else {
-          // If no match was found, we let [WidgetsApp.onUnknownRoute] handle it.
-          // Shop || Splash
-          return handleUnknowRoute(settings);
         }
       }
     } else {
