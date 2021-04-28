@@ -20,7 +20,7 @@ import 'package:fans/screen/shop/shop_screen.dart';
 import 'package:fans/store/actions.dart';
 import 'package:fans/store/appreducers.dart';
 import 'package:fans/store/middleware.dart';
-import 'package:universal_html/js.dart' as js;
+import 'package:universal_html/html.dart';
 
 class ReduxApp extends StatefulWidget {
   @override
@@ -237,16 +237,20 @@ class RouteConfiguration {
   }
 
   static Route<dynamic> generateStoreNameRoute(RouteSettings settings) {
-    if (!kIsWeb) return null;
-
-    var uri = Uri.parse(js.context['location']['href']);
-    var storeName = matchStoreName(uri.host);
-    if (storeName != null) {
-      return MaterialPageRoute<void>(
-        builder: routes['${Routes.shop}/$storeName'],
-        settings: settings,
-      );
+    if (kIsWeb) {
+      debugPrint('window.location.href >>> ${window.location.href}');
+      var uri = Uri.parse(window.location.href);
+      var storeName = matchStoreName(uri.host);
+      debugPrint('URI host >>> ${uri.host}, match storeName >>> $storeName');
+      if (storeName != null) {
+        return MaterialPageRoute<void>(
+          builder: routes['${Routes.shop}/$storeName'],
+          settings: settings,
+        );
+      }
+      return null;
     }
+
     return null;
   }
 }
