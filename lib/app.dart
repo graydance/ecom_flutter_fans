@@ -59,7 +59,6 @@ class _ReduxAppState extends State<ReduxApp> {
             scaffoldBackgroundColor: Colors.white,
             primaryColor: Colors.white,
           ),
-          initialRoute: Routes.splash,
           navigatorKey: Keys.navigatorKey,
           builder: EasyLoading.init(),
           onGenerateRoute: RouteConfiguration.onGenerateRoute,
@@ -113,7 +112,6 @@ class Path {
 class RouteConfiguration {
   static var isFirstRoute = true;
   static var routes = {
-    Routes.splash: (context) => SplashScreen(),
     Routes.welcome: (context) => WelcomeScreen(),
     Routes.verifyEmail: (context) => AuthEmailScreen(),
     Routes.signup: (context) => SignupScreen(),
