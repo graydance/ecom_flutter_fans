@@ -1,4 +1,3 @@
-import 'package:fans/utils/validator.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -7,6 +6,7 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:logging/logging.dart';
 import 'package:redux/redux.dart';
 import 'package:redux_logging/redux_logging.dart';
+import 'package:universal_html/html.dart';
 
 import 'package:fans/models/appstate.dart';
 import 'package:fans/screen/home/shop_detail_screen.dart';
@@ -20,7 +20,7 @@ import 'package:fans/screen/shop/shop_screen.dart';
 import 'package:fans/store/actions.dart';
 import 'package:fans/store/appreducers.dart';
 import 'package:fans/store/middleware.dart';
-import 'package:universal_html/html.dart';
+import 'package:fans/utils/validator.dart';
 
 class ReduxApp extends StatefulWidget {
   @override
@@ -244,7 +244,7 @@ class RouteConfiguration {
       debugPrint('URI host >>> ${uri.host}, match storeName >>> $storeName');
       if (storeName != null) {
         return MaterialPageRoute<void>(
-          builder: routes['${Routes.shop}/$storeName'],
+          builder: (ctx) => ShopScreen(userName: storeName),
           settings: settings,
         );
       }
