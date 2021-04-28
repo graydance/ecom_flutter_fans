@@ -1,4 +1,5 @@
 import 'package:fans/utils/validator.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
@@ -236,6 +237,8 @@ class RouteConfiguration {
   }
 
   static Route<dynamic> generateStoreNameRoute(RouteSettings settings) {
+    if (!kIsWeb) return null;
+
     var uri = Uri.parse(js.context['location']['href']);
     var storeName = matchStoreName(uri.host);
     if (storeName != null) {
