@@ -254,7 +254,6 @@ class RouteConfiguration {
       // 非泛域名进入闪屏页
       return MaterialPageRoute<void>(
         builder: (context) => SplashScreen(),
-        settings: settings,
       );
     }
   }
@@ -268,7 +267,6 @@ class RouteConfiguration {
       if (storeName != null) {
         return MaterialPageRoute<void>(
           builder: (ctx) => ShopScreen(userName: storeName),
-          settings: settings,
         );
       }
       return null;
