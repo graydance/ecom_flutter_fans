@@ -38,11 +38,8 @@ class _SplashScreenState extends State<SplashScreen> {
                       ),
                       child: FansButton(
                         onPressed: () {
-                          Keys.navigatorKey.currentState.pushReplacement(
-                            MaterialPageRoute(
-                              builder: (ctx) => ShopScreen(userName: userName),
-                            ),
-                          );
+                          Keys.navigatorKey.currentState
+                              .pushReplacementNamed('${Routes.shop}/$userName');
                         },
                         title: 'Continue shopping',
                       ),
