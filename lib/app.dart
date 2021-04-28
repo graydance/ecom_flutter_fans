@@ -193,17 +193,15 @@ class RouteConfiguration {
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
     if (routes.containsKey(settings.name)) {
       if (!routeInitd) {
+        debugPrint('Step 2 >>> routeInitd $routeInitd');
         final storeNameRoute = generateStoreNameRoute(settings);
         if (storeNameRoute != null) {
+          debugPrint('Step 3 >>> Route StoreName');
           return storeNameRoute;
         }
-
-        return MaterialPageRoute<void>(
-          builder: routes[Routes.splash],
-          settings: settings,
-        );
       }
 
+      debugPrint('Step 4 >>> Route settings.name: ${settings.name}');
       return MaterialPageRoute<void>(
         builder: routes[settings.name],
         settings: settings,
@@ -211,6 +209,7 @@ class RouteConfiguration {
     }
 
     routeInitd = true;
+    debugPrint('Step 1 >>> routeInitd: $routeInitd');
     for (Path path in paths) {
       if (path.useQueryString && settings.name.startsWith(path.pattern)) {
         final queryParameters = Uri.parse(settings.name).queryParameters;
@@ -232,6 +231,7 @@ class RouteConfiguration {
       }
     }
 
+    debugPrint('Step 5 >>> unknown route: $routeInitd ${settings.name}');
     // If no match was found, we let [WidgetsApp.onUnknownRoute] handle it.
     return generateStoreNameRoute(settings);
   }
