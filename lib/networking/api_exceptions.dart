@@ -21,27 +21,27 @@ class APIException implements Exception {
 
   factory APIException.create(DioError error) {
     switch (error.type) {
-      case DioErrorType.CANCEL:
+      case DioErrorType.cancel:
         {
           return BadRequestException(-1, "请求取消");
         }
         break;
-      case DioErrorType.CONNECT_TIMEOUT:
+      case DioErrorType.connectTimeout:
         {
           return BadRequestException(-1, "连接超时");
         }
         break;
-      case DioErrorType.SEND_TIMEOUT:
+      case DioErrorType.sendTimeout:
         {
           return BadRequestException(-1, "请求超时");
         }
         break;
-      case DioErrorType.RECEIVE_TIMEOUT:
+      case DioErrorType.receiveTimeout:
         {
           return BadRequestException(-1, "响应超时");
         }
         break;
-      case DioErrorType.RESPONSE:
+      case DioErrorType.response:
         {
           if (error.response == null) {
             return BadRequestException(-1, "Response is empty!");
@@ -51,14 +51,12 @@ class APIException implements Exception {
             switch (errCode) {
               case 400:
                 {
-                  // "请求语法错误"
                   return BadRequestException(
                       errCode, error.response.statusMessage);
                 }
                 break;
               case 401:
                 {
-                  // "没有权限"
                   return UnauthorisedException(
                       errCode, error.response.statusMessage);
                 }
@@ -89,21 +87,18 @@ class APIException implements Exception {
                 break;
               case 502:
                 {
-                  // "无效的请求"
                   return UnauthorisedException(
                       errCode, error.response.statusMessage);
                 }
                 break;
               case 503:
                 {
-                  // "服务器挂了"
                   return UnauthorisedException(
                       errCode, error.response.statusMessage);
                 }
                 break;
               case 505:
                 {
-                  // "不支持HTTP协议请求"
                   return UnauthorisedException(
                       errCode, error.response.statusMessage);
                 }
