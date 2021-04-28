@@ -92,6 +92,8 @@ class FacebookWebAnalyticsProvider extends AnalyticsProvider {
   Future<void> report(
       {AnalyticsEvent event,
       Map<AnalyticsEventParameter, dynamic> parameters}) {
+    if (!kIsWeb) return Future.value();
+
     Map<String, dynamic> maps = {};
     if (parameters != null) {
       for (var key in parameters.keys) {
