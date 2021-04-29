@@ -100,7 +100,8 @@ class FacebookWebAnalyticsProvider extends AnalyticsProvider {
         maps.addAll({key.name: parameters[key]});
       }
     }
-    return js.context
-        .callMethod('fb_logEvent', [event.name, json.encode(maps)]);
+    js.context.callMethod('fb_logEvent', [event.name, json.encode(maps)]);
+
+    return Future.value();
   }
 }
