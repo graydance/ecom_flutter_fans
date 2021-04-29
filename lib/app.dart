@@ -205,7 +205,7 @@ class RouteConfiguration {
             settings: settings,
           );
         } else if (regExpPattern.hasMatch(settings.name) &&
-            (settings.name == Routes.shop ||
+            (settings.name.startsWith(Routes.shop) ||
                 !routes.containsKey(settings.name))) {
           debugPrint(
               'onGenerateRoute >>> settings.name: ${settings.name} useQueryString: ${path.useQueryString} path: ${path.pattern}');
