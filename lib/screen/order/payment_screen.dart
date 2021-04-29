@@ -56,6 +56,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
           store, ModalRoute.of(context).settings.arguments),
       onInitialBuild: (viewModel) {
         _paymentGroupValue = viewModel.paymentMethods.first?.id ?? '';
+        setState(() {});
       },
       builder: (ctx, viewModel) => Scaffold(
         appBar: AppBar(
