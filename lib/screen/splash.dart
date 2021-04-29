@@ -1,6 +1,7 @@
 import 'package:fans/app.dart';
 import 'package:fans/event/app_event.dart';
 import 'package:fans/screen/components/default_button.dart';
+import 'package:fans/screen/shop/shop_screen.dart';
 import 'package:fans/storage/auth_storage.dart';
 import 'package:flutter/material.dart';
 

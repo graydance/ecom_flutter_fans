@@ -1222,10 +1222,6 @@ class _ViewModel {
           billingAddress.id, email, code, completer));
     }
 
-    if (store.state.config.country.isEmpty) {
-      store.dispatch(FetchConfigAction());
-    }
-
     return _ViewModel(
       isAnonymous: store.state.auth.user.isAnonymous == 1,
       currency: store.state.auth.user.monetaryUnit,

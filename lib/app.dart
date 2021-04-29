@@ -1,4 +1,3 @@
-import 'package:fans/utils/validator.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -7,6 +6,7 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:logging/logging.dart';
 import 'package:redux/redux.dart';
 import 'package:redux_logging/redux_logging.dart';
+import 'package:universal_html/html.dart';
 
 import 'package:fans/models/appstate.dart';
 import 'package:fans/screen/home/shop_detail_screen.dart';
@@ -20,7 +20,7 @@ import 'package:fans/screen/shop/shop_screen.dart';
 import 'package:fans/store/actions.dart';
 import 'package:fans/store/appreducers.dart';
 import 'package:fans/store/middleware.dart';
-import 'package:universal_html/html.dart';
+import 'package:fans/utils/validator.dart';
 
 class ReduxApp extends StatefulWidget {
   @override
@@ -59,7 +59,6 @@ class _ReduxAppState extends State<ReduxApp> {
             scaffoldBackgroundColor: Colors.white,
             primaryColor: Colors.white,
           ),
-          initialRoute: Routes.splash,
           navigatorKey: Keys.navigatorKey,
           builder: EasyLoading.init(),
           onGenerateRoute: RouteConfiguration.onGenerateRoute,
@@ -111,9 +110,8 @@ class Path {
 }
 
 class RouteConfiguration {
-  static var routeInitd = false;
+  static var shopInited = false;
   static var routes = {
-    Routes.splash: (context) => SplashScreen(),
     Routes.welcome: (context) => WelcomeScreen(),
     Routes.verifyEmail: (context) => AuthEmailScreen(),
     Routes.signup: (context) => SignupScreen(),
@@ -127,6 +125,9 @@ class RouteConfiguration {
     Routes.home: (context) => TabbarScreen(
           onInit: () {},
         ),
+    Routes.shop: (context) => ShopScreen(
+          userName: '',
+        ),
     Routes.searchByTag: (context) => SearchByTagScreen(),
     Routes.shopDetail: (context) => ShopDetailScreen(),
     Routes.productDetail: (context) => ProductDetailScreen(),
@@ -134,9 +135,6 @@ class RouteConfiguration {
     // Routes.preOrder: (context) => PreOrderScreen(),
     Routes.payment: (context) => PaymentScreen(),
     Routes.paymentSuccess: (context) => PaymentSuccessScreen(),
-    Routes.shop: (context) => ShopScreen(
-          userName: '',
-        ),
     Routes.signin: (context) => SignInScreen(),
     Routes.paypalResult: (context) => PaymentResultScreen(),
     Routes.preOrderMVP: (context) => PreOrderMVPScreen(),
@@ -191,36 +189,28 @@ class RouteConfiguration {
   /// [WidgetsApp.onGenerateRoute] to make use of the [paths] for route
   /// matching.
   static Route<dynamic> onGenerateRoute(RouteSettings settings) {
-    if (routes.containsKey(settings.name)) {
-      if (!routeInitd) {
-        final storeNameRoute = generateStoreNameRoute(settings);
-        if (storeNameRoute != null) {
-          return storeNameRoute;
-        }
+    debugPrint(
+        'onGenerateRoute >>> settings.name: ${settings.name} shopInited: $shopInited');
 
-        return MaterialPageRoute<void>(
-          builder: routes[Routes.splash],
-          settings: settings,
-        );
-      }
-
-      return MaterialPageRoute<void>(
-        builder: routes[settings.name],
-        settings: settings,
-      );
-    }
-
-    routeInitd = true;
-    for (Path path in paths) {
-      if (path.useQueryString && settings.name.startsWith(path.pattern)) {
-        final queryParameters = Uri.parse(settings.name).queryParameters;
-        return MaterialPageRoute<void>(
-          builder: (context) => path.builder(context, queryParameters),
-          settings: settings,
-        );
-      } else {
+    if (!shopInited) {
+      for (Path path in paths) {
         final regExpPattern = RegExp(path.pattern);
-        if (regExpPattern.hasMatch(settings.name)) {
+
+        // Routes.paypalResult || Routes.paypalResult || Routes.allinpayResult || Routes.paypalCancel
+        if (path.useQueryString && settings.name.startsWith(path.pattern)) {
+          shopInited = true;
+          final queryParameters = Uri.parse(settings.name).queryParameters;
+          return MaterialPageRoute<void>(
+            builder: (context) => path.builder(context, queryParameters),
+            settings: settings,
+          );
+        } else if (regExpPattern.hasMatch(settings.name) &&
+            (settings.name.startsWith(Routes.shop) ||
+                !routes.containsKey(settings.name))) {
+          debugPrint(
+              'onGenerateRoute >>> settings.name: ${settings.name} useQueryString: ${path.useQueryString} path: ${path.pattern}');
+
+          // /username || /shop/username
           final firstMatch = regExpPattern.firstMatch(settings.name);
           final match =
               (firstMatch.groupCount == 1) ? firstMatch.group(1) : null;
@@ -230,22 +220,50 @@ class RouteConfiguration {
           );
         }
       }
+    } else {
+      if (routes.containsKey(settings.name)) {
+        debugPrint(
+            'onGenerateRoute >>> containsKey Route settings.name: ${settings.name}');
+        return MaterialPageRoute<void>(
+          builder: routes[settings.name],
+          settings: settings,
+        );
+      } else {
+        // If no match was found, we let [WidgetsApp.onUnknownRoute] handle it.
+        return handleUnknowRoute(settings);
+      }
     }
 
     // If no match was found, we let [WidgetsApp.onUnknownRoute] handle it.
-    return generateStoreNameRoute(settings);
+    return handleUnknowRoute(settings);
+  }
+
+  static Route<dynamic> handleUnknowRoute(RouteSettings settings) {
+    final storeNameRoute = generateStoreNameRoute(settings);
+    // 泛域名进入首页
+    if (storeNameRoute != null) {
+      debugPrint('onGenerateRoute >>> Route StoreName');
+      return storeNameRoute;
+    } else {
+      debugPrint('onGenerateRoute >>> Route to Splash');
+      // 非泛域名进入闪屏页
+      return MaterialPageRoute<void>(
+        builder: (context) => SplashScreen(),
+      );
+    }
   }
 
   static Route<dynamic> generateStoreNameRoute(RouteSettings settings) {
     if (kIsWeb) {
       debugPrint('window.location.href >>> ${window.location.href}');
       var uri = Uri.parse(window.location.href);
+      if (uri == null) return null;
+
       var storeName = matchStoreName(uri.host);
       debugPrint('URI host >>> ${uri.host}, match storeName >>> $storeName');
       if (storeName != null) {
         return MaterialPageRoute<void>(
-          builder: routes['${Routes.shop}/$storeName'],
-          settings: settings,
+          builder: (ctx) => ShopScreen(userName: storeName),
         );
       }
       return null;
