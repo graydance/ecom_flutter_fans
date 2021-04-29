@@ -590,9 +590,6 @@ class _ViewModel {
           EditAddressAction(isEditShippingAddress, address, completer));
     }
 
-    if (store.state.config.country.isEmpty) {
-      store.dispatch(FetchConfigAction());
-    }
     return _ViewModel(
       isPreOrder: orderDetail.address == null ||
           orderDetail.billAddress == null ||

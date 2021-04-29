@@ -257,6 +257,8 @@ class RouteConfiguration {
     if (kIsWeb) {
       debugPrint('window.location.href >>> ${window.location.href}');
       var uri = Uri.parse(window.location.href);
+      if (uri == null) return null;
+
       var storeName = matchStoreName(uri.host);
       debugPrint('URI host >>> ${uri.host}, match storeName >>> $storeName');
       if (storeName != null) {

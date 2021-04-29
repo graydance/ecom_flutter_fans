@@ -9,7 +9,7 @@ dependencies:
     sdk: flutter
   flutter_redux: ^0.7.0
   redux: ^4.0.0+3
-  dio: ^4.0.0
+  dio: ^3.0.10
   redux_logging: ^0.4.0
   logging: ^0.11.4
   video_player: ^2.1.1
@@ -29,7 +29,7 @@ dependencies:
   badges: ^1.2.0
   uuid: ^3.0.1
   crypto: ^3.0.0
-  cached_network_image: ^3.0.0
+  cached_network_image: ^2.5.1
   flutter_picker: ^2.0.0
   intl_phone_number_input: ^0.7.0+1
   firebase_core: ^1.0.3
