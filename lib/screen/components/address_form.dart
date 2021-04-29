@@ -266,6 +266,7 @@ class _AddressFormState extends State<AddressForm> {
             ),
           TextFormField(
             autovalidateMode: AutovalidateMode.onUserInteraction,
+            keyboardType: TextInputType.number,
             decoration: _commonInputDecoration('Zip Code'),
             controller: _zipCodeController,
             validator: (value) =>
