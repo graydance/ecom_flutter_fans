@@ -21,27 +21,27 @@ class APIException implements Exception {
 
   factory APIException.create(DioError error) {
     switch (error.type) {
-      case DioErrorType.cancel:
+      case DioErrorType.CANCEL:
         {
           return BadRequestException(-1, "请求取消");
         }
         break;
-      case DioErrorType.connectTimeout:
+      case DioErrorType.CONNECT_TIMEOUT:
         {
           return BadRequestException(-1, "连接超时");
         }
         break;
-      case DioErrorType.sendTimeout:
+      case DioErrorType.SEND_TIMEOUT:
         {
           return BadRequestException(-1, "请求超时");
         }
         break;
-      case DioErrorType.receiveTimeout:
+      case DioErrorType.RECEIVE_TIMEOUT:
         {
           return BadRequestException(-1, "响应超时");
         }
         break;
-      case DioErrorType.response:
+      case DioErrorType.RESPONSE:
         {
           if (error.response == null) {
             return BadRequestException(-1, "Response is empty!");

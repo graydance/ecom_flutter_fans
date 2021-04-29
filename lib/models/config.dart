@@ -33,12 +33,17 @@ class Config {
   }
 
   factory Config.fromMap(Map<String, dynamic> map) {
-    return Config(
+    final model = Config(
       country:
-          List<Country>.from(map['country']?.map((x) => Country.fromMap(x))),
+          List<Country>.from(map['country']?.map((x) => Country.fromMap(x))) ??
+              [],
       payMethod: List<PaymentMethod>.from(
-          map['payMethod']?.map((x) => PaymentMethod.fromMap(x))),
+              map['payMethod']?.map((x) => PaymentMethod.fromMap(x))) ??
+          [],
     );
+    debugPrint('Config map: $map');
+    debugPrint('Config model: ${model.toString()}');
+    return model;
   }
 
   String toJson() => json.encode(toMap());

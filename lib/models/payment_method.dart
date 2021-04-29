@@ -31,8 +31,8 @@ class PaymentMethod {
 
   factory PaymentMethod.fromMap(Map<String, dynamic> map) {
     return PaymentMethod(
-      id: map['id'],
-      name: map['name'],
+      id: map['id'] ?? '',
+      name: map['name'] ?? '',
     );
   }
 
