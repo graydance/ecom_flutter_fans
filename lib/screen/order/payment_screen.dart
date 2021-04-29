@@ -201,45 +201,52 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   physics: NeverScrollableScrollPhysics(),
                   itemBuilder: (ctx, index) {
                     final paymentMethod = viewModel.paymentMethods[index];
-                    return Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(4),
-                        border:
-                            Border.all(color: AppTheme.color555764, width: 1),
-                      ),
-                      height: 46,
-                      padding: const EdgeInsets.all(8),
-                      child: Row(children: [
-                        SizedBox(
-                          width: 20,
-                          height: 20,
-                          child: Radio(
-                              value: paymentMethod.id,
-                              groupValue: _paymentGroupValue,
-                              activeColor: AppTheme.colorED8514,
-                              onChanged: (value) {
-                                setState(() {
-                                  _paymentGroupValue = value;
-                                });
-                              }),
+                    return GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _paymentGroupValue = paymentMethod.id;
+                        });
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(4),
+                          border:
+                              Border.all(color: AppTheme.color555764, width: 1),
                         ),
-                        SizedBox(
-                          width: 4,
-                        ),
-                        Expanded(
-                          child: Text(
-                            paymentMethod.name,
-                            style: TextStyle(
-                              color: AppTheme.color555764,
-                              fontSize: 12,
+                        height: 46,
+                        padding: const EdgeInsets.all(8),
+                        child: Row(children: [
+                          SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: Radio(
+                                value: paymentMethod.id,
+                                groupValue: _paymentGroupValue,
+                                activeColor: AppTheme.colorED8514,
+                                onChanged: (value) {
+                                  setState(() {
+                                    _paymentGroupValue = value;
+                                  });
+                                }),
+                          ),
+                          SizedBox(
+                            width: 4,
+                          ),
+                          Expanded(
+                            child: Text(
+                              paymentMethod.name,
+                              style: TextStyle(
+                                color: AppTheme.color555764,
+                                fontSize: 12,
+                              ),
                             ),
                           ),
-                        ),
-                        if (paymentMethod.id.toLowerCase() == 'paypal')
-                          Image(
-                            image: R.image.paypal(),
-                          ),
-                      ]),
+                          if (paymentMethod.id.toLowerCase() == 'paypal')
+                            Image(
+                              image: R.image.paypal(),
+                            ),
+                        ]),
+                      ),
                     );
                   },
                   separatorBuilder: (ctx, index) {
