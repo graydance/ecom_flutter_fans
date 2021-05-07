@@ -288,7 +288,8 @@ class _CartScreenState extends State<CartScreen> {
                   ),
                 if (viewModel.cart.list.isNotEmpty && !_controller.isSelecting)
                   FansButton(
-                    onPressed: viewModel.cart.list.isNotEmpty
+                    onPressed: viewModel.cart.list.isNotEmpty ||
+                            viewModel.cart.canOrder
                         ? () {
                             viewModel.onCheckout(viewModel.cart.list);
                           }
@@ -369,7 +370,12 @@ class CartItemTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final String error = item.isStockEnough ? '' : '* Out of stock';
+    String error = '';
+    if (item.isStockEnough) {
+      error = '* Out of stock';
+    } else if (item.status == 0) {
+      error = '* This item is unavailable';
+    }
 
     return Column(
       mainAxisSize: MainAxisSize.min,
