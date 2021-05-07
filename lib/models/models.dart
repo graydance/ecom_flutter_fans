@@ -17,3 +17,4 @@ export './config.dart';
 export './country.dart';
 export './address.dart';
 export './payment_method.dart';
+export './idol.dart';
