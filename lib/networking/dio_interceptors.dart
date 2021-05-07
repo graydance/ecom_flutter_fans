@@ -10,23 +10,19 @@ import 'api_exceptions.dart';
 /// 错误处理拦截器
 class ErrorInterceptor extends Interceptor {
   @override
-  void onError(
+  Future onError(
     DioError err,
-    ErrorInterceptorHandler handler,
   ) {
     APIException exception = APIException.create(err);
     // 错误提示
     err.error = exception;
-    super.onError(err, handler);
+    return super.onError(err);
   }
 }
 
 class TokenInterceptor extends Interceptor {
   @override
-  void onRequest(
-    RequestOptions options,
-    RequestInterceptorHandler handler,
-  ) async {
+  Future onRequest(RequestOptions options) async {
     var token = await AuthStorage.getToken();
     if (token != null && token.isNotEmpty) {
       options.headers.addAll({
@@ -41,7 +37,7 @@ class TokenInterceptor extends Interceptor {
       'x-version': signVersion,
       'x-signature': sign,
     });
-    super.onRequest(options, handler);
+    return super.onRequest(options);
   }
 
   String _generateMd5(String data) {

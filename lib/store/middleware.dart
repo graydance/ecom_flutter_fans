@@ -726,7 +726,8 @@ Middleware<AppState> _createFetchConfig() {
     if (action is FetchConfigAction) {
       Networking.request(ConfigAPI()).then(
         (data) {
-          final config = Config.fromMap(data['data']);
+          final map = data['data'];
+          final config = Config.fromMap(map);
           store.dispatch(OnUpdateConfigAction(config));
         },
       ).catchError((err) {});
