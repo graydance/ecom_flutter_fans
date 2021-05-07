@@ -82,6 +82,7 @@ flutter:
   - assets/images/kol/kol_tab_photos_unselected.png
   - assets/images/product/cart_empty.png
   - assets/images/product/common_button_bg.png
+  - assets/images/product/credit.png
   - assets/images/product/goods_placeholder.png
   - assets/images/product/icon_add.png
   - assets/images/product/icon_add_disable.png

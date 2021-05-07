@@ -241,10 +241,11 @@ class _PaymentScreenState extends State<PaymentScreen> {
                               ),
                             ),
                           ),
-                          if (paymentMethod.id.toLowerCase() == 'paypal')
-                            Image(
-                              image: R.image.paypal(),
-                            ),
+                          Image(
+                            image: paymentMethod.id.toLowerCase() == 'paypal'
+                                ? R.image.paypal()
+                                : R.image.credit(),
+                          ),
                         ]),
                       ),
                     );
