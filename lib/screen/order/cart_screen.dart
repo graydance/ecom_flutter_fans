@@ -371,10 +371,10 @@ class CartItemTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     String error = '';
-    if (item.isStockEnough) {
-      error = '* Out of stock';
-    } else if (item.status == 0) {
+    if (item.status == 0) {
       error = '* This item is unavailable';
+    } else if (item.isStockEnough == false) {
+      error = '* Out of stock';
     }
 
     return Column(

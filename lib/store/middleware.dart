@@ -566,7 +566,7 @@ Middleware<AppState> _createSellerInfo() {
     if (action is FetchSellerInfoAction) {
       Networking.request(SellerInfoAPI(action.userName)).then(
         (data) {
-          final seller = Feed.fromMap(data['data']);
+          final seller = Idol.fromMap(data['data']);
           action.completer.complete(seller);
         },
       ).catchError((err) {

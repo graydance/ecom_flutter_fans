@@ -31,7 +31,7 @@ class ShopScreen extends StatefulWidget {
 }
 
 class _ShopScreenState extends State<ShopScreen> {
-  Feed _seller = Feed();
+  Idol _seller = Idol();
   String _expressInfo = '';
 
   final _refreshGoodsController = EasyRefreshController();
@@ -49,11 +49,13 @@ class _ShopScreenState extends State<ShopScreen> {
         FetchSellerInfoAction(userName: widget.userName, completer: completer));
 
     try {
-      final Feed seller = await completer.future;
+      final Idol seller = await completer.future;
       setState(() {
         _seller = seller;
       });
-    } catch (e) {}
+    } catch (e) {
+      debugPrint(e.toString());
+    }
 
     _showCoupon(viewModel.currency);
 
