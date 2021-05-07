@@ -21,6 +21,7 @@ class GoodsItem {
   final String originalPriceStr;
   final List<Tag> tag;
   final String discount;
+  final int stock;
 
   const GoodsItem({
     this.id = '',
@@ -38,6 +39,7 @@ class GoodsItem {
     this.originalPriceStr = '',
     this.tag = const [],
     this.discount = '',
+    this.stock = 0,
   });
 
   GoodsItem copyWith({
@@ -56,6 +58,7 @@ class GoodsItem {
     String originalPriceStr,
     List<Tag> tag,
     String discount,
+    int stock,
   }) {
     return GoodsItem(
       id: id ?? this.id,
@@ -73,6 +76,7 @@ class GoodsItem {
       originalPriceStr: originalPriceStr ?? this.originalPriceStr,
       tag: tag ?? this.tag,
       discount: discount ?? this.discount,
+      stock: stock ?? this.stock,
     );
   }
 
@@ -91,14 +95,13 @@ class GoodsItem {
       'originalPrice': originalPrice,
       'currentPriceStr': currentPriceStr,
       'originalPriceStr': originalPriceStr,
-      'tag': tag?.map((x) => x?.toMap())?.toList(),
+      'tag': tag?.map((x) => x.toMap())?.toList(),
       'discount': discount,
+      'stock': stock,
     };
   }
 
   factory GoodsItem.fromMap(Map<String, dynamic> map) {
-    if (map == null) return null;
-
     return GoodsItem(
       id: map['id'],
       idolGoodsId: map['idolGoodsId'],
@@ -115,6 +118,7 @@ class GoodsItem {
       originalPriceStr: map['originalPriceStr'],
       tag: List<Tag>.from(map['tag']?.map((x) => Tag.fromMap(x))),
       discount: map['discount'],
+      stock: map['stock'],
     );
   }
 
@@ -125,29 +129,30 @@ class GoodsItem {
 
   @override
   String toString() {
-    return 'GoodsItem(id: $id, idolGoodsId: $idolGoodsId, heatRank: $heatRank, supplierId: $supplierId, width: $width, height: $height, picture: $picture, goodsName: $goodsName, isOffTheShelf: $isOffTheShelf, currentPrice: $currentPrice, originalPrice: $originalPrice, currentPriceStr: $currentPriceStr, originalPriceStr: $originalPriceStr, tag: $tag, discount: $discount)';
+    return 'GoodsItem(id: $id, idolGoodsId: $idolGoodsId, heatRank: $heatRank, supplierId: $supplierId, width: $width, height: $height, picture: $picture, goodsName: $goodsName, isOffTheShelf: $isOffTheShelf, currentPrice: $currentPrice, originalPrice: $originalPrice, currentPriceStr: $currentPriceStr, originalPriceStr: $originalPriceStr, tag: $tag, discount: $discount, stock: $stock)';
   }
 
   @override
-  bool operator ==(Object o) {
-    if (identical(this, o)) return true;
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
 
-    return o is GoodsItem &&
-        o.id == id &&
-        o.idolGoodsId == idolGoodsId &&
-        o.heatRank == heatRank &&
-        o.supplierId == supplierId &&
-        o.width == width &&
-        o.height == height &&
-        o.picture == picture &&
-        o.goodsName == goodsName &&
-        o.isOffTheShelf == isOffTheShelf &&
-        o.currentPrice == currentPrice &&
-        o.originalPrice == originalPrice &&
-        o.currentPriceStr == currentPriceStr &&
-        o.originalPriceStr == originalPriceStr &&
-        listEquals(o.tag, tag) &&
-        o.discount == discount;
+    return other is GoodsItem &&
+        other.id == id &&
+        other.idolGoodsId == idolGoodsId &&
+        other.heatRank == heatRank &&
+        other.supplierId == supplierId &&
+        other.width == width &&
+        other.height == height &&
+        other.picture == picture &&
+        other.goodsName == goodsName &&
+        other.isOffTheShelf == isOffTheShelf &&
+        other.currentPrice == currentPrice &&
+        other.originalPrice == originalPrice &&
+        other.currentPriceStr == currentPriceStr &&
+        other.originalPriceStr == originalPriceStr &&
+        listEquals(other.tag, tag) &&
+        other.discount == discount &&
+        other.stock == stock;
   }
 
   @override
@@ -166,6 +171,7 @@ class GoodsItem {
         currentPriceStr.hashCode ^
         originalPriceStr.hashCode ^
         tag.hashCode ^
-        discount.hashCode;
+        discount.hashCode ^
+        stock.hashCode;
   }
 }
