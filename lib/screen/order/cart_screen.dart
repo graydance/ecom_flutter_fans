@@ -294,7 +294,8 @@ class _CartScreenState extends State<CartScreen> {
                             viewModel.onCheckout(viewModel.cart.list);
                           }
                         : null,
-                    isDisable: viewModel.cart.list.isEmpty,
+                    isDisable: viewModel.cart.list.isNotEmpty ||
+                        viewModel.cart.canOrder,
                     title: 'Check out',
                   ),
               ],
