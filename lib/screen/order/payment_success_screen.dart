@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:universal_html/html.dart' as html;
 
 import 'package:fans/app.dart';
 import 'package:fans/event/app_event.dart';
@@ -82,8 +83,10 @@ class _PaymentSuccessScreenState extends State<PaymentSuccessScreen> {
                 child: FansButton(
                   onPressed: () {
                     if (kIsWeb) {
-                      Keys.navigatorKey.currentState
-                          .pushReplacementNamed('${Routes.shop}/$username');
+                      html.window.location.href =
+                          'https://$username.store.olaak.com';
+                      // Keys.navigatorKey.currentState
+                      //     .pushReplacementNamed('${Routes.shop}/$username');
                     } else {
                       Keys.navigatorKey.currentState
                           .popUntil((route) => route.isFirst);
