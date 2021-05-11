@@ -2,10 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 
-import 'package:fans/models/goods.dart';
-import 'package:fans/models/goods_skus.dart';
-import 'package:fans/models/goods_spec.dart';
-import 'package:fans/models/tag.dart';
+import 'package:fans/models/models.dart';
 
 class Product {
   final String id;
@@ -35,6 +32,7 @@ class Product {
   final String currentPriceStr;
   final List<Tag> tag;
   final int isCustomiz;
+  final List<ServiceConfig> serviceConfigs;
 
   const Product({
     this.id = '',
@@ -64,6 +62,7 @@ class Product {
     this.currentPriceStr = '',
     this.tag = const [],
     this.isCustomiz = 0,
+    this.serviceConfigs = const [],
   });
 
   Product copyWith({
@@ -94,6 +93,7 @@ class Product {
     String currentPriceStr,
     List<Tag> tag,
     int isCustomiz,
+    List<ServiceConfig> serviceConfigs,
   }) {
     return Product(
       id: id ?? this.id,
@@ -123,6 +123,7 @@ class Product {
       currentPriceStr: currentPriceStr ?? this.currentPriceStr,
       tag: tag ?? this.tag,
       isCustomiz: isCustomiz ?? this.isCustomiz,
+      serviceConfigs: serviceConfigs ?? this.serviceConfigs,
     );
   }
 
@@ -157,7 +158,8 @@ class Product {
         other.originalPriceStr == originalPriceStr &&
         other.currentPriceStr == currentPriceStr &&
         listEquals(other.tag, tag) &&
-        other.isCustomiz == isCustomiz;
+        other.isCustomiz == isCustomiz &&
+        listEquals(other.serviceConfigs, serviceConfigs);
   }
 
   @override
@@ -188,12 +190,13 @@ class Product {
         originalPriceStr.hashCode ^
         currentPriceStr.hashCode ^
         tag.hashCode ^
-        isCustomiz.hashCode;
+        isCustomiz.hashCode ^
+        serviceConfigs.hashCode;
   }
 
   @override
   String toString() {
-    return 'Product(id: $id, productName: $productName, originalPrice: $originalPrice, currentPrice: $currentPrice, earningPrice: $earningPrice, description: $description, carNumber: $carNumber, collectNumber: $collectNumber, status: $status, originalUrl: $originalUrl, specType: $specType, width: $width, height: $height, supplierId: $supplierId, goodsPictures: $goodsPictures, goodsSkus: $goodsSkus, specList: $specList, idolId: $idolId, idolGoodsId: $idolGoodsId, nickName: $nickName, storeName: $storeName, isOfficial: $isOfficial, recommend: $recommend, originalPriceStr: $originalPriceStr, currentPriceStr: $currentPriceStr, tag: $tag, isCustomiz: $isCustomiz)';
+    return 'Product(id: $id, productName: $productName, originalPrice: $originalPrice, currentPrice: $currentPrice, earningPrice: $earningPrice, description: $description, carNumber: $carNumber, collectNumber: $collectNumber, status: $status, originalUrl: $originalUrl, specType: $specType, width: $width, height: $height, supplierId: $supplierId, goodsPictures: $goodsPictures, goodsSkus: $goodsSkus, specList: $specList, idolId: $idolId, idolGoodsId: $idolGoodsId, nickName: $nickName, storeName: $storeName, isOfficial: $isOfficial, recommend: $recommend, originalPriceStr: $originalPriceStr, currentPriceStr: $currentPriceStr, tag: $tag, isCustomiz: $isCustomiz, serviceConfigs: $serviceConfigs)';
   }
 
   Map<String, dynamic> toMap() {
@@ -225,6 +228,7 @@ class Product {
       'currentPriceStr': currentPriceStr,
       'tag': tag?.map((x) => x.toMap())?.toList(),
       'isCustomiz': isCustomiz,
+      'serviceConfigs': serviceConfigs?.map((x) => x.toMap())?.toList(),
     };
   }
 
@@ -261,6 +265,8 @@ class Product {
       currentPriceStr: map['currentPriceStr'],
       tag: List<Tag>.from(map['tag']?.map((x) => Tag.fromMap(x))),
       isCustomiz: map['isCustomiz'],
+      serviceConfigs: List<ServiceConfig>.from(
+          map['serviceConfigs']?.map((x) => ServiceConfig.fromMap(x))),
     );
   }
 
