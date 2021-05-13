@@ -35,6 +35,10 @@ class OrderSku {
   final String customiz;
   final String cartItemId;
 
+  final String expressShow;
+  final int expressTemplateId;
+  final int expressTemplatePrice;
+
   const OrderSku({
     this.id = '',
     this.originalPrice = 0,
@@ -60,6 +64,9 @@ class OrderSku {
     this.isCustomiz = 0,
     this.customiz = '',
     this.cartItemId = '',
+    this.expressShow = '',
+    this.expressTemplateId = 0,
+    this.expressTemplatePrice = 0,
   });
 
   OrderSku copyWith({
@@ -87,6 +94,9 @@ class OrderSku {
     int isCustomiz,
     String customiz,
     String cartItemId,
+    String expressShow,
+    int expressTemplateId,
+    int expressTemplatePrice,
   }) {
     return OrderSku(
       id: id ?? this.id,
@@ -113,6 +123,9 @@ class OrderSku {
       isCustomiz: isCustomiz ?? this.isCustomiz,
       customiz: customiz ?? this.customiz,
       cartItemId: cartItemId ?? this.cartItemId,
+      expressShow: expressShow ?? this.expressShow,
+      expressTemplateId: expressTemplateId ?? this.expressTemplateId,
+      expressTemplatePrice: expressTemplatePrice ?? this.expressTemplatePrice,
     );
   }
 
@@ -142,6 +155,9 @@ class OrderSku {
       'isCustomiz': isCustomiz,
       'customiz': customiz,
       'cartItemId': cartItemId,
+      'expressShow': expressShow,
+      'expressTemplateId': expressTemplateId,
+      'expressTemplatePrice': expressTemplatePrice,
     };
   }
 
@@ -171,6 +187,9 @@ class OrderSku {
       isCustomiz: map['isCustomiz'],
       customiz: map['customiz'],
       cartItemId: map['cartItemId'],
+      expressShow: map['expressShow'] ?? '',
+      expressTemplateId: map['expressTemplateId'] ?? 0,
+      expressTemplatePrice: map['expressTemplatePrice'] ?? 0,
     );
   }
 
@@ -207,7 +226,10 @@ class OrderSku {
         other.isStockEnough == isStockEnough &&
         other.isCustomiz == isCustomiz &&
         other.customiz == customiz &&
-        other.cartItemId == cartItemId;
+        other.cartItemId == cartItemId &&
+        other.expressShow == expressShow &&
+        other.expressTemplateId == expressTemplateId &&
+        other.expressTemplatePrice == expressTemplatePrice;
   }
 
   @override
@@ -235,12 +257,15 @@ class OrderSku {
         isStockEnough.hashCode ^
         isCustomiz.hashCode ^
         customiz.hashCode ^
-        cartItemId.hashCode;
+        cartItemId.hashCode ^
+        expressShow.hashCode ^
+        expressTemplateId.hashCode ^
+        expressTemplatePrice.hashCode;
   }
 
   @override
   String toString() {
-    return 'OrderSku(id: $id, originalPrice: $originalPrice, currentPrice: $currentPrice, earningPrice: $earningPrice, tax: $tax, barcode: $barcode, stock: $stock, sales: $sales, weight: $weight, skuImage: $skuImage, skuSpecIds: $skuSpecIds, createdAt: $createdAt, updatedAt: $updatedAt, number: $number, idolGoodsId: $idolGoodsId, idolId: $idolId, status: $status, goodsName: $goodsName, goodsSkuName: $goodsSkuName, currentPriceStr: $currentPriceStr, isStockEnough: $isStockEnough, isCustomiz: $isCustomiz, customiz: $customiz, cartItemId: $cartItemId)';
+    return 'OrderSku(id: $id, originalPrice: $originalPrice, currentPrice: $currentPrice, earningPrice: $earningPrice, tax: $tax, barcode: $barcode, stock: $stock, sales: $sales, weight: $weight, skuImage: $skuImage, skuSpecIds: $skuSpecIds, createdAt: $createdAt, updatedAt: $updatedAt, number: $number, idolGoodsId: $idolGoodsId, idolId: $idolId, status: $status, goodsName: $goodsName, goodsSkuName: $goodsSkuName, currentPriceStr: $currentPriceStr, isStockEnough: $isStockEnough, isCustomiz: $isCustomiz, customiz: $customiz, cartItemId: $cartItemId, expressShow: $expressShow, expressTemplateId: $expressTemplateId, expressTemplatePrice: $expressTemplatePrice)';
   }
 }
 
@@ -251,6 +276,7 @@ class OrderParameter {
   final int number;
   final int isCustomiz;
   final String customiz;
+  final int expressTemplateId;
 
   OrderParameter({
     this.skuSpecIds,
@@ -258,6 +284,7 @@ class OrderParameter {
     this.number = 0,
     this.isCustomiz = 0,
     this.customiz = '',
+    this.expressTemplateId = 0,
   });
 
   Map<String, dynamic> toMap() {
@@ -267,6 +294,7 @@ class OrderParameter {
       'number': number,
       'isCustomiz': isCustomiz,
       'customiz': customiz,
+      'expressTemplateId': expressTemplateId,
     };
   }
 
@@ -277,6 +305,7 @@ class OrderParameter {
       number: map['number'],
       isCustomiz: map['isCustomiz'],
       customiz: map['customiz'],
+      expressTemplateId: map['expressTemplateId'],
     );
   }
 
@@ -294,7 +323,8 @@ class OrderParameter {
         other.idolGoodsId == idolGoodsId &&
         other.number == number &&
         other.isCustomiz == isCustomiz &&
-        other.customiz == customiz;
+        other.customiz == customiz &&
+        other.expressTemplateId == expressTemplateId;
   }
 
   @override
@@ -303,6 +333,7 @@ class OrderParameter {
         idolGoodsId.hashCode ^
         number.hashCode ^
         isCustomiz.hashCode ^
-        customiz.hashCode;
+        customiz.hashCode ^
+        expressTemplateId.hashCode;
   }
 }
