@@ -8,6 +8,8 @@ import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:redux/redux.dart';
+import 'package:universal_html/html.dart' as html;
+import 'package:url_launcher/url_launcher.dart';
 
 import 'package:fans/app.dart';
 import 'package:fans/event/app_event.dart';
@@ -42,6 +44,21 @@ class _ShopScreenState extends State<ShopScreen> {
   Map<String, _Size> _cacheSize = {};
 
   Set<String> _reportedIds = {};
+
+  final List<_SupportItem> _supportItems = [
+    _SupportItem(
+        'Contact', 'https://app.gitbook.com/@levermore-1/s/help-and-support/'),
+    _SupportItem('Shipping Info',
+        'https://app.gitbook.com/@levermore-1/s/help-and-support/shipping-info'),
+    _SupportItem('Return Policy',
+        'https://app.gitbook.com/@levermore-1/s/help-and-support/return-policy'),
+    _SupportItem('How To Track',
+        'https://app.gitbook.com/@levermore-1/s/help-and-support/how-to-track'),
+    _SupportItem('Terms & condititon',
+        'https://app.gitbook.com/@levermore-1/s/help-and-support/terms-and-condititon'),
+    _SupportItem('Privacy & Cookies Policy',
+        'https://app.gitbook.com/@levermore-1/s/help-and-support/privacy-and-cookies-policy'),
+  ];
 
   _loadData(_ViewModel viewModel) async {
     final completer = Completer();
@@ -303,6 +320,118 @@ class _ShopScreenState extends State<ShopScreen> {
                         ),
                 ),
               ),
+              SliverToBoxAdapter(
+                child: ListView(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Divider(
+                        color: AppTheme.colorC4C5CD,
+                        height: 1,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 30,
+                        vertical: 6,
+                      ),
+                      child: Text(
+                        'HELP & SUPPORT',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: AppTheme.color979AA9,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 8,
+                    ),
+                    ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemBuilder: (context, index) {
+                        final model = _supportItems[index];
+                        return GestureDetector(
+                          onTap: () {
+                            if (kIsWeb) {
+                              html.window.location.href = model.url;
+                            } else {
+                              launch(model.url);
+                            }
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 30,
+                              vertical: 8,
+                            ),
+                            child: Row(
+                              children: [
+                                Text(
+                                  model.title,
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: AppTheme.color979AA9,
+                                  ),
+                                ),
+                                Spacer(),
+                                Icon(
+                                  Icons.arrow_forward_ios_rounded,
+                                  color: AppTheme.color979AA9,
+                                  size: 10,
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                      itemCount: _supportItems.length,
+                    ),
+                    SizedBox(
+                      height: 40,
+                    ),
+                    Column(
+                      children: [
+                        Image(image: R.image.icon_supports()),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            const url = 'https://olaak.com';
+                            if (kIsWeb) {
+                              html.window.location.href = url;
+                            } else {
+                              launch(url);
+                            }
+                          },
+                          child: Text(
+                            'Powered by Olaak',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: AppTheme.color979AA9,
+                              fontWeight: FontWeight.w500,
+                              decoration: TextDecoration.underline,
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 8,
+                        ),
+                        Text(
+                          '©2021 Olaak All Rights Reserved',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: AppTheme.color979AA9,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
         ),
@@ -545,4 +674,12 @@ class _ViewModel {
     return _ViewModel(userId, store.state.cart.list.length,
         store.state.auth.user.monetaryUnit);
   }
+}
+
+@immutable
+class _SupportItem {
+  final String title;
+  final String url;
+
+  _SupportItem(this.title, this.url);
 }

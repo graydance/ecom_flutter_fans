@@ -302,6 +302,11 @@ class _R_Image_AssetResource {
   final icon_shipping =
       const AssetResource("assets/images/product/icon_shipping.png", packageName: null);
 
+  /// asset: assets/images/product/icon_supports.png
+  // ignore: non_constant_identifier_names
+  final icon_supports =
+      const AssetResource("assets/images/product/icon_supports.png", packageName: null);
+
   /// asset: assets/images/product/payment_success.png
   // ignore: non_constant_identifier_names
   final payment_success =
@@ -642,6 +647,12 @@ class _R_Image {
   // ignore: non_constant_identifier_names
   AssetImage icon_shipping() {
     return AssetImage(asset.icon_shipping.keyName);
+  }
+
+  /// asset: assets/images/product/icon_supports.png
+  // ignore: non_constant_identifier_names
+  AssetImage icon_supports() {
+    return AssetImage(asset.icon_supports.keyName);
   }
 
   /// asset: assets/images/product/payment_success.png
