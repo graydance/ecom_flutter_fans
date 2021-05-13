@@ -271,53 +271,59 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                               height: 1,
                             ),
                           if (_model.serviceConfigs.isNotEmpty)
-                            Container(
-                              constraints: BoxConstraints(minHeight: 54),
-                              padding: const EdgeInsets.symmetric(vertical: 8),
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          'Service',
-                                          style: TextStyle(
-                                            color: AppTheme.color0F1015,
-                                            fontWeight: FontWeight.w500,
-                                            fontSize: 14,
+                            GestureDetector(
+                              onTap: () async {
+                                await _showServiceBottomSheet(context);
+                              },
+                              child: Container(
+                                constraints: BoxConstraints(minHeight: 54),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 8),
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'Service',
+                                            style: TextStyle(
+                                              color: AppTheme.color0F1015,
+                                              fontWeight: FontWeight.w500,
+                                              fontSize: 14,
+                                            ),
                                           ),
-                                        ),
-                                        SizedBox(
-                                          height: 8,
-                                        ),
-                                        Row(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Expanded(
-                                              child: Text(
-                                                _model.serviceConfigs
-                                                    .map((e) => e.title)
-                                                    .join(', '),
-                                                style: TextStyle(
-                                                  color: AppTheme.color555764,
-                                                  fontSize: 12,
+                                          SizedBox(
+                                            height: 8,
+                                          ),
+                                          Row(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: [
+                                              Expanded(
+                                                child: Text(
+                                                  _model.serviceConfigs
+                                                      .map((e) => e.title)
+                                                      .join(', '),
+                                                  style: TextStyle(
+                                                    color: AppTheme.color555764,
+                                                    fontSize: 12,
+                                                  ),
                                                 ),
                                               ),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
+                                            ],
+                                          ),
+                                        ],
+                                      ),
                                     ),
-                                  ),
-                                  Icon(
-                                    Icons.arrow_forward_ios_rounded,
-                                    size: 10,
-                                    color: AppTheme.color555764,
-                                  ),
-                                ],
+                                    Icon(
+                                      Icons.arrow_forward_ios_rounded,
+                                      size: 10,
+                                      color: AppTheme.color555764,
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
                         ],
@@ -510,6 +516,13 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
     return showModalBottomSheet(
         context: context,
+        isScrollControlled: true,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(4),
+            topRight: Radius.circular(4),
+          ),
+        ),
         builder: (context) {
           return _DeliveryOptionView(
             shippedFrom: _model.shippedFrom,
@@ -522,6 +535,25 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             },
             defaultExpress: _selectedExpress,
             currency: currency,
+          );
+        },
+        isDismissible: true);
+  }
+
+  Future<void> _showServiceBottomSheet(BuildContext context) async {
+    return showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(4),
+            topRight: Radius.circular(4),
+          ),
+        ),
+        builder: (context) {
+          return _ServiceView(
+            list: _model.serviceConfigs,
           );
         },
         isDismissible: true);
@@ -564,8 +596,10 @@ class __DeliveryOptionViewState extends State<_DeliveryOptionView> {
     return SafeArea(
       bottom: false,
       child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 20,
+        padding: EdgeInsets.only(
+          left: 20,
+          right: 20,
+          bottom: MediaQuery.of(context).padding.bottom,
         ),
         child: ListView(
           shrinkWrap: true,
@@ -661,6 +695,154 @@ class __DeliveryOptionViewState extends State<_DeliveryOptionView> {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _ServiceView extends StatelessWidget {
+  final List<ServiceConfig> list;
+  const _ServiceView({
+    Key key,
+    @required this.list,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      bottom: false,
+      child: Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).padding.bottom,
+        ),
+        child: ListView(
+          shrinkWrap: true,
+          children: [
+            Container(
+              height: 210 / 375 * MediaQuery.of(context).size.width,
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                  image: R.image.icon_service(),
+                  fit: BoxFit.fill,
+                ),
+              ),
+              child: Stack(
+                children: [
+                  Positioned(
+                    left: 10,
+                    right: 10,
+                    bottom: 30,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          'Shop with Confidence',
+                          style: TextStyle(
+                            color: AppTheme.colorED8514,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        SizedBox(
+                          height: 6,
+                        ),
+                        Text(
+                          'We provids guarantess to all Olaak purchases',
+                          style: TextStyle(
+                            color: AppTheme.colorED8514,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Positioned(
+                    right: 5,
+                    top: 5,
+                    child: SizedBox(
+                      height: 30,
+                      width: 30,
+                      child: TextButton(
+                        onPressed: () => Navigator.of(context).pop(),
+                        style: TextButton.styleFrom(
+                          primary: AppTheme.colorC4C5CD,
+                          padding: EdgeInsets.all(1),
+                        ),
+                        child: Image(
+                          image: R.image.icon_close(),
+                          width: 15,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemBuilder: (context, index) {
+                return _buildTile(list[index]);
+              },
+              itemCount: list.length,
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 20,
+                vertical: 15,
+              ),
+              child: FansButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                title: 'OK',
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTile(ServiceConfig model) {
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          CachedNetworkImage(
+            imageUrl: model.icon,
+            width: 30,
+            height: 30,
+          ),
+          SizedBox(
+            width: 12,
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                model.title,
+                style: TextStyle(
+                  color: AppTheme.color0F1015,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              SizedBox(
+                height: 8,
+              ),
+              Text(
+                model.content,
+                style: TextStyle(
+                  color: AppTheme.color555764,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                ),
+              )
+            ],
+          ),
+        ],
       ),
     );
   }

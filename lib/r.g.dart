@@ -292,6 +292,11 @@ class _R_Image_AssetResource {
   final icon_remove_disable =
       const AssetResource("assets/images/product/icon_remove_disable.png", packageName: null);
 
+  /// asset: assets/images/product/icon_service.png
+  // ignore: non_constant_identifier_names
+  final icon_service =
+      const AssetResource("assets/images/product/icon_service.png", packageName: null);
+
   /// asset: assets/images/product/icon_shipping.png
   // ignore: non_constant_identifier_names
   final icon_shipping =
@@ -625,6 +630,12 @@ class _R_Image {
   // ignore: non_constant_identifier_names
   AssetImage icon_remove_disable() {
     return AssetImage(asset.icon_remove_disable.keyName);
+  }
+
+  /// asset: assets/images/product/icon_service.png
+  // ignore: non_constant_identifier_names
+  AssetImage icon_service() {
+    return AssetImage(asset.icon_service.keyName);
   }
 
   /// asset: assets/images/product/icon_shipping.png
