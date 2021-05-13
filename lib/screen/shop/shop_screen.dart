@@ -495,7 +495,7 @@ class _ShopScreenState extends State<ShopScreen> {
                     height: 4,
                   ),
                   Text(
-                    'On order of $currency${(info.min / 100.0).toStringAsFixed(0)}+',
+                    'On order of $currency${(info.min / 100.0).toStringAsFixed(2)}+',
                     style: TextStyle(
                       fontSize: 16,
                       color: AppTheme.color0F1015,
