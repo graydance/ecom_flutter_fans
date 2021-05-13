@@ -44,8 +44,7 @@ class R {
 /// - fileExtname：.png
 class AssetResource {
   /// Creates an object to hold the asset resource’s metadata.
-  const AssetResource(this.assetName, {this.packageName})
-      : assert(assetName != null);
+  const AssetResource(this.assetName, {this.packageName}) : assert(assetName != null);
 
   /// The name of the main asset from the set of asset resources to choose from.
   final String assetName;
@@ -56,8 +55,7 @@ class AssetResource {
   /// The name used to generate the key to obtain the asset resource. For local assets
   /// this is [assetName], and for assets from packages the [assetName] is
   /// prefixed 'packages/<package_name>/'.
-  String get keyName =>
-      packageName == null ? assetName : "packages/$packageName/$assetName";
+  String get keyName => packageName == null ? assetName : "packages/$packageName/$assetName";
 
   /// The file basename of the asset resource.
   String get fileBasename {
@@ -96,311 +94,262 @@ class _R_Image_AssetResource {
 
   /// asset: assets/images/auth/auth_background.png
   // ignore: non_constant_identifier_names
-  final auth_background = const AssetResource(
-      "assets/images/auth/auth_background.png",
-      packageName: null);
+  final auth_background =
+      const AssetResource("assets/images/auth/auth_background.png", packageName: null);
 
   /// asset: assets/images/auth/eyes_visibility.png
   // ignore: non_constant_identifier_names
-  final eyes_visibility = const AssetResource(
-      "assets/images/auth/eyes_visibility.png",
-      packageName: null);
+  final eyes_visibility =
+      const AssetResource("assets/images/auth/eyes_visibility.png", packageName: null);
 
   /// asset: assets/images/auth/eyes_visibility_off.png
   // ignore: non_constant_identifier_names
-  final eyes_visibility_off = const AssetResource(
-      "assets/images/auth/eyes_visibility_off.png",
-      packageName: null);
+  final eyes_visibility_off =
+      const AssetResource("assets/images/auth/eyes_visibility_off.png", packageName: null);
 
   /// asset: assets/images/auth/ic_index_logo.png
   // ignore: non_constant_identifier_names
-  final ic_index_logo = const AssetResource(
-      "assets/images/auth/ic_index_logo.png",
-      packageName: null);
+  final ic_index_logo =
+      const AssetResource("assets/images/auth/ic_index_logo.png", packageName: null);
 
   /// asset: assets/images/auth/interest_selected.png
   // ignore: non_constant_identifier_names
-  final interest_selected = const AssetResource(
-      "assets/images/auth/interest_selected.png",
-      packageName: null);
+  final interest_selected =
+      const AssetResource("assets/images/auth/interest_selected.png", packageName: null);
 
   /// asset: assets/images/auth/interest_unselected.png
   // ignore: non_constant_identifier_names
-  final interest_unselected = const AssetResource(
-      "assets/images/auth/interest_unselected.png",
-      packageName: null);
+  final interest_unselected =
+      const AssetResource("assets/images/auth/interest_unselected.png", packageName: null);
 
   /// asset: assets/images/auth/splash_background.png
   // ignore: non_constant_identifier_names
-  final splash_background = const AssetResource(
-      "assets/images/auth/splash_background.png",
-      packageName: null);
+  final splash_background =
+      const AssetResource("assets/images/auth/splash_background.png", packageName: null);
 
   /// asset: assets/images/feed/ad_avatar_placeholder.png
   // ignore: non_constant_identifier_names
-  final ad_avatar_placeholder = const AssetResource(
-      "assets/images/feed/ad_avatar_placeholder.png",
-      packageName: null);
+  final ad_avatar_placeholder =
+      const AssetResource("assets/images/feed/ad_avatar_placeholder.png", packageName: null);
 
   /// asset: assets/images/feed/add_cart.png
   // ignore: non_constant_identifier_names
-  final add_cart =
-      const AssetResource("assets/images/feed/add_cart.png", packageName: null);
+  final add_cart = const AssetResource("assets/images/feed/add_cart.png", packageName: null);
 
   /// asset: assets/images/feed/avatar_placeholder.png
   // ignore: non_constant_identifier_names
-  final avatar_placeholder = const AssetResource(
-      "assets/images/feed/avatar_placeholder.png",
-      packageName: null);
+  final avatar_placeholder =
+      const AssetResource("assets/images/feed/avatar_placeholder.png", packageName: null);
 
   /// asset: assets/images/feed/cart.png
   // ignore: non_constant_identifier_names
-  final cart =
-      const AssetResource("assets/images/feed/cart.png", packageName: null);
+  final cart = const AssetResource("assets/images/feed/cart.png", packageName: null);
 
   /// asset: assets/images/feed/cart_white.png
   // ignore: non_constant_identifier_names
-  final cart_white = const AssetResource("assets/images/feed/cart_white.png",
-      packageName: null);
+  final cart_white = const AssetResource("assets/images/feed/cart_white.png", packageName: null);
 
   /// asset: assets/images/feed/coupon_discount.png
   // ignore: non_constant_identifier_names
-  final coupon_discount = const AssetResource(
-      "assets/images/feed/coupon_discount.png",
-      packageName: null);
+  final coupon_discount =
+      const AssetResource("assets/images/feed/coupon_discount.png", packageName: null);
 
   /// asset: assets/images/feed/favorite.png
   // ignore: non_constant_identifier_names
-  final favorite =
-      const AssetResource("assets/images/feed/favorite.png", packageName: null);
+  final favorite = const AssetResource("assets/images/feed/favorite.png", packageName: null);
 
   /// asset: assets/images/feed/idol_avatar_placeholder.png
   // ignore: non_constant_identifier_names
-  final idol_avatar_placeholder = const AssetResource(
-      "assets/images/feed/idol_avatar_placeholder.png",
-      packageName: null);
+  final idol_avatar_placeholder =
+      const AssetResource("assets/images/feed/idol_avatar_placeholder.png", packageName: null);
 
   /// asset: assets/images/feed/idol_default_bg.png
   // ignore: non_constant_identifier_names
-  final idol_default_bg = const AssetResource(
-      "assets/images/feed/idol_default_bg.png",
-      packageName: null);
+  final idol_default_bg =
+      const AssetResource("assets/images/feed/idol_default_bg.png", packageName: null);
 
   /// asset: assets/images/feed/more_vert.png
   // ignore: non_constant_identifier_names
-  final more_vert = const AssetResource("assets/images/feed/more_vert.png",
-      packageName: null);
+  final more_vert = const AssetResource("assets/images/feed/more_vert.png", packageName: null);
 
   /// asset: assets/images/feed/new_msg_tip_bg.png
   // ignore: non_constant_identifier_names
-  final new_msg_tip_bg = const AssetResource(
-      "assets/images/feed/new_msg_tip_bg.png",
-      packageName: null);
+  final new_msg_tip_bg =
+      const AssetResource("assets/images/feed/new_msg_tip_bg.png", packageName: null);
 
   /// asset: assets/images/feed/pause.png
   // ignore: non_constant_identifier_names
-  final pause =
-      const AssetResource("assets/images/feed/pause.png", packageName: null);
+  final pause = const AssetResource("assets/images/feed/pause.png", packageName: null);
 
   /// asset: assets/images/feed/play.png
   // ignore: non_constant_identifier_names
-  final play =
-      const AssetResource("assets/images/feed/play.png", packageName: null);
+  final play = const AssetResource("assets/images/feed/play.png", packageName: null);
 
   /// asset: assets/images/feed/product_mask_bg.png
   // ignore: non_constant_identifier_names
-  final product_mask_bg = const AssetResource(
-      "assets/images/feed/product_mask_bg.png",
-      packageName: null);
+  final product_mask_bg =
+      const AssetResource("assets/images/feed/product_mask_bg.png", packageName: null);
 
   /// asset: assets/images/feed/shopping_cart.png
   // ignore: non_constant_identifier_names
-  final shopping_cart = const AssetResource(
-      "assets/images/feed/shopping_cart.png",
-      packageName: null);
+  final shopping_cart =
+      const AssetResource("assets/images/feed/shopping_cart.png", packageName: null);
 
   /// asset: assets/images/feed/verified.png
   // ignore: non_constant_identifier_names
-  final verified =
-      const AssetResource("assets/images/feed/verified.png", packageName: null);
+  final verified = const AssetResource("assets/images/feed/verified.png", packageName: null);
 
   /// asset: assets/images/feed/voice_mute.png
   // ignore: non_constant_identifier_names
-  final voice_mute = const AssetResource("assets/images/feed/voice_mute.png",
-      packageName: null);
+  final voice_mute = const AssetResource("assets/images/feed/voice_mute.png", packageName: null);
 
   /// asset: assets/images/feed/voice_unmute.png
   // ignore: non_constant_identifier_names
-  final voice_unmute = const AssetResource(
-      "assets/images/feed/voice_unmute.png",
-      packageName: null);
+  final voice_unmute =
+      const AssetResource("assets/images/feed/voice_unmute.png", packageName: null);
 
   /// asset: assets/images/kol/kol_album_bg.png
   // ignore: non_constant_identifier_names
-  final kol_album_bg = const AssetResource("assets/images/kol/kol_album_bg.png",
-      packageName: null);
+  final kol_album_bg = const AssetResource("assets/images/kol/kol_album_bg.png", packageName: null);
 
   /// asset: assets/images/kol/kol_cart.png
   // ignore: non_constant_identifier_names
-  final kol_cart =
-      const AssetResource("assets/images/kol/kol_cart.png", packageName: null);
+  final kol_cart = const AssetResource("assets/images/kol/kol_cart.png", packageName: null);
 
   /// asset: assets/images/kol/kol_detail_bg.png
   // ignore: non_constant_identifier_names
-  final kol_detail_bg = const AssetResource(
-      "assets/images/kol/kol_detail_bg.png",
-      packageName: null);
+  final kol_detail_bg =
+      const AssetResource("assets/images/kol/kol_detail_bg.png", packageName: null);
 
   /// asset: assets/images/kol/kol_tab_album.png
   // ignore: non_constant_identifier_names
-  final kol_tab_album = const AssetResource(
-      "assets/images/kol/kol_tab_album.png",
-      packageName: null);
+  final kol_tab_album =
+      const AssetResource("assets/images/kol/kol_tab_album.png", packageName: null);
 
   /// asset: assets/images/kol/kol_tab_album_unselected.png
   // ignore: non_constant_identifier_names
-  final kol_tab_album_unselected = const AssetResource(
-      "assets/images/kol/kol_tab_album_unselected.png",
-      packageName: null);
+  final kol_tab_album_unselected =
+      const AssetResource("assets/images/kol/kol_tab_album_unselected.png", packageName: null);
 
   /// asset: assets/images/kol/kol_tab_photos.png
   // ignore: non_constant_identifier_names
-  final kol_tab_photos = const AssetResource(
-      "assets/images/kol/kol_tab_photos.png",
-      packageName: null);
+  final kol_tab_photos =
+      const AssetResource("assets/images/kol/kol_tab_photos.png", packageName: null);
 
   /// asset: assets/images/kol/kol_tab_photos_unselected.png
   // ignore: non_constant_identifier_names
-  final kol_tab_photos_unselected = const AssetResource(
-      "assets/images/kol/kol_tab_photos_unselected.png",
-      packageName: null);
+  final kol_tab_photos_unselected =
+      const AssetResource("assets/images/kol/kol_tab_photos_unselected.png", packageName: null);
 
   /// asset: assets/images/product/cart_empty.png
   // ignore: non_constant_identifier_names
-  final cart_empty = const AssetResource("assets/images/product/cart_empty.png",
-      packageName: null);
+  final cart_empty = const AssetResource("assets/images/product/cart_empty.png", packageName: null);
 
   /// asset: assets/images/product/common_button_bg.png
   // ignore: non_constant_identifier_names
-  final common_button_bg = const AssetResource(
-      "assets/images/product/common_button_bg.png",
-      packageName: null);
+  final common_button_bg =
+      const AssetResource("assets/images/product/common_button_bg.png", packageName: null);
 
   /// asset: assets/images/product/credit.png
   // ignore: non_constant_identifier_names
-  final credit = const AssetResource("assets/images/product/credit.png",
-      packageName: null);
+  final credit = const AssetResource("assets/images/product/credit.png", packageName: null);
 
   /// asset: assets/images/product/goods_placeholder.png
   // ignore: non_constant_identifier_names
-  final goods_placeholder = const AssetResource(
-      "assets/images/product/goods_placeholder.png",
-      packageName: null);
+  final goods_placeholder =
+      const AssetResource("assets/images/product/goods_placeholder.png", packageName: null);
 
   /// asset: assets/images/product/icon_add.png
   // ignore: non_constant_identifier_names
-  final icon_add = const AssetResource("assets/images/product/icon_add.png",
-      packageName: null);
+  final icon_add = const AssetResource("assets/images/product/icon_add.png", packageName: null);
 
   /// asset: assets/images/product/icon_add_disable.png
   // ignore: non_constant_identifier_names
-  final icon_add_disable = const AssetResource(
-      "assets/images/product/icon_add_disable.png",
-      packageName: null);
+  final icon_add_disable =
+      const AssetResource("assets/images/product/icon_add_disable.png", packageName: null);
+
+  /// asset: assets/images/product/icon_airplane.png
+  // ignore: non_constant_identifier_names
+  final icon_airplane =
+      const AssetResource("assets/images/product/icon_airplane.png", packageName: null);
 
   /// asset: assets/images/product/icon_close.png
   // ignore: non_constant_identifier_names
-  final icon_close = const AssetResource("assets/images/product/icon_close.png",
-      packageName: null);
+  final icon_close = const AssetResource("assets/images/product/icon_close.png", packageName: null);
 
   /// asset: assets/images/product/icon_payment.png
   // ignore: non_constant_identifier_names
-  final icon_payment = const AssetResource(
-      "assets/images/product/icon_payment.png",
-      packageName: null);
+  final icon_payment =
+      const AssetResource("assets/images/product/icon_payment.png", packageName: null);
 
   /// asset: assets/images/product/icon_remove.png
   // ignore: non_constant_identifier_names
-  final icon_remove = const AssetResource(
-      "assets/images/product/icon_remove.png",
-      packageName: null);
+  final icon_remove =
+      const AssetResource("assets/images/product/icon_remove.png", packageName: null);
 
   /// asset: assets/images/product/icon_remove_disable.png
   // ignore: non_constant_identifier_names
-  final icon_remove_disable = const AssetResource(
-      "assets/images/product/icon_remove_disable.png",
-      packageName: null);
+  final icon_remove_disable =
+      const AssetResource("assets/images/product/icon_remove_disable.png", packageName: null);
 
   /// asset: assets/images/product/icon_shipping.png
   // ignore: non_constant_identifier_names
-  final icon_shipping = const AssetResource(
-      "assets/images/product/icon_shipping.png",
-      packageName: null);
+  final icon_shipping =
+      const AssetResource("assets/images/product/icon_shipping.png", packageName: null);
 
   /// asset: assets/images/product/payment_success.png
   // ignore: non_constant_identifier_names
-  final payment_success = const AssetResource(
-      "assets/images/product/payment_success.png",
-      packageName: null);
+  final payment_success =
+      const AssetResource("assets/images/product/payment_success.png", packageName: null);
 
   /// asset: assets/images/product/paypal.png
   // ignore: non_constant_identifier_names
-  final paypal = const AssetResource("assets/images/product/paypal.png",
-      packageName: null);
+  final paypal = const AssetResource("assets/images/product/paypal.png", packageName: null);
 
   /// asset: assets/images/product/product_search.png
   // ignore: non_constant_identifier_names
-  final product_search = const AssetResource(
-      "assets/images/product/product_search.png",
-      packageName: null);
+  final product_search =
+      const AssetResource("assets/images/product/product_search.png", packageName: null);
 
   /// asset: assets/images/tabbar/tabbar_home_highlight.png
   // ignore: non_constant_identifier_names
-  final tabbar_home_highlight = const AssetResource(
-      "assets/images/tabbar/tabbar_home_highlight.png",
-      packageName: null);
+  final tabbar_home_highlight =
+      const AssetResource("assets/images/tabbar/tabbar_home_highlight.png", packageName: null);
 
   /// asset: assets/images/tabbar/tabbar_home_normal.png
   // ignore: non_constant_identifier_names
-  final tabbar_home_normal = const AssetResource(
-      "assets/images/tabbar/tabbar_home_normal.png",
-      packageName: null);
+  final tabbar_home_normal =
+      const AssetResource("assets/images/tabbar/tabbar_home_normal.png", packageName: null);
 
   /// asset: assets/images/tabbar/tabbar_inbox_hightlight.png
   // ignore: non_constant_identifier_names
-  final tabbar_inbox_hightlight = const AssetResource(
-      "assets/images/tabbar/tabbar_inbox_hightlight.png",
-      packageName: null);
+  final tabbar_inbox_hightlight =
+      const AssetResource("assets/images/tabbar/tabbar_inbox_hightlight.png", packageName: null);
 
   /// asset: assets/images/tabbar/tabbar_inbox_normal.png
   // ignore: non_constant_identifier_names
-  final tabbar_inbox_normal = const AssetResource(
-      "assets/images/tabbar/tabbar_inbox_normal.png",
-      packageName: null);
+  final tabbar_inbox_normal =
+      const AssetResource("assets/images/tabbar/tabbar_inbox_normal.png", packageName: null);
 
   /// asset: assets/images/tabbar/tabbar_profile_hightlight.png
   // ignore: non_constant_identifier_names
-  final tabbar_profile_hightlight = const AssetResource(
-      "assets/images/tabbar/tabbar_profile_hightlight.png",
-      packageName: null);
+  final tabbar_profile_hightlight =
+      const AssetResource("assets/images/tabbar/tabbar_profile_hightlight.png", packageName: null);
 
   /// asset: assets/images/tabbar/tabbar_profile_normal.png
   // ignore: non_constant_identifier_names
-  final tabbar_profile_normal = const AssetResource(
-      "assets/images/tabbar/tabbar_profile_normal.png",
-      packageName: null);
+  final tabbar_profile_normal =
+      const AssetResource("assets/images/tabbar/tabbar_profile_normal.png", packageName: null);
 
   /// asset: assets/images/tabbar/tabbar_search_highlight.png
   // ignore: non_constant_identifier_names
-  final tabbar_search_highlight = const AssetResource(
-      "assets/images/tabbar/tabbar_search_highlight.png",
-      packageName: null);
+  final tabbar_search_highlight =
+      const AssetResource("assets/images/tabbar/tabbar_search_highlight.png", packageName: null);
 
   /// asset: assets/images/tabbar/tabbar_search_normal.png
   // ignore: non_constant_identifier_names
-  final tabbar_search_normal = const AssetResource(
-      "assets/images/tabbar/tabbar_search_normal.png",
-      packageName: null);
+  final tabbar_search_normal =
+      const AssetResource("assets/images/tabbar/tabbar_search_normal.png", packageName: null);
 }
 
 // ignore: camel_case_types
@@ -646,6 +595,12 @@ class _R_Image {
   // ignore: non_constant_identifier_names
   AssetImage icon_add_disable() {
     return AssetImage(asset.icon_add_disable.keyName);
+  }
+
+  /// asset: assets/images/product/icon_airplane.png
+  // ignore: non_constant_identifier_names
+  AssetImage icon_airplane() {
+    return AssetImage(asset.icon_airplane.keyName);
   }
 
   /// asset: assets/images/product/icon_close.png

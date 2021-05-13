@@ -28,16 +28,16 @@ class _MediaCarouselWidgetState extends State<MediaCarouselWidget> {
               });
             },
           ),
-          Positioned(
-            bottom: 0,
-            left: 0,
-            right: 0,
-            height: 30,
-            child: Image(
-              image: R.image.product_mask_bg(),
-              fit: BoxFit.fill,
-            ),
-          ),
+          // Positioned(
+          //   bottom: 0,
+          //   left: 0,
+          //   right: 0,
+          //   height: 30,
+          //   child: Image(
+          //     image: R.image.product_mask_bg(),
+          //     fit: BoxFit.fill,
+          //   ),
+          // ),
           Positioned(
             bottom: 10,
             child: PhotoCarouselIndicator(

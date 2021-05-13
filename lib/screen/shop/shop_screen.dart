@@ -81,7 +81,7 @@ class _ShopScreenState extends State<ShopScreen> {
         AppEvent.shared.report(event: AnalyticsEvent.shoplink_view);
       },
       builder: (ctx, viewModel) => Scaffold(
-        backgroundColor: AppTheme.colorF8F8F8,
+        backgroundColor: AppTheme.colorF4F4F4,
         body: EasyRefresh(
           firstRefresh: true,
           controller: _refreshGoodsController,
@@ -186,7 +186,7 @@ class _ShopScreenState extends State<ShopScreen> {
                                         fit: BoxFit.cover),
                                     border: Border.all(
                                         color: Colors.white, width: 1.0),
-                                    color: AppTheme.colorF8F8F8,
+                                    color: AppTheme.colorF4F4F4,
                                   ),
                                   child: _seller.portrait.isNotEmpty ||
                                           _seller.userName.isEmpty
