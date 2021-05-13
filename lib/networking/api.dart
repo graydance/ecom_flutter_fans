@@ -372,13 +372,7 @@ class AddCartAPI extends API {
   AddCartAPI({@required this.params});
 
   @override
-  Map<String, dynamic> get parameters => {
-        'idolGoodsId': params.idolGoodsId,
-        'skuSpecIds': params.skuSpecIds,
-        'number': params.number,
-        'isCustomiz': params.isCustomiz,
-        'customiz': params.customiz,
-      };
+  Map<String, dynamic> get parameters => params.toMap();
 
   @override
   String get path => '/user/good/add_cart';

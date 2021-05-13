@@ -492,6 +492,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 skuSpecIds,
                 isCustomiz,
                 customiz,
+                _selectedExpress.id,
                 context,
               );
               break;
@@ -499,7 +500,13 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               AppEvent.shared.report(
                   event: AnalyticsEvent.buy_now,
                   parameters: {AnalyticsEventParameter.id: _model.idolGoodsId});
-              model.onTapBuyNow(_quantity, skuSpecIds, isCustomiz, customiz);
+              model.onTapBuyNow(
+                _quantity,
+                skuSpecIds,
+                isCustomiz,
+                customiz,
+                _selectedExpress.id,
+              );
               break;
           }
         },
@@ -990,8 +997,8 @@ class _ViewModel {
   final int cartCount;
   final String currency;
   final GoodsSkus firstSku;
-  final Function(int, String, bool, String, BuildContext) onTapAddToCart;
-  final Function(int, String, bool, String) onTapBuyNow;
+  final Function(int, String, bool, String, int, BuildContext) onTapAddToCart;
+  final Function(int, String, bool, String, int) onTapBuyNow;
 
   _ViewModel({
     this.isAnonymous,
@@ -1005,7 +1012,7 @@ class _ViewModel {
   static _ViewModel fromStore(Store<AppState> store, String id) {
     final state = store.state.productDetails.allStates[id];
     _onTapAddToCart(int quantity, String skuSpecIds, bool isCustomiz,
-        String customiz, BuildContext context) {
+        String customiz, int expressTemplateId, BuildContext context) {
       EasyLoading.show();
       final completer = Completer();
       completer.future.then((value) {
@@ -1037,6 +1044,7 @@ class _ViewModel {
           number: quantity,
           isCustomiz: isCustomiz && customiz.trim().isNotEmpty ? 1 : 0,
           customiz: customiz,
+          expressTemplateId: expressTemplateId,
         ),
         completer,
       );
@@ -1044,8 +1052,8 @@ class _ViewModel {
       store.dispatch(action);
     }
 
-    _onTapBuyNow(
-        int quantity, String skuSpecIds, bool isCustomiz, String customiz) {
+    _onTapBuyNow(int quantity, String skuSpecIds, bool isCustomiz,
+        String customiz, int expressTemplateId) {
       EasyLoading.show();
       final completer = Completer();
       completer.future.then((value) {
@@ -1065,6 +1073,7 @@ class _ViewModel {
             number: quantity,
             isCustomiz: isCustomiz && customiz.trim().isNotEmpty ? 1 : 0,
             customiz: customiz,
+            expressTemplateId: expressTemplateId,
           )
         ],
         completer: completer,

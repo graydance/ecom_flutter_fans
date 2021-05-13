@@ -29,8 +29,10 @@ class _CartScreenState extends State<CartScreen> {
   final _controller = MultiSelectController();
 
   Map<String, int> _itemQuantities = {};
+  Map<String, int> _itemShipping = {};
 
   String _subtotal = '';
+  String _shipping = '';
   String _total = '';
 
   final _debouncing = Debouncing();
@@ -45,12 +47,18 @@ class _CartScreenState extends State<CartScreen> {
   _onQuantityChanged(BuildContext context, int quantity, OrderSku item,
       _ViewModel viewModel) async {
     _itemQuantities[item.id] = quantity * item.currentPrice;
+    _itemShipping[item.id] = quantity * item.expressTemplatePrice;
     final sum =
         _itemQuantities.values.reduce((value, element) => value + element);
+
+    final shipping =
+        _itemShipping.values.reduce((value, element) => value + element);
+
     setState(() {
       _subtotal = viewModel.currency + (sum / 100.0).toStringAsFixed(2);
+      _shipping = viewModel.currency + (shipping / 100.0).toStringAsFixed(2);
       _total = viewModel.currency +
-          ((sum + viewModel.cart.taxes) / 100.0).toStringAsFixed(2);
+          ((sum + viewModel.cart.taxes + shipping) / 100.0).toStringAsFixed(2);
     });
 
     List<OrderSku> list = List.from(viewModel.cart.list);
@@ -102,6 +110,7 @@ class _CartScreenState extends State<CartScreen> {
       final Cart cart = await completer.future;
       setState(() {
         _subtotal = currency + cart.subtotalStr;
+        _shipping = cart.shipping;
         _total = currency + cart.totalStr;
       });
       EasyLoading.dismiss();
@@ -180,6 +189,7 @@ class _CartScreenState extends State<CartScreen> {
               final Cart cart = await completer.future;
               setState(() {
                 _subtotal = viewModel.currency + cart.subtotalStr;
+                _shipping = cart.shipping;
                 _total = viewModel.currency + cart.totalStr;
               });
             },
@@ -268,7 +278,7 @@ class _CartScreenState extends State<CartScreen> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 if (viewModel.cart.list.isNotEmpty && !_controller.isSelecting)
-                  _buildSummary(_subtotal, viewModel.cart.shipping,
+                  _buildSummary(_subtotal, _shipping,
                       viewModel.currency + viewModel.cart.taxesStr, _total),
                 if (_controller.isSelecting)
                   EditingToolBar(
@@ -288,14 +298,14 @@ class _CartScreenState extends State<CartScreen> {
                   ),
                 if (viewModel.cart.list.isNotEmpty && !_controller.isSelecting)
                   FansButton(
-                    onPressed: viewModel.cart.list.isNotEmpty ||
+                    onPressed: viewModel.cart.list.isNotEmpty &&
                             viewModel.cart.canOrder
                         ? () {
                             viewModel.onCheckout(viewModel.cart.list);
                           }
                         : null,
-                    isDisable: viewModel.cart.list.isNotEmpty ||
-                        viewModel.cart.canOrder,
+                    isDisable:
+                        viewModel.cart.list.isEmpty || !viewModel.cart.canOrder,
                     title: 'Check out',
                   ),
               ],
@@ -380,6 +390,7 @@ class CartItemTile extends StatelessWidget {
 
     return Column(
       mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -519,6 +530,13 @@ class CartItemTile extends StatelessWidget {
               ),
             ),
           ),
+        SizedBox(
+          height: 20,
+        ),
+        Text(
+          item.expressShow,
+          style: TextStyle(color: AppTheme.color0F1015, fontSize: 12),
+        ),
       ],
     );
   }
@@ -770,6 +788,7 @@ class _ViewModel {
                   number: e.number,
                   isCustomiz: e.isCustomiz,
                   customiz: e.customiz,
+                  expressTemplateId: e.expressTemplateId,
                 ))
             .toList(),
         completer: completer,
