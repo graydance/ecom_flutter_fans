@@ -553,7 +553,11 @@ class CartItemTile extends StatelessWidget {
         ),
         Text(
           item.expressShow,
-          style: TextStyle(color: AppTheme.color0F1015, fontSize: 12),
+          style: TextStyle(
+            color: AppTheme.color0F1015,
+            fontSize: 12,
+            fontWeight: FontWeight.w500,
+          ),
         ),
       ],
     );
