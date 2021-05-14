@@ -46,18 +46,17 @@ class _ShopScreenState extends State<ShopScreen> {
   Set<String> _reportedIds = {};
 
   final List<_SupportItem> _supportItems = [
-    _SupportItem(
-        'Contact', 'https://app.gitbook.com/@levermore-1/s/help-and-support/'),
+    _SupportItem('Contact', 'https://levermore-1.gitbook.io/help-and-support/'),
     _SupportItem('Shipping Info',
-        'https://app.gitbook.com/@levermore-1/s/help-and-support/shipping-info'),
+        'https://levermore-1.gitbook.io/help-and-support/shipping-info'),
     _SupportItem('Return Policy',
-        'https://app.gitbook.com/@levermore-1/s/help-and-support/return-policy'),
+        'https://levermore-1.gitbook.io/help-and-support/return-policy'),
     _SupportItem('How To Track',
-        'https://app.gitbook.com/@levermore-1/s/help-and-support/how-to-track'),
+        'https://levermore-1.gitbook.io/help-and-support/how-to-track'),
     _SupportItem('Terms & condititon',
-        'https://app.gitbook.com/@levermore-1/s/help-and-support/terms-and-condititon'),
+        'https://levermore-1.gitbook.io/help-and-support/terms-and-condititon'),
     _SupportItem('Privacy & Cookies Policy',
-        'https://app.gitbook.com/@levermore-1/s/help-and-support/privacy-and-cookies-policy'),
+        'https://levermore-1.gitbook.io/help-and-support/privacy-and-cookies-policy'),
   ];
 
   _loadData(_ViewModel viewModel) async {
