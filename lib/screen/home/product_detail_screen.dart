@@ -825,29 +825,31 @@ class _ServiceView extends StatelessWidget {
           SizedBox(
             width: 12,
           ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                model.title,
-                style: TextStyle(
-                  color: AppTheme.color0F1015,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  model.title,
+                  style: TextStyle(
+                    color: AppTheme.color0F1015,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
-              ),
-              SizedBox(
-                height: 8,
-              ),
-              Text(
-                model.content,
-                style: TextStyle(
-                  color: AppTheme.color555764,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
+                SizedBox(
+                  height: 8,
                 ),
-              )
-            ],
+                Text(
+                  model.content,
+                  style: TextStyle(
+                    color: AppTheme.color555764,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
