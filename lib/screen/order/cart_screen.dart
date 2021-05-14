@@ -419,10 +419,12 @@ class CartItemTile extends StatelessWidget {
                     item.goodsName,
                     maxLines: 3,
                     style: TextStyle(
-                      color: AppTheme.color0F1015,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 14,
+                      color: AppTheme.color555764,
+                      fontSize: 12,
                     ),
+                  ),
+                  SizedBox(
+                    height: 8,
                   ),
                   Text(
                     '$currency${item.currentPriceStr}',
@@ -432,6 +434,19 @@ class CartItemTile extends StatelessWidget {
                       fontSize: 14,
                     ),
                   ),
+                  SizedBox(
+                    height: 8,
+                  ),
+                  Text(
+                    item.goodsSkuName,
+                    style: TextStyle(
+                      color: AppTheme.color555764,
+                      fontSize: 12,
+                    ),
+                  ),
+                  SizedBox(
+                    height: 8,
+                  ),
                   QuantityEditingButton(
                     style: QuantityEditingButtonStyle.small,
                     quantity: item.number,
@@ -440,6 +455,9 @@ class CartItemTile extends StatelessWidget {
                       if (onQuantityChanged != null)
                         onQuantityChanged(value, item);
                     },
+                  ),
+                  SizedBox(
+                    height: 8,
                   ),
                   Text(
                     error,
