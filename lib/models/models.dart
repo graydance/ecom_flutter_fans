@@ -18,3 +18,6 @@ export './country.dart';
 export './address.dart';
 export './payment_method.dart';
 export './idol.dart';
+export './service_config.dart';
+export './tag.dart';
+export './express_templete.dart';

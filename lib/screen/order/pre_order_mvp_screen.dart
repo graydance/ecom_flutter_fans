@@ -529,6 +529,7 @@ class _ViewModel {
                 number: sku.number,
                 isCustomiz: sku.isCustomiz,
                 customiz: sku.customiz,
+                expressTemplateId: sku.expressTemplateId,
               ))
           .toList();
       final completer = Completer();
@@ -570,6 +571,7 @@ class _ViewModel {
                 number: sku.number,
                 isCustomiz: sku.isCustomiz,
                 customiz: sku.customiz,
+                expressTemplateId: sku.expressTemplateId,
               ))
           .toList();
       store.dispatch(OrderAction(buyGoods, shippingAddress.id,

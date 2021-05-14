@@ -17,6 +17,7 @@ class ProductFeedItem extends StatefulWidget {
   final String currency;
   final Feed model;
   final bool onlyShowImage;
+  final double padding;
   final Function(String) onTap;
 
   const ProductFeedItem({
@@ -24,6 +25,7 @@ class ProductFeedItem extends StatefulWidget {
     @required this.currency,
     @required this.model,
     this.onlyShowImage = false,
+    this.padding = 20,
     this.onTap,
   }) : super(key: key);
 
@@ -54,112 +56,99 @@ class _ProductFeedItemState extends State<ProductFeedItem> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Container(
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          child: Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              widget.model.productName,
-              style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
-                  color: Color(0xff0F1015)),
-            ),
-          ),
-        ),
         GestureDetector(
           onTap: () {
             if (widget.onTap != null) widget.onTap(widget.model.id);
           },
           child: SizedBox(
-            height: MediaQuery.of(context).size.width - 20 * 2,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(4.0),
-              child: Container(
-                color: Color(0xfff8f8f8),
-                child: Stack(
-                  children: [
-                    MediaCarouselWidget(
-                      items: widget.model.goods.map((url) {
-                        return Center(
-                          child: CachedNetworkImage(
-                            placeholder: (context, _) => Image(
-                              image: R.image.goods_placeholder(),
-                              fit: BoxFit.cover,
-                            ),
-                            imageUrl: url,
-                            fit: BoxFit.contain,
+            height: MediaQuery.of(context).size.width - widget.padding * 2,
+            child: Container(
+              color: AppTheme.colorF4F4F4,
+              child: Stack(
+                children: [
+                  MediaCarouselWidget(
+                    items: widget.model.goods.map((url) {
+                      return Center(
+                        child: CachedNetworkImage(
+                          placeholder: (context, _) => Image(
+                            image: R.image.goods_placeholder(),
+                            fit: BoxFit.cover,
                           ),
-                        );
-                      }).toList(),
+                          imageUrl: url,
+                          fit: BoxFit.contain,
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                  if (widget.model.discount.isNotEmpty)
+                    Positioned(
+                      top: 0,
+                      left: 0,
+                      child: Container(
+                        height: 20,
+                        width: 70,
+                        decoration: BoxDecoration(
+                          color: Color(0xffFEAC1B),
+                          borderRadius: BorderRadius.only(
+                            bottomRight: Radius.circular(50),
+                          ),
+                        ),
+                        child: Center(
+                          child: Text(
+                            '${widget.model.discount} off',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
-                    if (widget.model.discount.isNotEmpty)
-                      Positioned(
-                        top: 0,
-                        left: 0,
-                        child: Container(
-                          height: 20,
-                          width: 70,
-                          decoration: BoxDecoration(
-                            color: Color(0xffFEAC1B),
-                            borderRadius: BorderRadius.only(
-                              bottomRight: Radius.circular(50),
-                            ),
-                          ),
-                          child: Center(
-                            child: Text(
-                              '${widget.model.discount} off',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 12,
+                  // 购物车和收藏
+                  if (!widget.onlyShowImage)
+                    Positioned(
+                      bottom: 8,
+                      right: 8,
+                      child: Column(
+                        children: [
+                          Column(
+                            children: [
+                              Image(image: R.image.add_cart()),
+                              Text(
+                                NumberFormat.compact()
+                                    .format(widget.model.shoppingCar),
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 12),
                               ),
-                            ),
+                            ],
                           ),
-                        ),
+                          SizedBox(
+                            height: 12,
+                          ),
+                          Column(
+                            children: [
+                              Image(image: R.image.favorite()),
+                              Text(
+                                NumberFormat.compact()
+                                    .format(widget.model.collectNum),
+                                style: TextStyle(
+                                    color: Colors.white, fontSize: 12),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
-                    // 购物车和收藏
-                    if (!widget.onlyShowImage)
-                      Positioned(
-                        bottom: 8,
-                        right: 8,
-                        child: Column(
-                          children: [
-                            Column(
-                              children: [
-                                Image(image: R.image.add_cart()),
-                                Text(
-                                  NumberFormat.compact()
-                                      .format(widget.model.shoppingCar),
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 12),
-                                ),
-                              ],
-                            ),
-                            SizedBox(
-                              height: 12,
-                            ),
-                            Column(
-                              children: [
-                                Image(image: R.image.favorite()),
-                                Text(
-                                  NumberFormat.compact()
-                                      .format(widget.model.collectNum),
-                                  style: TextStyle(
-                                      color: Colors.white, fontSize: 12),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                  ],
-                ),
+                    ),
+                ],
               ),
             ),
           ),
         ),
         Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0),
+          padding: const EdgeInsets.symmetric(
+            vertical: 8.0,
+            horizontal: 20,
+          ),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.baseline,
             textBaseline: TextBaseline.ideographic,
@@ -188,10 +177,20 @@ class _ProductFeedItemState extends State<ProductFeedItem> {
             ],
           ),
         ),
-        Align(
-          alignment: Alignment.centerLeft,
-          child: Html(
-            data: widget.model.goodsDescription,
+        Container(
+          padding: const EdgeInsets.symmetric(
+            vertical: 8,
+            horizontal: 20,
+          ),
+          child: Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              widget.model.productName,
+              style: TextStyle(
+                fontSize: 14,
+                color: AppTheme.color0F1015,
+              ),
+            ),
           ),
         ),
       ],
