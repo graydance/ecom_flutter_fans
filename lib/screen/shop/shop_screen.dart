@@ -369,14 +369,15 @@ class _ShopScreenState extends State<ShopScreen> {
                             ),
                             child: Row(
                               children: [
-                                Text(
-                                  model.title,
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: AppTheme.color979AA9,
+                                Expanded(
+                                  child: Text(
+                                    model.title,
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: AppTheme.color979AA9,
+                                    ),
                                   ),
                                 ),
-                                Spacer(),
                                 Icon(
                                   Icons.arrow_forward_ios_rounded,
                                   color: AppTheme.color979AA9,
