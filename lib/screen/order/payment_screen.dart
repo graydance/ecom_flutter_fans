@@ -90,7 +90,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   child: Text(
-                    'Shipping Method',
+                    'Shipping Address',
                     style: TextStyle(
                       fontSize: 16,
                       color: AppTheme.color0F1015,
@@ -139,44 +139,6 @@ class _PaymentScreenState extends State<PaymentScreen> {
                             ),
                           ],
                         ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(
-                            left: 8, bottom: 8.0, right: 8.0),
-                        child: Row(children: [
-                          SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: Radio(
-                                value: 'Shipping',
-                                groupValue: _groupValue,
-                                activeColor: AppTheme.colorED8514,
-                                onChanged: (value) {
-                                  setState(() {
-                                    _groupValue = value;
-                                  });
-                                }),
-                          ),
-                          SizedBox(
-                            width: 4,
-                          ),
-                          Expanded(
-                            child: Text(
-                              'Satndard Express 2 - 6 days',
-                              style: TextStyle(
-                                color: AppTheme.color555764,
-                                fontSize: 12,
-                              ),
-                            ),
-                          ),
-                          Text(
-                            viewModel.orderDetail.shipping,
-                            style: TextStyle(
-                              color: AppTheme.color555764,
-                              fontSize: 12,
-                            ),
-                          ),
-                        ]),
                       ),
                     ],
                   ),
