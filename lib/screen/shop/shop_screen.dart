@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
@@ -220,17 +221,29 @@ class _ShopScreenState extends State<ShopScreen> {
                                 SizedBox(
                                   height: 4,
                                 ),
-                                Text(
-                                  '@${_seller.userName}',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 14,
-                                    shadows: [
-                                      Shadow(
-                                          offset: Offset(1.0, 1.0),
-                                          blurRadius: 2.0,
-                                          color: Color(0xFF575859)),
-                                    ],
+                                GestureDetector(
+                                  onLongPress: () async {
+                                    final eventIsEnable =
+                                        await AuthStorage.getBool(
+                                                'EventIsEnable') ??
+                                            true;
+                                    await AuthStorage.setBool(
+                                        'EventIsEnable', !eventIsEnable);
+                                    EasyLoading.showToast(
+                                        'App Event status is ${!eventIsEnable}');
+                                  },
+                                  child: Text(
+                                    '@${_seller.userName}',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 14,
+                                      shadows: [
+                                        Shadow(
+                                            offset: Offset(1.0, 1.0),
+                                            blurRadius: 2.0,
+                                            color: Color(0xFF575859)),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ],
