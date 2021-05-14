@@ -29,6 +29,7 @@ class _ProductAttributesBottomSheetState
   List<GoodsSkus> _stockNotEnoughSkuList;
   List<int> _selectionSpecIds;
   List<List<int>> _disableSpecIds;
+  List<int> _selectionSpecIndexs = [];
 
   bool _isCustomiz = true;
   final _customizController = TextEditingController();
@@ -36,15 +37,38 @@ class _ProductAttributesBottomSheetState
 
   @override
   void initState() {
-    _selectionSpecIds = List.generate(
-        widget.viewModel.model.specList.length,
-        (index) =>
-            widget.viewModel.model.specList[index].specValues.first.id ?? 0);
+    if (widget.viewModel.selectedSku != null) {
+      _selectionSpecIds = widget.viewModel.selectedSku.skuSpecIds
+          .split('_')
+          .map((e) => int.tryParse(e) ?? 0)
+          .toList();
 
-    final skus = widget.viewModel.model.goodsSkus;
-    _currentSku = skus.firstWhere(
-        (element) => element.skuSpecIds == _selectionSpecIds.join('_'),
-        orElse: () => skus.first);
+      _currentSku = widget.viewModel.selectedSku;
+
+      final specList = widget.viewModel.model.specList;
+      _selectionSpecIndexs = List.generate(specList.length, (index) => 0);
+      for (int i = 0; i < specList.length; i++) {
+        debugPrint(
+            '_selectionSpecIndexs >>> ${_selectionSpecIds[i]} index >>> $i');
+
+        _selectionSpecIndexs[i] = specList[i]
+            .specValues
+            .indexWhere((e) => e.id == _selectionSpecIds[i]);
+      }
+    } else {
+      _selectionSpecIds = List.generate(
+          widget.viewModel.model.specList.length,
+          (index) =>
+              widget.viewModel.model.specList[index].specValues.first.id ?? 0);
+
+      final skus = widget.viewModel.model.goodsSkus;
+      _currentSku = skus.firstWhere(
+          (element) => element.skuSpecIds == _selectionSpecIds.join('_'),
+          orElse: () => skus.first);
+
+      _selectionSpecIndexs =
+          List.generate(widget.viewModel.model.specList.length, (index) => 0);
+    }
 
     _disableSpecIds =
         List.generate(widget.viewModel.model.specList.length, (index) => []);
@@ -114,11 +138,21 @@ class _ProductAttributesBottomSheetState
                   child: ListView.separated(
                       shrinkWrap: true,
                       itemBuilder: (ctx, i) {
+                        final model = widget.viewModel.model.specList[i];
+                        final initialSelection = _selectionSpecIndexs[i];
+                        debugPrint('initialSelection >>> $initialSelection');
+
                         return SpecItem(
-                          model: widget.viewModel.model.specList[i],
+                          model: model,
                           disableIds: _disableSpecIds[i],
-                          valueChanged: (selectedItem) {
+                          initialSelection:
+                              initialSelection < 0 ? 0 : initialSelection,
+                          valueChanged: (selectedItem, index) {
+                            debugPrint(
+                                'onSpecChanged >>> ${selectedItem.toString()} index >>> $index');
                             _selectionSpecIds[i] = selectedItem.id;
+                            _selectionSpecIndexs[i] = index;
+
                             final sku = widget.viewModel.model.goodsSkus
                                 .firstWhere(
                                     (element) =>
@@ -133,6 +167,10 @@ class _ProductAttributesBottomSheetState
                               _currentSku = sku;
                               _disableSpecIds = disableSpecIds;
                             });
+
+                            if (widget.viewModel.onSkuChanged != null) {
+                              widget.viewModel.onSkuChanged(_currentSku);
+                            }
                           },
                         );
                       },
@@ -371,10 +409,15 @@ class _ProductAttributesBottomSheetState
 class SpecItem extends StatelessWidget {
   final GoodsSpec model;
   final List<int> disableIds;
-  final Function(SpecValues) valueChanged;
+  final int initialSelection;
+  final Function(SpecValues, int) valueChanged;
 
   const SpecItem(
-      {Key key, this.model, this.disableIds = const [], this.valueChanged})
+      {Key key,
+      this.model,
+      this.disableIds = const [],
+      this.initialSelection = 0,
+      this.valueChanged})
       : super(key: key);
 
   @override
@@ -394,12 +437,13 @@ class SpecItem extends StatelessWidget {
           height: 8,
         ),
         CustomRadioButton(
+          initialSelection: initialSelection,
           buttonLables: model.specValues.map((e) => e.specValue).toList(),
           buttonValues: model.specValues.map((e) => e.id).toList(),
           disableButtonValues: disableIds,
           radioButtonValue: (value, index) {
             if (valueChanged != null) {
-              valueChanged(model.specValues[index]);
+              valueChanged(model.specValues[index], index);
             }
           },
           horizontal: true,
@@ -432,7 +476,7 @@ class FansImageView extends StatelessWidget {
     return ClipRRect(
       borderRadius: BorderRadius.circular(4.0),
       child: Container(
-        color: AppTheme.colorF8F8F8,
+        color: AppTheme.colorF4F4F4,
         child: CachedNetworkImage(
           placeholder: (context, _) => Image(
             image: R.image.goods_placeholder(),
@@ -500,16 +544,20 @@ class ProductAttributesViewModel {
   final String currency;
   final Product model;
   final int quantity;
+  final GoodsSkus selectedSku;
   final ProductAttributesActionType actionType;
   final Function(int) onQuantityChange;
+  final Function(GoodsSkus) onSkuChanged;
   final Function(String, bool, String) onTapAction;
 
   ProductAttributesViewModel({
     @required this.currency,
     @required this.model,
     @required this.quantity,
+    @required this.selectedSku,
     @required this.actionType,
     @required this.onQuantityChange,
+    @required this.onSkuChanged,
     @required this.onTapAction,
   });
 }

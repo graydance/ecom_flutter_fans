@@ -4,10 +4,13 @@ import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:redux/redux.dart';
+import 'package:universal_html/html.dart' as html;
+import 'package:url_launcher/url_launcher.dart';
 
 import 'package:fans/app.dart';
 import 'package:fans/event/app_event.dart';
@@ -31,7 +34,7 @@ class ShopScreen extends StatefulWidget {
 }
 
 class _ShopScreenState extends State<ShopScreen> {
-  Feed _seller = Feed();
+  Idol _seller = Idol();
   String _expressInfo = '';
 
   final _refreshGoodsController = EasyRefreshController();
@@ -43,17 +46,33 @@ class _ShopScreenState extends State<ShopScreen> {
 
   Set<String> _reportedIds = {};
 
+  final List<_SupportItem> _supportItems = [
+    _SupportItem('Contact', 'https://levermore-1.gitbook.io/help-and-support/'),
+    _SupportItem('Shipping Info',
+        'https://levermore-1.gitbook.io/help-and-support/shipping-info'),
+    _SupportItem('Return Policy',
+        'https://levermore-1.gitbook.io/help-and-support/return-policy'),
+    _SupportItem('How To Track',
+        'https://levermore-1.gitbook.io/help-and-support/how-to-track'),
+    _SupportItem('Terms & condititon',
+        'https://levermore-1.gitbook.io/help-and-support/terms-and-condititon'),
+    _SupportItem('Privacy & Cookies Policy',
+        'https://levermore-1.gitbook.io/help-and-support/privacy-and-cookies-policy'),
+  ];
+
   _loadData(_ViewModel viewModel) async {
     final completer = Completer();
     StoreProvider.of<AppState>(context).dispatch(
         FetchSellerInfoAction(userName: widget.userName, completer: completer));
 
     try {
-      final Feed seller = await completer.future;
+      final Idol seller = await completer.future;
       setState(() {
         _seller = seller;
       });
-    } catch (e) {}
+    } catch (e) {
+      debugPrint(e.toString());
+    }
 
     _showCoupon(viewModel.currency);
 
@@ -79,7 +98,7 @@ class _ShopScreenState extends State<ShopScreen> {
         AppEvent.shared.report(event: AnalyticsEvent.shoplink_view);
       },
       builder: (ctx, viewModel) => Scaffold(
-        backgroundColor: AppTheme.colorF8F8F8,
+        backgroundColor: AppTheme.colorF4F4F4,
         body: EasyRefresh(
           firstRefresh: true,
           controller: _refreshGoodsController,
@@ -184,7 +203,7 @@ class _ShopScreenState extends State<ShopScreen> {
                                         fit: BoxFit.cover),
                                     border: Border.all(
                                         color: Colors.white, width: 1.0),
-                                    color: AppTheme.colorF8F8F8,
+                                    color: AppTheme.colorF4F4F4,
                                   ),
                                   child: _seller.portrait.isNotEmpty ||
                                           _seller.userName.isEmpty
@@ -202,17 +221,29 @@ class _ShopScreenState extends State<ShopScreen> {
                                 SizedBox(
                                   height: 4,
                                 ),
-                                Text(
-                                  '@${_seller.userName}',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 14,
-                                    shadows: [
-                                      Shadow(
-                                          offset: Offset(1.0, 1.0),
-                                          blurRadius: 2.0,
-                                          color: Color(0xFF575859)),
-                                    ],
+                                GestureDetector(
+                                  onLongPress: () async {
+                                    final eventIsEnable =
+                                        await AuthStorage.getBool(
+                                                'EventIsEnable') ??
+                                            true;
+                                    await AuthStorage.setBool(
+                                        'EventIsEnable', !eventIsEnable);
+                                    EasyLoading.showToast(
+                                        'App Event status is ${!eventIsEnable}');
+                                  },
+                                  child: Text(
+                                    '@${_seller.userName}',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 14,
+                                      shadows: [
+                                        Shadow(
+                                            offset: Offset(1.0, 1.0),
+                                            blurRadius: 2.0,
+                                            color: Color(0xFF575859)),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ],
@@ -301,6 +332,119 @@ class _ShopScreenState extends State<ShopScreen> {
                         ),
                 ),
               ),
+              SliverToBoxAdapter(
+                child: ListView(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Divider(
+                        color: AppTheme.colorC4C5CD,
+                        height: 1,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 30,
+                        vertical: 6,
+                      ),
+                      child: Text(
+                        'HELP & SUPPORT',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: AppTheme.color979AA9,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 8,
+                    ),
+                    ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemBuilder: (context, index) {
+                        final model = _supportItems[index];
+                        return GestureDetector(
+                          onTap: () {
+                            if (kIsWeb) {
+                              html.window.location.href = model.url;
+                            } else {
+                              launch(model.url);
+                            }
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 30,
+                              vertical: 8,
+                            ),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    model.title,
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: AppTheme.color979AA9,
+                                    ),
+                                  ),
+                                ),
+                                Icon(
+                                  Icons.arrow_forward_ios_rounded,
+                                  color: AppTheme.color979AA9,
+                                  size: 10,
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                      itemCount: _supportItems.length,
+                    ),
+                    SizedBox(
+                      height: 40,
+                    ),
+                    Column(
+                      children: [
+                        Image(image: R.image.icon_supports()),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        GestureDetector(
+                          onTap: () {
+                            const url = 'https://olaak.com';
+                            if (kIsWeb) {
+                              html.window.location.href = url;
+                            } else {
+                              launch(url);
+                            }
+                          },
+                          child: Text(
+                            'Powered by Olaak',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: AppTheme.color979AA9,
+                              fontWeight: FontWeight.w500,
+                              decoration: TextDecoration.underline,
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 8,
+                        ),
+                        Text(
+                          '©2021 Olaak All Rights Reserved',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: AppTheme.color979AA9,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
         ),
@@ -364,7 +508,7 @@ class _ShopScreenState extends State<ShopScreen> {
                     height: 4,
                   ),
                   Text(
-                    'On order of $currency${(info.min / 100.0).toStringAsFixed(0)}+',
+                    'On order of $currency${(info.min / 100.0).toStringAsFixed(2)}+',
                     style: TextStyle(
                       fontSize: 16,
                       color: AppTheme.color0F1015,
@@ -543,4 +687,12 @@ class _ViewModel {
     return _ViewModel(userId, store.state.cart.list.length,
         store.state.auth.user.monetaryUnit);
   }
+}
+
+@immutable
+class _SupportItem {
+  final String title;
+  final String url;
+
+  _SupportItem(this.title, this.url);
 }

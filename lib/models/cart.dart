@@ -14,6 +14,7 @@ class Cart {
   final String subtotalStr;
   final String taxesStr;
   final String totalStr;
+  final bool canOrder;
 
   const Cart({
     this.list = const [],
@@ -24,6 +25,7 @@ class Cart {
     this.subtotalStr = '',
     this.taxesStr = '',
     this.totalStr = '',
+    this.canOrder = false,
   });
 
   Cart copyWith({
@@ -35,6 +37,7 @@ class Cart {
     String subtotalStr,
     String taxesStr,
     String totalStr,
+    bool canOrder,
   }) {
     return Cart(
       list: list ?? this.list,
@@ -45,12 +48,13 @@ class Cart {
       subtotalStr: subtotalStr ?? this.subtotalStr,
       taxesStr: taxesStr ?? this.taxesStr,
       totalStr: totalStr ?? this.totalStr,
+      canOrder: canOrder ?? this.canOrder,
     );
   }
 
   Map<String, dynamic> toMap() {
     return {
-      'list': list?.map((x) => x?.toMap())?.toList(),
+      'list': list?.map((x) => x.toMap())?.toList(),
       'subtotal': subtotal,
       'taxes': taxes,
       'total': total,
@@ -58,12 +62,11 @@ class Cart {
       'subtotalStr': subtotalStr,
       'taxesStr': taxesStr,
       'totalStr': totalStr,
+      'canOrder': canOrder,
     };
   }
 
   factory Cart.fromMap(Map<String, dynamic> map) {
-    if (map == null) return null;
-
     return Cart(
       list: List<OrderSku>.from(map['list']?.map((x) => OrderSku.fromMap(x))),
       subtotal: map['subtotal'],
@@ -73,6 +76,7 @@ class Cart {
       subtotalStr: map['subtotalStr'],
       taxesStr: map['taxesStr'],
       totalStr: map['totalStr'],
+      canOrder: map['canOrder'],
     );
   }
 
@@ -82,22 +86,23 @@ class Cart {
 
   @override
   String toString() {
-    return 'Cart(list: $list, subtotal: $subtotal, taxes: $taxes, total: $total, shipping: $shipping, subtotalStr: $subtotalStr, taxesStr: $taxesStr, totalStr: $totalStr)';
+    return 'Cart(list: $list, subtotal: $subtotal, taxes: $taxes, total: $total, shipping: $shipping, subtotalStr: $subtotalStr, taxesStr: $taxesStr, totalStr: $totalStr, canOrder: $canOrder)';
   }
 
   @override
-  bool operator ==(Object o) {
-    if (identical(this, o)) return true;
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
 
-    return o is Cart &&
-        listEquals(o.list, list) &&
-        o.subtotal == subtotal &&
-        o.taxes == taxes &&
-        o.total == total &&
-        o.shipping == shipping &&
-        o.subtotalStr == subtotalStr &&
-        o.taxesStr == taxesStr &&
-        o.totalStr == totalStr;
+    return other is Cart &&
+        listEquals(other.list, list) &&
+        other.subtotal == subtotal &&
+        other.taxes == taxes &&
+        other.total == total &&
+        other.shipping == shipping &&
+        other.subtotalStr == subtotalStr &&
+        other.taxesStr == taxesStr &&
+        other.totalStr == totalStr &&
+        other.canOrder == canOrder;
   }
 
   @override
@@ -109,6 +114,7 @@ class Cart {
         shipping.hashCode ^
         subtotalStr.hashCode ^
         taxesStr.hashCode ^
-        totalStr.hashCode;
+        totalStr.hashCode ^
+        canOrder.hashCode;
   }
 }

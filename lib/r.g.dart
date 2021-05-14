@@ -250,6 +250,10 @@ class _R_Image_AssetResource {
   final common_button_bg =
       const AssetResource("assets/images/product/common_button_bg.png", packageName: null);
 
+  /// asset: assets/images/product/credit.png
+  // ignore: non_constant_identifier_names
+  final credit = const AssetResource("assets/images/product/credit.png", packageName: null);
+
   /// asset: assets/images/product/goods_placeholder.png
   // ignore: non_constant_identifier_names
   final goods_placeholder =
@@ -263,6 +267,11 @@ class _R_Image_AssetResource {
   // ignore: non_constant_identifier_names
   final icon_add_disable =
       const AssetResource("assets/images/product/icon_add_disable.png", packageName: null);
+
+  /// asset: assets/images/product/icon_airplane.png
+  // ignore: non_constant_identifier_names
+  final icon_airplane =
+      const AssetResource("assets/images/product/icon_airplane.png", packageName: null);
 
   /// asset: assets/images/product/icon_close.png
   // ignore: non_constant_identifier_names
@@ -283,10 +292,20 @@ class _R_Image_AssetResource {
   final icon_remove_disable =
       const AssetResource("assets/images/product/icon_remove_disable.png", packageName: null);
 
+  /// asset: assets/images/product/icon_service.png
+  // ignore: non_constant_identifier_names
+  final icon_service =
+      const AssetResource("assets/images/product/icon_service.png", packageName: null);
+
   /// asset: assets/images/product/icon_shipping.png
   // ignore: non_constant_identifier_names
   final icon_shipping =
       const AssetResource("assets/images/product/icon_shipping.png", packageName: null);
+
+  /// asset: assets/images/product/icon_supports.png
+  // ignore: non_constant_identifier_names
+  final icon_supports =
+      const AssetResource("assets/images/product/icon_supports.png", packageName: null);
 
   /// asset: assets/images/product/payment_success.png
   // ignore: non_constant_identifier_names
@@ -564,6 +583,12 @@ class _R_Image {
     return AssetImage(asset.common_button_bg.keyName);
   }
 
+  /// asset: assets/images/product/credit.png
+  // ignore: non_constant_identifier_names
+  AssetImage credit() {
+    return AssetImage(asset.credit.keyName);
+  }
+
   /// asset: assets/images/product/goods_placeholder.png
   // ignore: non_constant_identifier_names
   AssetImage goods_placeholder() {
@@ -580,6 +605,12 @@ class _R_Image {
   // ignore: non_constant_identifier_names
   AssetImage icon_add_disable() {
     return AssetImage(asset.icon_add_disable.keyName);
+  }
+
+  /// asset: assets/images/product/icon_airplane.png
+  // ignore: non_constant_identifier_names
+  AssetImage icon_airplane() {
+    return AssetImage(asset.icon_airplane.keyName);
   }
 
   /// asset: assets/images/product/icon_close.png
@@ -606,10 +637,22 @@ class _R_Image {
     return AssetImage(asset.icon_remove_disable.keyName);
   }
 
+  /// asset: assets/images/product/icon_service.png
+  // ignore: non_constant_identifier_names
+  AssetImage icon_service() {
+    return AssetImage(asset.icon_service.keyName);
+  }
+
   /// asset: assets/images/product/icon_shipping.png
   // ignore: non_constant_identifier_names
   AssetImage icon_shipping() {
     return AssetImage(asset.icon_shipping.keyName);
+  }
+
+  /// asset: assets/images/product/icon_supports.png
+  // ignore: non_constant_identifier_names
+  AssetImage icon_supports() {
+    return AssetImage(asset.icon_supports.keyName);
   }
 
   /// asset: assets/images/product/payment_success.png

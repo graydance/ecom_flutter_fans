@@ -821,9 +821,8 @@ class _OrderDetailsExpansionTileState extends State<OrderDetailsExpansionTile> {
                           item.goodsName,
                           maxLines: 3,
                           style: TextStyle(
-                            color: AppTheme.color0F1015,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 14,
+                            color: AppTheme.color555764,
+                            fontSize: 12,
                           ),
                         ),
                         SizedBox(
@@ -835,6 +834,16 @@ class _OrderDetailsExpansionTileState extends State<OrderDetailsExpansionTile> {
                             color: AppTheme.color0F1015,
                             fontWeight: FontWeight.w600,
                             fontSize: 14,
+                          ),
+                        ),
+                        SizedBox(
+                          height: 6,
+                        ),
+                        Text(
+                          item.goodsSkuName,
+                          style: TextStyle(
+                            color: AppTheme.color555764,
+                            fontSize: 12,
                           ),
                         ),
                         SizedBox(
@@ -859,6 +868,16 @@ class _OrderDetailsExpansionTileState extends State<OrderDetailsExpansionTile> {
                               fontSize: 12,
                             ),
                           ),
+                        SizedBox(
+                          height: 6,
+                        ),
+                        Text(
+                          item.expressShow,
+                          style: TextStyle(
+                            color: AppTheme.color0F1015,
+                            fontSize: 12,
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -1183,6 +1202,7 @@ class _ViewModel {
                 number: sku.number,
                 isCustomiz: sku.isCustomiz,
                 customiz: sku.customiz,
+                expressTemplateId: sku.expressTemplateId,
               ))
           .toList();
       final completer = Completer();
@@ -1216,6 +1236,7 @@ class _ViewModel {
                 number: sku.number,
                 isCustomiz: sku.isCustomiz,
                 customiz: sku.customiz,
+                expressTemplateId: sku.expressTemplateId,
               ))
           .toList();
       store.dispatch(OrderAction(buyGoods, shippingAddress.id,
