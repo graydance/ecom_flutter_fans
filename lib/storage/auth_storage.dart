@@ -41,4 +41,14 @@ class AuthStorage {
     final preferences = await SharedPreferences.getInstance();
     return preferences.getString(key);
   }
+
+  static Future<void> setBool(String key, bool value) async {
+    final preferences = await SharedPreferences.getInstance();
+    preferences.setBool(key, value);
+  }
+
+  static Future<bool> getBool(String key) async {
+    final preferences = await SharedPreferences.getInstance();
+    return preferences.getBool(key);
+  }
 }

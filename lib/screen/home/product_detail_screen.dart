@@ -157,7 +157,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                         _skuTitle,
                                         style: TextStyle(
                                           color: AppTheme.color0F1015,
-                                          fontWeight: FontWeight.w500,
+                                          fontWeight: FontWeight.bold,
                                           fontSize: 14,
                                         ),
                                       ),
@@ -220,7 +220,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                               : 'Free Shipping',
                                           style: TextStyle(
                                             color: AppTheme.color0F1015,
-                                            fontWeight: FontWeight.w500,
+                                            fontWeight: FontWeight.bold,
                                             fontSize: 14,
                                           ),
                                         ),
@@ -290,7 +290,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                             'Service',
                                             style: TextStyle(
                                               color: AppTheme.color0F1015,
-                                              fontWeight: FontWeight.w500,
+                                              fontWeight: FontWeight.bold,
                                               fontSize: 14,
                                             ),
                                           ),
@@ -346,7 +346,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                               'Description',
                               style: TextStyle(
                                 color: AppTheme.color0F1015,
-                                fontWeight: FontWeight.w500,
+                                fontWeight: FontWeight.bold,
                                 fontSize: 14,
                               ),
                             ),
@@ -544,8 +544,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               setState(() {
                 _selectedExpress = value;
               });
-
-              _showSkuBottomSheet(
+            },
+            onTapAddToCart: () async {
+              await _showSkuBottomSheet(
                 context,
                 viewModel,
                 ProductAttributesActionType.addToCart,
@@ -591,6 +592,7 @@ class _DeliveryOptionView extends StatefulWidget {
   final String shippedTo;
   final List<ExpressTemplete> list;
   final Function(ExpressTemplete) onChanged;
+  final VoidCallback onTapAddToCart;
   final ExpressTemplete defaultExpress;
   final String currency;
 
@@ -600,6 +602,7 @@ class _DeliveryOptionView extends StatefulWidget {
       @required this.shippedTo,
       @required this.list,
       @required this.onChanged,
+      @required this.onTapAddToCart,
       @required this.currency,
       this.defaultExpress})
       : super(key: key);
@@ -716,7 +719,7 @@ class __DeliveryOptionViewState extends State<_DeliveryOptionView> {
               child: FansButton(
                 onPressed: () {
                   Navigator.of(context).pop();
-                  widget.onChanged(_expressGroupValue);
+                  widget.onTapAddToCart();
                 },
                 title: 'ADD TO CART',
               ),
@@ -771,7 +774,7 @@ class _ServiceView extends StatelessWidget {
                           style: TextStyle(
                             color: AppTheme.colorED8514,
                             fontSize: 18,
-                            fontWeight: FontWeight.w500,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                         SizedBox(
@@ -922,7 +925,7 @@ class SimilarProducts extends StatelessWidget {
             'Recommended items',
             style: TextStyle(
               fontSize: 14,
-              fontWeight: FontWeight.w500,
+              fontWeight: FontWeight.bold,
               color: AppTheme.color0F1015,
             ),
           ),
