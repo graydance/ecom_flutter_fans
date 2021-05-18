@@ -157,7 +157,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                         _skuTitle,
                                         style: TextStyle(
                                           color: AppTheme.color0F1015,
-                                          fontWeight: FontWeight.w500,
+                                          fontWeight: FontWeight.bold,
                                           fontSize: 14,
                                         ),
                                       ),
@@ -197,7 +197,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                             onTap: () async {
                               await _showDeliveryBottomSheet(
                                 context,
-                                model.currency,
+                                model,
                               );
                             },
                             child: Container(
@@ -220,7 +220,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                               : 'Free Shipping',
                                           style: TextStyle(
                                             color: AppTheme.color0F1015,
-                                            fontWeight: FontWeight.w500,
+                                            fontWeight: FontWeight.bold,
                                             fontSize: 14,
                                           ),
                                         ),
@@ -273,7 +273,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                           if (_model.serviceConfigs.isNotEmpty)
                             GestureDetector(
                               onTap: () async {
-                                await _showServiceBottomSheet(context);
+                                await _showServiceBottomSheet(context, model);
                               },
                               child: Container(
                                 constraints: BoxConstraints(minHeight: 54),
@@ -290,7 +290,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                             'Service',
                                             style: TextStyle(
                                               color: AppTheme.color0F1015,
-                                              fontWeight: FontWeight.w500,
+                                              fontWeight: FontWeight.bold,
                                               fontSize: 14,
                                             ),
                                           ),
@@ -346,7 +346,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                               'Description',
                               style: TextStyle(
                                 color: AppTheme.color0F1015,
-                                fontWeight: FontWeight.w500,
+                                fontWeight: FontWeight.bold,
                                 fontSize: 14,
                               ),
                             ),
@@ -354,8 +354,13 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                           SizedBox(
                             height: 8,
                           ),
-                          Html(
-                            data: _model.description,
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 20,
+                            ),
+                            child: Html(
+                              data: _model.description,
+                            ),
                           ),
                         ],
                       ),
@@ -445,12 +450,12 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     );
   }
 
-  Future<void> _showSkuBottomSheet(BuildContext context, _ViewModel model,
+  Future<void> _showSkuBottomSheet(BuildContext context, _ViewModel viewModel,
       ProductAttributesActionType actionType) async {
     await showProductAttributesBottomSheet(
       context,
       ProductAttributesViewModel(
-        currency: model.currency,
+        currency: viewModel.currency,
         model: _model,
         quantity: _quantity,
         actionType: actionType,
@@ -487,7 +492,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               AppEvent.shared.report(
                   event: AnalyticsEvent.add_to_cart,
                   parameters: {AnalyticsEventParameter.id: _model.idolGoodsId});
-              model.onTapAddToCart(
+              viewModel.onTapAddToCart(
                 _quantity,
                 skuSpecIds,
                 isCustomiz,
@@ -500,7 +505,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               AppEvent.shared.report(
                   event: AnalyticsEvent.buy_now,
                   parameters: {AnalyticsEventParameter.id: _model.idolGoodsId});
-              model.onTapBuyNow(
+              viewModel.onTapBuyNow(
                 _quantity,
                 skuSpecIds,
                 isCustomiz,
@@ -515,7 +520,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   }
 
   Future<void> _showDeliveryBottomSheet(
-      BuildContext context, String currency) async {
+      BuildContext context, _ViewModel viewModel) async {
     if (_model.expressTemplete.isEmpty) {
       EasyLoading.showToast('No shipping');
       return;
@@ -540,14 +545,22 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 _selectedExpress = value;
               });
             },
+            onTapAddToCart: () async {
+              await _showSkuBottomSheet(
+                context,
+                viewModel,
+                ProductAttributesActionType.addToCart,
+              );
+            },
             defaultExpress: _selectedExpress,
-            currency: currency,
+            currency: viewModel.currency,
           );
         },
         isDismissible: true);
   }
 
-  Future<void> _showServiceBottomSheet(BuildContext context) async {
+  Future<void> _showServiceBottomSheet(
+      BuildContext context, _ViewModel viewModel) async {
     return showModalBottomSheet(
         context: context,
         isScrollControlled: true,
@@ -561,6 +574,13 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         builder: (context) {
           return _ServiceView(
             list: _model.serviceConfigs,
+            onTapAddToCart: () {
+              _showSkuBottomSheet(
+                context,
+                viewModel,
+                ProductAttributesActionType.addToCart,
+              );
+            },
           );
         },
         isDismissible: true);
@@ -572,6 +592,7 @@ class _DeliveryOptionView extends StatefulWidget {
   final String shippedTo;
   final List<ExpressTemplete> list;
   final Function(ExpressTemplete) onChanged;
+  final VoidCallback onTapAddToCart;
   final ExpressTemplete defaultExpress;
   final String currency;
 
@@ -581,6 +602,7 @@ class _DeliveryOptionView extends StatefulWidget {
       @required this.shippedTo,
       @required this.list,
       @required this.onChanged,
+      @required this.onTapAddToCart,
       @required this.currency,
       this.defaultExpress})
       : super(key: key);
@@ -617,11 +639,12 @@ class __DeliveryOptionViewState extends State<_DeliveryOptionView> {
                 children: [
                   Expanded(
                     child: Text(
-                      'Delivery Option',
+                      'Delivery Opention',
                       style: TextStyle(
-                          fontSize: 18,
-                          color: AppTheme.color0F1015,
-                          fontWeight: FontWeight.w500),
+                        fontSize: 18,
+                        color: AppTheme.color0F1015,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                   SizedBox(
@@ -658,6 +681,7 @@ class __DeliveryOptionViewState extends State<_DeliveryOptionView> {
                       });
                       widget.onChanged(model);
                     },
+                    contentPadding: EdgeInsets.zero,
                     title: Padding(
                       padding: const EdgeInsets.only(bottom: 6),
                       child: Text(
@@ -665,7 +689,7 @@ class __DeliveryOptionViewState extends State<_DeliveryOptionView> {
                         style: TextStyle(
                           fontSize: 14,
                           color: AppTheme.color0F1015,
-                          fontWeight: FontWeight.w500,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
@@ -694,10 +718,10 @@ class __DeliveryOptionViewState extends State<_DeliveryOptionView> {
               ),
               child: FansButton(
                 onPressed: () {
-                  widget.onChanged(_expressGroupValue);
                   Navigator.of(context).pop();
+                  widget.onTapAddToCart();
                 },
-                title: 'Confirm',
+                title: 'ADD TO CART',
               ),
             ),
           ],
@@ -709,9 +733,12 @@ class __DeliveryOptionViewState extends State<_DeliveryOptionView> {
 
 class _ServiceView extends StatelessWidget {
   final List<ServiceConfig> list;
+  final VoidCallback onTapAddToCart;
+
   const _ServiceView({
     Key key,
     @required this.list,
+    @required this.onTapAddToCart,
   }) : super(key: key);
 
   @override
@@ -747,7 +774,7 @@ class _ServiceView extends StatelessWidget {
                           style: TextStyle(
                             color: AppTheme.colorED8514,
                             fontSize: 18,
-                            fontWeight: FontWeight.w500,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                         SizedBox(
@@ -801,8 +828,11 @@ class _ServiceView extends StatelessWidget {
               child: FansButton(
                 onPressed: () {
                   Navigator.of(context).pop();
+                  if (onTapAddToCart != null) {
+                    onTapAddToCart();
+                  }
                 },
-                title: 'OK',
+                title: 'ADD TO CART',
               ),
             ),
           ],
@@ -825,29 +855,31 @@ class _ServiceView extends StatelessWidget {
           SizedBox(
             width: 12,
           ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                model.title,
-                style: TextStyle(
-                  color: AppTheme.color0F1015,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  model.title,
+                  style: TextStyle(
+                    color: AppTheme.color0F1015,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
-              ),
-              SizedBox(
-                height: 8,
-              ),
-              Text(
-                model.content,
-                style: TextStyle(
-                  color: AppTheme.color555764,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w500,
+                SizedBox(
+                  height: 8,
                 ),
-              )
-            ],
+                Text(
+                  model.content,
+                  style: TextStyle(
+                    color: AppTheme.color555764,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -893,7 +925,7 @@ class SimilarProducts extends StatelessWidget {
             'Recommended items',
             style: TextStyle(
               fontSize: 14,
-              fontWeight: FontWeight.w500,
+              fontWeight: FontWeight.bold,
               color: AppTheme.color0F1015,
             ),
           ),

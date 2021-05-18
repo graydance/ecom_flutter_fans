@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:fans/storage/auth_storage.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:enum_to_string/enum_to_string.dart';
 import 'package:firebase_analytics/observer.dart';
@@ -18,8 +19,14 @@ class AppEvent {
 
   Future<void> report(
       {@required AnalyticsEvent event,
-      Map<AnalyticsEventParameter, dynamic> parameters}) {
-    debugPrint('>>> AppEvent report: ${event.name} $parameters');
+      Map<AnalyticsEventParameter, dynamic> parameters}) async {
+    final eventIsEnable = await AuthStorage.getBool('EventIsEnable');
+    debugPrint(
+        '>>> AppEvent report: ${event.name} $parameters | eventIsEnable: $eventIsEnable');
+    if (eventIsEnable != null && eventIsEnable == false) {
+      return Future.value();
+    }
+
     return Future.wait(providers.map(
         (provider) => provider.report(event: event, parameters: parameters)));
   }
