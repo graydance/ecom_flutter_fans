@@ -440,7 +440,7 @@ class PayCaptureAPI extends API {
   @override
   Map<String, dynamic> get parameters => {'payNumber': payNumber};
 
-  String get path => '/user/good/pay_capture';
+  String get path => '/user/pub/pay_capture';
 }
 
 class CheckCouponAPI extends API {
