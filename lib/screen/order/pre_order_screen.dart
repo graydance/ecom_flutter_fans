@@ -818,8 +818,9 @@ class _OrderDetailsExpansionTileState extends State<OrderDetailsExpansionTile> {
                           height: 8,
                         ),
                         Text(
-                          item.goodsName,
-                          maxLines: 3,
+                          item.goodsName + item.goodsName + item.goodsName + item.goodsName,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
                           style: TextStyle(
                             color: AppTheme.color555764,
                             fontSize: 12,
@@ -836,9 +837,11 @@ class _OrderDetailsExpansionTileState extends State<OrderDetailsExpansionTile> {
                             fontSize: 14,
                           ),
                         ),
+                        if (item.goodsSkuName.isNotEmpty)
                         SizedBox(
                           height: 6,
                         ),
+                        if (item.goodsSkuName.isNotEmpty)
                         Text(
                           item.goodsSkuName,
                           style: TextStyle(
