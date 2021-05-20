@@ -156,8 +156,8 @@ class _ProductFeedItemState extends State<ProductFeedItem> {
               Text(
                 '${widget.currency}${widget.model.currentPriceStr}',
                 style: TextStyle(
-                    color: AppTheme.color0F1015,
-                    fontSize: 18,
+                    color: AppTheme.colorC20010,
+                    fontSize: 20,
                     fontWeight: FontWeight.bold),
               ),
               SizedBox(
@@ -179,7 +179,6 @@ class _ProductFeedItemState extends State<ProductFeedItem> {
         ),
         Container(
           padding: const EdgeInsets.symmetric(
-            vertical: 8,
             horizontal: 20,
           ),
           child: Align(
@@ -192,6 +191,9 @@ class _ProductFeedItemState extends State<ProductFeedItem> {
               ),
             ),
           ),
+        ),
+        SizedBox(
+          height: 12,
         ),
       ],
     );
