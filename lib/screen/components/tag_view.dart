@@ -11,6 +11,7 @@ class TagView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      margin: EdgeInsets.zero,
       elevation: 0,
       color: Colors.transparent,
       shape: RoundedRectangleBorder(

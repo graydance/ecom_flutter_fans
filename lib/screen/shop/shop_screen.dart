@@ -622,7 +622,7 @@ class _Tile extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                   SizedBox(
-                    height: 8,
+                    height: 4,
                   ),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.baseline,
@@ -638,7 +638,7 @@ class _Tile extends StatelessWidget {
                         ),
                       ),
                       SizedBox(
-                        width: 8,
+                        width: 4,
                       ),
                       Text(
                         '$currency${model.originalPriceStr}',
@@ -653,7 +653,7 @@ class _Tile extends StatelessWidget {
                   ),
                   if (model.tag.isNotEmpty)
                     SizedBox(
-                      height: 8,
+                      height: 4,
                     ),
                   Wrap(
                     spacing: -2,
