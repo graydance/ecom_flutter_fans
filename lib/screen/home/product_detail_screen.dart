@@ -382,67 +382,67 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         ),
         bottomNavigationBar: _model.idolGoodsId.isEmpty
             ? null
-            : Container(
-                height: 44,
-                padding: EdgeInsets.only(
-                    bottom: MediaQuery.of(context).padding.bottom),
-                child: Row(
-                  children: [
-                    if (!model.isAnonymous)
+            : SafeArea(
+                child: SizedBox(
+                  height: 44,
+                  child: Row(
+                    children: [
+                      if (!model.isAnonymous)
+                        Expanded(
+                          flex: 1,
+                          child: FavoriteButton(
+                            isSaved: false,
+                          ),
+                        ),
                       Expanded(
-                        flex: 1,
-                        child: FavoriteButton(
-                          isSaved: false,
+                        flex: 2,
+                        child: TextButton(
+                          onPressed: _model == null
+                              ? null
+                              : () async {
+                                  await _showSkuBottomSheet(
+                                    context,
+                                    model,
+                                    ProductAttributesActionType.addToCart,
+                                  );
+                                },
+                          style: TextButton.styleFrom(
+                            minimumSize: Size(44, 44),
+                            primary: Colors.white,
+                            backgroundColor: AppTheme.colorFEAC1B,
+                            shape: RoundedRectangleBorder(),
+                          ),
+                          child: Text(
+                            'Add to cart'.toUpperCase(),
+                            style: TextStyle(color: Colors.white),
+                          ),
                         ),
                       ),
-                    Expanded(
-                      flex: 2,
-                      child: TextButton(
-                        onPressed: _model == null
-                            ? null
-                            : () async {
-                                await _showSkuBottomSheet(
-                                  context,
-                                  model,
-                                  ProductAttributesActionType.addToCart,
-                                );
-                              },
-                        style: TextButton.styleFrom(
-                          minimumSize: Size(44, 44),
-                          primary: Colors.white,
-                          backgroundColor: AppTheme.colorFEAC1B,
-                          shape: RoundedRectangleBorder(),
+                      Expanded(
+                        flex: 2,
+                        child: TextButton(
+                          onPressed: _model == null
+                              ? null
+                              : () async {
+                                  await _showSkuBottomSheet(
+                                    context,
+                                    model,
+                                    ProductAttributesActionType.buyNow,
+                                  );
+                                },
+                          style: TextButton.styleFrom(
+                            minimumSize: Size(44, 44),
+                            primary: Colors.white,
+                            backgroundColor: AppTheme.colorED8514,
+                            shape: RoundedRectangleBorder(),
+                          ),
+                          child: Text(
+                            'Buy now'.toUpperCase(),
+                          ),
                         ),
-                        child: Text(
-                          'Add to cart'.toUpperCase(),
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      flex: 2,
-                      child: TextButton(
-                        onPressed: _model == null
-                            ? null
-                            : () async {
-                                await _showSkuBottomSheet(
-                                  context,
-                                  model,
-                                  ProductAttributesActionType.buyNow,
-                                );
-                              },
-                        style: TextButton.styleFrom(
-                          minimumSize: Size(44, 44),
-                          primary: Colors.white,
-                          backgroundColor: AppTheme.colorED8514,
-                          shape: RoundedRectangleBorder(),
-                        ),
-                        child: Text(
-                          'Buy now'.toUpperCase(),
-                        ),
-                      ),
-                    )
-                  ],
+                      )
+                    ],
+                  ),
                 ),
               ),
       ),
