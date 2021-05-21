@@ -149,7 +149,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                 );
                               },
                               child: Container(
-                                constraints: BoxConstraints(minHeight: 54),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 20),
                                 child: Row(
                                   children: [
                                     Expanded(
@@ -201,8 +202,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                               );
                             },
                             child: Container(
-                              constraints: BoxConstraints(minHeight: 54),
-                              padding: const EdgeInsets.symmetric(vertical: 8),
+                              padding: const EdgeInsets.symmetric(vertical: 20),
                               child: Row(
                                 children: [
                                   Expanded(
@@ -276,9 +276,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                 await _showServiceBottomSheet(context, model);
                               },
                               child: Container(
-                                constraints: BoxConstraints(minHeight: 54),
                                 padding:
-                                    const EdgeInsets.symmetric(vertical: 8),
+                                    const EdgeInsets.symmetric(vertical: 20),
                                 child: Row(
                                   children: [
                                     Expanded(
@@ -497,7 +496,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 skuSpecIds,
                 isCustomiz,
                 customiz,
-                _selectedExpress.id,
+                _selectedExpress?.id ?? 0,
                 context,
               );
               break;

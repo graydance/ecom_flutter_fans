@@ -417,7 +417,8 @@ class CartItemTile extends StatelessWidget {
                 children: [
                   Text(
                     item.goodsName,
-                    maxLines: 3,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                       color: AppTheme.color555764,
                       fontSize: 12,
