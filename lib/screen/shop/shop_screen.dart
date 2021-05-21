@@ -5,7 +5,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
@@ -669,8 +668,8 @@ class GoodsTile extends StatelessWidget {
                       height: 4,
                     ),
                   Wrap(
-                    spacing: -2,
-                    runSpacing: -2,
+                    spacing: 4,
+                    runSpacing: 4,
                     children: model.tag
                         .map(
                           (e) => TagView(
