@@ -27,7 +27,7 @@ class Product {
   final String nickName;
   final String storeName;
   final int isOfficial;
-  final List<Goods> recommend;
+  final List<GoodsItem> recommend;
   final String originalPriceStr;
   final String currentPriceStr;
   final List<Tag> tag;
@@ -94,7 +94,7 @@ class Product {
     String nickName,
     String storeName,
     int isOfficial,
-    List<Goods> recommend,
+    List<GoodsItem> recommend,
     String originalPriceStr,
     String currentPriceStr,
     List<Tag> tag,
@@ -280,8 +280,8 @@ class Product {
       nickName: map['nickName'],
       storeName: map['storeName'],
       isOfficial: map['isOfficial'],
-      recommend:
-          List<Goods>.from(map['recommend']?.map((x) => Goods.fromMap(x))),
+      recommend: List<GoodsItem>.from(
+          map['recommend']?.map((x) => GoodsItem.fromMap(x))),
       originalPriceStr: map['originalPriceStr'],
       currentPriceStr: map['currentPriceStr'],
       tag: List<Tag>.from(map['tag']?.map((x) => Tag.fromMap(x))),

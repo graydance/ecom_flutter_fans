@@ -5,9 +5,9 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_redux/flutter_redux.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 import 'package:redux/redux.dart';
 import 'package:universal_html/html.dart' as html;
 import 'package:url_launcher/url_launcher.dart';
@@ -37,14 +37,15 @@ class _ShopScreenState extends State<ShopScreen> {
   Idol _seller = Idol();
   String _expressInfo = '';
 
-  final _refreshGoodsController = EasyRefreshController();
+  final _refreshGoodsController = RefreshController(initialRefresh: true);
   int _page = 1;
   final _pageSize = 20;
   List<GoodsItem> _goods = [];
 
-  Map<String, _Size> _cacheSize = {};
+  Map<String, TileImageSize> _cacheSize = {};
 
   Set<String> _reportedIds = {};
+  bool _isShowFooter = false;
 
   final List<_SupportItem> _supportItems = [
     _SupportItem('Contact', 'https://levermore-1.gitbook.io/help-and-support/'),
@@ -99,11 +100,13 @@ class _ShopScreenState extends State<ShopScreen> {
       },
       builder: (ctx, viewModel) => Scaffold(
         backgroundColor: AppTheme.colorF4F4F4,
-        body: EasyRefresh(
-          firstRefresh: true,
+        body: SmartRefresher(
           controller: _refreshGoodsController,
-          enableControlFinishRefresh: true,
-          enableControlFinishLoad: true,
+          enablePullDown: true,
+          enablePullUp: true,
+          footer: ClassicFooter(
+            loadStyle: LoadStyle.ShowWhenLoading,
+          ),
           onRefresh: () async {
             final action = FetchIdolGoodsAction(
                 userName: viewModel.userName,
@@ -127,43 +130,51 @@ class _ShopScreenState extends State<ShopScreen> {
                 _goods = models;
               });
 
-              _refreshGoodsController.resetLoadState();
-              _refreshGoodsController.finishRefresh();
+              _refreshGoodsController.refreshCompleted();
+              _refreshGoodsController.resetNoData();
+              setState(() {
+                _isShowFooter = false;
+              });
             } catch (error) {
-              _refreshGoodsController.finishRefresh(success: false);
+              _refreshGoodsController.refreshFailed();
             }
           },
-          onLoad: _goods.isEmpty
-              ? null
-              : () async {
-                  final action = FetchIdolGoodsAction(
-                      userName: viewModel.userName,
-                      page: _page + 1,
-                      limit: _pageSize,
-                      completer: Completer());
-                  StoreProvider.of<AppState>(context).dispatch(action);
+          onLoading: () async {
+            final action = FetchIdolGoodsAction(
+                userName: viewModel.userName,
+                page: _page + 1,
+                limit: _pageSize,
+                completer: Completer());
+            StoreProvider.of<AppState>(context).dispatch(action);
 
-                  try {
-                    final response = await action.completer.future;
-                    if (!mounted) return;
+            try {
+              final response = await action.completer.future;
+              if (!mounted) return;
 
-                    final totalPage = response['totalPage'];
-                    final currentPage = response['currentPage'];
-                    final list = response['list'] as List;
-                    List<GoodsItem> models =
-                        list.map((e) => GoodsItem.fromMap(e)).toList();
+              final totalPage = response['totalPage'];
+              final currentPage = response['currentPage'];
+              final list = response['list'] as List;
+              List<GoodsItem> models =
+                  list.map((e) => GoodsItem.fromMap(e)).toList();
 
-                    _page += 1;
-                    setState(() {
-                      _goods.addAll(models);
-                    });
+              _page += 1;
+              setState(() {
+                _goods.addAll(models);
+              });
 
-                    final isNoMore = currentPage >= totalPage;
-                    _refreshGoodsController.finishLoad(noMore: isNoMore);
-                  } catch (error) {
-                    _refreshGoodsController.finishLoad(success: false);
-                  }
-                },
+              final isNoMore = currentPage >= totalPage;
+              if (isNoMore) {
+                _refreshGoodsController.loadNoData();
+                setState(() {
+                  _isShowFooter = true;
+                });
+              } else {
+                _refreshGoodsController.loadComplete();
+              }
+            } catch (error) {
+              _refreshGoodsController.loadFailed();
+            }
+          },
           child: CustomScrollView(
             slivers: [
               SliverToBoxAdapter(
@@ -325,126 +336,127 @@ class _ShopScreenState extends State<ShopScreen> {
                               );
                             }
 
-                            return _Tile(viewModel.currency, _goods[index],
+                            return GoodsTile(viewModel.currency, _goods[index],
                                 _getSize(_goods[index]));
                           },
                           staggeredTileBuilder: (index) => StaggeredTile.fit(2),
                         ),
                 ),
               ),
-              SliverToBoxAdapter(
-                child: ListView(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Divider(
-                        color: AppTheme.colorC4C5CD,
-                        height: 1,
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 30,
-                        vertical: 6,
-                      ),
-                      child: Text(
-                        'HELP & SUPPORT',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: AppTheme.color979AA9,
-                          fontWeight: FontWeight.w500,
+              if (_isShowFooter)
+                SliverToBoxAdapter(
+                  child: ListView(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Divider(
+                          color: AppTheme.colorC4C5CD,
+                          height: 1,
                         ),
                       ),
-                    ),
-                    SizedBox(
-                      height: 8,
-                    ),
-                    ListView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemBuilder: (context, index) {
-                        final model = _supportItems[index];
-                        return GestureDetector(
-                          onTap: () {
-                            if (kIsWeb) {
-                              html.window.location.href = model.url;
-                            } else {
-                              launch(model.url);
-                            }
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 30,
-                              vertical: 8,
-                            ),
-                            child: Row(
-                              children: [
-                                Expanded(
-                                  child: Text(
-                                    model.title,
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      color: AppTheme.color979AA9,
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 30,
+                          vertical: 6,
+                        ),
+                        child: Text(
+                          'HELP & SUPPORT',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: AppTheme.color979AA9,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 8,
+                      ),
+                      ListView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemBuilder: (context, index) {
+                          final model = _supportItems[index];
+                          return GestureDetector(
+                            onTap: () {
+                              if (kIsWeb) {
+                                html.window.location.href = model.url;
+                              } else {
+                                launch(model.url);
+                              }
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 30,
+                                vertical: 8,
+                              ),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      model.title,
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: AppTheme.color979AA9,
+                                      ),
                                     ),
                                   ),
-                                ),
-                                Icon(
-                                  Icons.arrow_forward_ios_rounded,
-                                  color: AppTheme.color979AA9,
-                                  size: 10,
-                                ),
-                              ],
+                                  Icon(
+                                    Icons.arrow_forward_ios_rounded,
+                                    color: AppTheme.color979AA9,
+                                    size: 10,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                        itemCount: _supportItems.length,
+                      ),
+                      SizedBox(
+                        height: 40,
+                      ),
+                      Column(
+                        children: [
+                          Image(image: R.image.icon_supports()),
+                          SizedBox(
+                            height: 20,
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              const url = 'https://olaak.com';
+                              if (kIsWeb) {
+                                html.window.location.href = url;
+                              } else {
+                                launch(url);
+                              }
+                            },
+                            child: Text(
+                              'Powered by Olaak',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: AppTheme.color979AA9,
+                                fontWeight: FontWeight.w500,
+                                decoration: TextDecoration.underline,
+                              ),
                             ),
                           ),
-                        );
-                      },
-                      itemCount: _supportItems.length,
-                    ),
-                    SizedBox(
-                      height: 40,
-                    ),
-                    Column(
-                      children: [
-                        Image(image: R.image.icon_supports()),
-                        SizedBox(
-                          height: 20,
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            const url = 'https://olaak.com';
-                            if (kIsWeb) {
-                              html.window.location.href = url;
-                            } else {
-                              launch(url);
-                            }
-                          },
-                          child: Text(
-                            'Powered by Olaak',
+                          SizedBox(
+                            height: 8,
+                          ),
+                          Text(
+                            '©2021 Olaak All Rights Reserved',
                             style: TextStyle(
                               fontSize: 12,
                               color: AppTheme.color979AA9,
-                              fontWeight: FontWeight.w500,
-                              decoration: TextDecoration.underline,
                             ),
                           ),
-                        ),
-                        SizedBox(
-                          height: 8,
-                        ),
-                        Text(
-                          '©2021 Olaak All Rights Reserved',
-                          style: TextStyle(
-                            fontSize: 12,
-                            color: AppTheme.color979AA9,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-              ),
             ],
           ),
         ),
@@ -452,14 +464,14 @@ class _ShopScreenState extends State<ShopScreen> {
     );
   }
 
-  _Size _getSize(GoodsItem item) {
+  TileImageSize _getSize(GoodsItem item) {
     final cache = _cacheSize[item.idolGoodsId];
     if (cache != null) return cache;
 
     var screenWidth = (MediaQuery.of(context).size.width - 16 * 2 - 4 * 4) / 2;
     var height = item.height / item.width * screenWidth;
 
-    final size = _Size(screenWidth, height);
+    final size = TileImageSize(screenWidth, height);
     _cacheSize[item.idolGoodsId] = size;
     return size;
   }
@@ -523,19 +535,19 @@ class _ShopScreenState extends State<ShopScreen> {
   }
 }
 
-class _Size {
-  const _Size(this.width, this.height);
+class TileImageSize {
+  const TileImageSize(this.width, this.height);
 
   final double width;
   final double height;
 }
 
-class _Tile extends StatelessWidget {
-  const _Tile(this.currency, this.model, this.size);
+class GoodsTile extends StatelessWidget {
+  const GoodsTile(this.currency, this.model, this.size);
 
   final String currency;
   final GoodsItem model;
-  final _Size size;
+  final TileImageSize size;
 
   @override
   Widget build(BuildContext context) {
@@ -656,8 +668,8 @@ class _Tile extends StatelessWidget {
                       height: 4,
                     ),
                   Wrap(
-                    spacing: -2,
-                    runSpacing: -2,
+                    spacing: 4,
+                    runSpacing: 4,
                     children: model.tag
                         .map(
                           (e) => TagView(
