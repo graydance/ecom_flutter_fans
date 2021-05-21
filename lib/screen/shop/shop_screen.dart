@@ -42,7 +42,7 @@ class _ShopScreenState extends State<ShopScreen> {
   final _pageSize = 20;
   List<GoodsItem> _goods = [];
 
-  Map<String, _Size> _cacheSize = {};
+  Map<String, TileImageSize> _cacheSize = {};
 
   Set<String> _reportedIds = {};
 
@@ -325,7 +325,7 @@ class _ShopScreenState extends State<ShopScreen> {
                               );
                             }
 
-                            return _Tile(viewModel.currency, _goods[index],
+                            return GoodsTile(viewModel.currency, _goods[index],
                                 _getSize(_goods[index]));
                           },
                           staggeredTileBuilder: (index) => StaggeredTile.fit(2),
@@ -452,14 +452,14 @@ class _ShopScreenState extends State<ShopScreen> {
     );
   }
 
-  _Size _getSize(GoodsItem item) {
+  TileImageSize _getSize(GoodsItem item) {
     final cache = _cacheSize[item.idolGoodsId];
     if (cache != null) return cache;
 
     var screenWidth = (MediaQuery.of(context).size.width - 16 * 2 - 4 * 4) / 2;
     var height = item.height / item.width * screenWidth;
 
-    final size = _Size(screenWidth, height);
+    final size = TileImageSize(screenWidth, height);
     _cacheSize[item.idolGoodsId] = size;
     return size;
   }
@@ -523,19 +523,19 @@ class _ShopScreenState extends State<ShopScreen> {
   }
 }
 
-class _Size {
-  const _Size(this.width, this.height);
+class TileImageSize {
+  const TileImageSize(this.width, this.height);
 
   final double width;
   final double height;
 }
 
-class _Tile extends StatelessWidget {
-  const _Tile(this.currency, this.model, this.size);
+class GoodsTile extends StatelessWidget {
+  const GoodsTile(this.currency, this.model, this.size);
 
   final String currency;
   final GoodsItem model;
-  final _Size size;
+  final TileImageSize size;
 
   @override
   Widget build(BuildContext context) {
