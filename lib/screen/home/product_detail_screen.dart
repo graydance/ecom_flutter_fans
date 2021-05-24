@@ -1,12 +1,14 @@
 import 'dart:async';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:fans/screen/shop/shop_screen.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_easyrefresh/easy_refresh.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_redux/flutter_redux.dart';
+import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:intl/intl.dart';
 import 'package:redux/redux.dart';
 
@@ -373,8 +375,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                             padding: const EdgeInsets.symmetric(
                               horizontal: 20,
                             ),
-                            child:
-                                SimilarProducts(recommends: _model.recommend),
+                            child: SimilarProducts(
+                                recommends: _model.recommend,
+                                currency: model.currency),
                           )
                         : Container(),
                   ],
@@ -382,67 +385,67 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         ),
         bottomNavigationBar: _model.idolGoodsId.isEmpty
             ? null
-            : Container(
-                height: 44,
-                padding: EdgeInsets.only(
-                    bottom: MediaQuery.of(context).padding.bottom),
-                child: Row(
-                  children: [
-                    if (!model.isAnonymous)
+            : SafeArea(
+                child: SizedBox(
+                  height: 44,
+                  child: Row(
+                    children: [
+                      if (!model.isAnonymous)
+                        Expanded(
+                          flex: 1,
+                          child: FavoriteButton(
+                            isSaved: false,
+                          ),
+                        ),
                       Expanded(
-                        flex: 1,
-                        child: FavoriteButton(
-                          isSaved: false,
+                        flex: 2,
+                        child: TextButton(
+                          onPressed: _model == null
+                              ? null
+                              : () async {
+                                  await _showSkuBottomSheet(
+                                    context,
+                                    model,
+                                    ProductAttributesActionType.addToCart,
+                                  );
+                                },
+                          style: TextButton.styleFrom(
+                            minimumSize: Size(44, 44),
+                            primary: Colors.white,
+                            backgroundColor: AppTheme.colorFEAC1B,
+                            shape: RoundedRectangleBorder(),
+                          ),
+                          child: Text(
+                            'Add to cart'.toUpperCase(),
+                            style: TextStyle(color: Colors.white),
+                          ),
                         ),
                       ),
-                    Expanded(
-                      flex: 2,
-                      child: TextButton(
-                        onPressed: _model == null
-                            ? null
-                            : () async {
-                                await _showSkuBottomSheet(
-                                  context,
-                                  model,
-                                  ProductAttributesActionType.addToCart,
-                                );
-                              },
-                        style: TextButton.styleFrom(
-                          minimumSize: Size(44, 44),
-                          primary: Colors.white,
-                          backgroundColor: AppTheme.colorFEAC1B,
-                          shape: RoundedRectangleBorder(),
+                      Expanded(
+                        flex: 2,
+                        child: TextButton(
+                          onPressed: _model == null
+                              ? null
+                              : () async {
+                                  await _showSkuBottomSheet(
+                                    context,
+                                    model,
+                                    ProductAttributesActionType.buyNow,
+                                  );
+                                },
+                          style: TextButton.styleFrom(
+                            minimumSize: Size(44, 44),
+                            primary: Colors.white,
+                            backgroundColor: AppTheme.colorED8514,
+                            shape: RoundedRectangleBorder(),
+                          ),
+                          child: Text(
+                            'Buy now'.toUpperCase(),
+                          ),
                         ),
-                        child: Text(
-                          'Add to cart'.toUpperCase(),
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      flex: 2,
-                      child: TextButton(
-                        onPressed: _model == null
-                            ? null
-                            : () async {
-                                await _showSkuBottomSheet(
-                                  context,
-                                  model,
-                                  ProductAttributesActionType.buyNow,
-                                );
-                              },
-                        style: TextButton.styleFrom(
-                          minimumSize: Size(44, 44),
-                          primary: Colors.white,
-                          backgroundColor: AppTheme.colorED8514,
-                          shape: RoundedRectangleBorder(),
-                        ),
-                        child: Text(
-                          'Buy now'.toUpperCase(),
-                        ),
-                      ),
-                    )
-                  ],
+                      )
+                    ],
+                  ),
                 ),
               ),
       ),
@@ -905,10 +908,12 @@ String _formatPrice(String price, String currency) {
 }
 
 class SimilarProducts extends StatelessWidget {
-  final List<Goods> recommends;
+  final List<GoodsItem> recommends;
+  final String currency;
   const SimilarProducts({
     Key key,
     @required this.recommends,
+    @required this.currency,
   }) : super(key: key);
 
   @override
@@ -929,38 +934,31 @@ class SimilarProducts extends StatelessWidget {
             ),
           ),
         ),
-        GridView.count(
+        StaggeredGridView.countBuilder(
           shrinkWrap: true,
           physics: NeverScrollableScrollPhysics(),
           padding: const EdgeInsets.only(top: 4),
-          mainAxisSpacing: 8,
-          crossAxisSpacing: 8,
-          crossAxisCount: 3,
-          children: recommends
-              .map(
-                (e) => GestureDetector(
-                  onTap: () {
-                    StoreProvider.of<AppState>(context)
-                        .dispatch(ShowProductDetailAction(e.idolGoodsId));
-                    Keys.navigatorKey.currentState
-                        .pushNamed(Routes.productDetail);
-                  },
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(4.0),
-                    child: CachedNetworkImage(
-                      placeholder: (context, _) => Container(
-                        color: AppTheme.colorEDEEF0,
-                      ),
-                      imageUrl: e.picture,
-                      fit: BoxFit.contain,
-                    ),
-                  ),
-                ),
-              )
-              .toList(),
+          crossAxisCount: 4,
+          mainAxisSpacing: 4.0,
+          crossAxisSpacing: 4.0,
+          itemBuilder: (context, index) {
+            final model = recommends[index];
+            return GoodsTile(currency, model, _getSize(context, model));
+          },
+          staggeredTileBuilder: (index) => StaggeredTile.fit(2),
+          itemCount: recommends.length,
         ),
       ],
     );
+  }
+
+  TileImageSize _getSize(BuildContext context, GoodsItem item) {
+    debugPrint('GoodsItem >>> ' + item.toString());
+    var screenWidth = (MediaQuery.of(context).size.width - 16 * 2 - 4 * 4) / 2;
+    var height = item.height / item.width * screenWidth;
+
+    final size = TileImageSize(screenWidth, height);
+    return size;
   }
 }
 
