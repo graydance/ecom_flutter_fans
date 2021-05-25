@@ -4,7 +4,6 @@ import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_html/flutter_html.dart';
 import 'package:intl/intl.dart';
 
 import 'package:fans/models/models.dart';
@@ -171,9 +170,26 @@ class _ProductFeedItemState extends State<ProductFeedItem> {
                     decoration: TextDecoration.lineThrough),
               ),
               Spacer(),
-              ...widget.model.tagNormal
-                  .map((e) => TagView(text: e.toUpperCase()))
-                  .toList(),
+              Wrap(
+                direction: Axis.horizontal,
+                alignment: WrapAlignment.start,
+                spacing: 5,
+                runSpacing: 5,
+                children: ['free shipping1', 'freee ssssss2'].map((tag) {
+                  return Container(
+                    padding: EdgeInsets.all(2),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: AppTheme.colorED8514, width: 1),
+                      borderRadius: BorderRadius.all(Radius.circular(4)),
+                    ),
+                    child: Text(
+                      tag,
+                      style:
+                          TextStyle(color: AppTheme.colorED8514, fontSize: 10),
+                    ),
+                  );
+                }).toList(),
+              ),
             ],
           ),
         ),
