@@ -175,7 +175,7 @@ class _ProductFeedItemState extends State<ProductFeedItem> {
                 alignment: WrapAlignment.start,
                 spacing: 5,
                 runSpacing: 5,
-                children: ['free shipping1', 'freee ssssss2'].map((tag) {
+                children: widget.model.tagNormal.map((tag) {
                   return Container(
                     padding: EdgeInsets.all(2),
                     decoration: BoxDecoration(
